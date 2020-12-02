@@ -1,0 +1,313 @@
+<head>
+<meta charset="utf-8">
+<title>Sterbefälle / Übersterblichkeit in Europa (ausgewählte Länder)</title>
+<link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
+<link rel="stylesheet" media="screen" href="Chart.min.css"> 
+<script type="text/javascript" src="Chart.min.js"></script>
+<script type="text/javascript" src="chartjs-plugin-annotation.min.js"></script>
+<script type="text/javascript" src="sterbefaelle7_ueber.js"></script>
+<style>
+	canvas {
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+        page-break-inside: avoid;
+	}
+	.chart-container {
+		width: 600px;
+		margin-left: 5px;
+		margin-right: 5px;
+		margin-bottom: 20px;
+        page-break-inside: avoid;
+	}
+   	.big-chart {
+		width: 1000px;
+    }
+	.container-all {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+</style>
+</head>
+<body>
+<a class="button button-outline" href="/">Zurück</a>
+<a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
+<a class="button button-outline" href="javascript:bigCharts()">Große Charts</a>
+<a class="button button-outline" href="javascript:smallCharts()">Kleine Charts</a>
+<h1>Sterbefälle / Übersterblichkeit</h1>
+<p>Stand: <a href="https://ec.europa.eu/eurostat">https://ec.europa.eu/eurostat</a>: <span id="eurostat_date"></span>, <a href="https://www.ecdc.europa.eu/en/coronavirus">https://www.ecdc.europa.eu/en/coronavirus</a>: <span id="ecdc_date"></span></p>
+<div class="container-all">
+</div>
+<!-- <p><strong>Übersterblichkeit:</strong> Beschreibt hier die Abweichung vom Vorjahresdurchschnitt (Intervall für die Bildung des Durchschnittes ist je Land angegeben). Der prozentuale Wert entspricht dem Anteil der kumulierten Abweichung an den gesamten durchschnittlichen Sterbefällen bis zur aktuell zuletzt verzeichneten Kalenderwoche (KW). Der abschließende Wert (oben) zeigt also die Gesamtabweichung zum Durchschnitt im bekannten Zeitraum in % sowie in Sterbefällen.</p> -->
+<h2 id="Anmerkungen">Anmerkungen</h2>
+<ul>
+<li><strong>Übersterblichkeit:</strong> Beschreibt hier die Abweichung vom Vorjahresdurchschnitt (Intervall für die Bildung des Durchschnittes ist je Land angegeben).
+ Der prozentuale Wert entspricht dem Anteil der kumulierten Abweichung an den gesamten durchschnittlichen Sterbefällen im jeweils gleichen Zeitraum. Der abschließende Wert (oben) zeigt also die Gesamtabweichung zum Durchschnitt im bekannten Zeitraum in % sowie in Sterbefällen. Je nach Land, kann dieser Zeitraum (siehe vertikale rote Linie) weit vor der aktuellen KW (siehe vertikale grüne Linie) liegen</li>
+<li><strong>Abweichungen:</strong> Unterschiedliche Werte im Vergleich zu anderen Auswertungen ergeben sich z.B. durch andere Intervalle über die der Vorjahresdurchschnitt gebildet wurde sowie andere betrachtete/verfügbare Zeiträume.</li>
+<li><strong>Werte:</strong> In dieser Statistik werden auch als 'provisional' oder 'estimated' gekennzeichnete Werte verwendet.</li>
+<li><strong>Covid-19:</strong> Dies sind die an das ECDC gemeldeten Covid-19 Todesfälle je KW. Der abschließende Wert (unten) nennt die kumulierten bislang gemeldeten Covid-19 Todesfälle gemäß ECDC (Aktualität, siehe Titelzeile).</li>
+</ul>
+<!-- <p><strong>Zeitraum:</strong> Betrachtete Zeiträume richten sich nach der Datenverfügbarkeit je Land.</p> -->
+<!-- <canvas id="myChart" style="width:600px;height: 300px;"></canvas> -->
+<script>
+
+/****************************/
+    var coInclude="DE CH AT DK BE NL FR SE CZ EL ES IT PL NO PT UK"
+//    var coInclude="DE DK SE CH"
+//    var coInclude="*"
+/****************************/
+
+
+//var ctx = document.getElementById('myChart').getContext('2d');
+function createConfig(details) {
+    return {
+        type:'line',
+        data: details,
+        options: {
+            //animation: true,
+            responsive: true,
+            //maintainAspectRatio: false,
+            title: {
+                display: true,
+                text: details.coname,
+            },
+            legend: {
+                labels: {
+                    boxWidth: 6,
+                    fontSize: 10,
+                    padding: 6,
+                }
+            }, 
+            scales: {
+                xAxes: [
+                {
+                    ticks: {
+                        fontSize:10,
+                        //minor: {enabled:true},
+                        //major: {enabled:true},
+                    }
+                }
+                ],
+                yAxes: [
+                {
+                    id: 'first-y-axis',
+                    type: 'linear',
+                    position: 'right',
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Sterbefälle je KW',
+                        lineHeight: 1,
+                        fontSize:10,
+                        padding:0,
+                    },
+                    ticks: {
+                        min:0,
+                        fontSize: 10,
+                    }
+                    //type: 'logarithmic'
+                },
+                {
+                    id: 'second-y-axis',
+                    type: 'linear',
+                    position: 'left',
+                    scaleLabel: {
+                        display: true,
+                        labelString: '%',
+                        lineHeight: 1,
+                        padding:0,
+                    },
+                    gridLines: {
+                        color: 'rgba(255, 0, 0, 0.15)',
+                        borderDash: [10,10],
+                    },
+                    ticks: {
+                        min: -5,
+                        max: (details.maxperc>20?details.maxperc:20),
+                        fontSize: 8,
+    //                   min:0,
+                    }
+                    //type: 'logarithmic'
+                },
+                ]
+            },
+            annotation: {
+                annotations: [
+                    {
+                        type: "line",
+                        mode: "vertical",
+                        scaleID: "x-axis-0",
+                        value: details.lastcw-0.99, /*lastcw is correct, why then?*/
+                        borderColor: 'rgba(255,0,0,0.25)',
+                        borderWidth: 1,
+                        label: {
+                          //backgroundColor: "red",
+                          backgroundColor: 'rgba(100,220,220,0)',
+                          //fontColor: window.chartColors.red,
+                          //yAdjust: 2,
+                          fontColor: "rgb(100,0,0)",
+                          fontSize: 10,
+                          content: ""+(Math.round(details.lastperc*10)/10)+"%, "+Math.round(details.sumdiff),
+                          position: "top",
+                          enabled: true
+                        },
+                    },
+                    {
+                        type: "line",
+                        mode: "vertical",
+                        scaleID: "x-axis-0",
+                        value: details.lastcw_covid-0.99, /*lastcw is correct, why then?*/
+                        borderColor: 'rgba(255,0,0,0)',
+                        borderWidth: 1,
+                        label: {
+                          //backgroundColor: "red",
+                          backgroundColor: 'rgba(100,220,220,0)',
+                          //fontColor: window.chartColors.red,
+                          //yAdjust: 2,
+                          fontColor: "rgb(0,102,76)",
+                          fontSize: 10,
+                          content: details.covid_sum,
+                          position: "bottom",
+                          enabled: true
+                        },
+                    },
+                    {
+                        type: "line",
+                        mode: "vertical",
+                        scaleID: "x-axis-0",
+                        value: kalenderwoche(new Date())-0.99, /*lastcw is correct, why then?*/
+                        borderColor: 'rgba(0,255,0,0.5)',
+                        borderWidth: 1,
+                        /*label: {
+                          //backgroundColor: "red",
+                          backgroundColor: 'rgba(100,220,220,0)',
+                          //fontColor: window.chartColors.red,
+                          //yAdjust: 2,
+                          fontColor: "rgb(100,0,0)",
+                          fontSize: 10,
+                          content: ''
+                          position: "top",
+                          enabled: true
+                        },*/
+                    },
+                ]
+            },
+        }
+    }
+}
+
+    
+//**********************************************************************************************
+window.onload = function() {
+	var container = document.querySelector('.container-all');
+    setSpanContent("ecdc_date",ch_stats.ecdc_date)
+    setSpanContent("eurostat_date",ch_stats.eurostat_date)
+    chdata.forEach(function(details) {
+        if ((coInclude=="*") || (coInclude.indexOf(details.cocode)>=0)) {
+            var div = document.createElement('div');
+            div.classList.add('chart-container');
+
+            var canvas = document.createElement('canvas');
+            div.appendChild(canvas);
+            container.appendChild(div);
+
+            var ctx = canvas.getContext('2d');
+            var config = createConfig(details);
+            new Chart(ctx, config);
+        }
+    });
+}
+
+//**********************************************************************************************
+
+function openNav() {
+  document.getElementById("mySidenav").style.width = "250px";
+}
+
+function closeNav() {
+  document.getElementById("mySidenav").style.width = "0";
+}
+
+//	.chart-container {
+//		width: 600px;
+
+function bigCharts() {
+    var elements = document.getElementsByClassName('chart-container');
+    for(var i = 0; i < elements.length; i++){
+        //elements[i].style.width='1000px'
+        elements[i].classList.add('big-chart')
+    }
+    for (var id in Chart.instances) {
+        Chart.instances[id].resize()
+    }
+    closeNav()
+}
+
+function smallCharts() {
+    var elements = document.getElementsByClassName('chart-container');
+    for(var i = 0; i < elements.length; i++){
+        //elements[i].style.width=''
+        elements[i].classList.remove('big-chart')
+    }
+    for (var id in Chart.instances) {
+        Chart.instances[id].resize()
+    }
+    closeNav()
+}
+
+
+//**********************************************************************************************
+function setSpanContent(id,str) {
+    var span = document.getElementById(id);
+
+    while( span.firstChild ) {
+        span.removeChild( span.firstChild );
+    }
+    span.appendChild( document.createTextNode(str) );
+}
+
+function cssrules() {
+    var rules = {};
+    for (var i=0; i<document.styleSheets.length; ++i) {
+        var cssRules = document.styleSheets[i].cssRules;
+        for (var j=0; j<cssRules.length; ++j)
+            rules[cssRules[j].selectorText] = cssRules[j];
+    }
+    return rules;
+}
+
+function css_getclass(name) {
+    var rules = cssrules();
+    if (!rules.hasOwnProperty(name))
+        throw 'TODO: deal_with_notfound_case';
+    return rules[name];
+}
+
+
+//**********************************************************************************************
+
+//source/credits: http://www.salesianer.de/util/kalwoch.html
+function kalenderwoche(Datum) {
+    //var Datum=new Date(j,m-1,t)
+    var DoDat=donnerstag(Datum)
+    var kwjahr=DoDat.getFullYear()
+    var DoKW1=donnerstag(new Date(kwjahr,0,4))
+    return Math.floor(1.5+(DoDat.getTime()-DoKW1.getTime())/86400000/7)
+}
+
+function donnerstag(datum) {
+  var Do=new Date()
+  Do.setTime(datum.getTime() + (3-((datum.getDay()+6) % 7)) * 86400000)
+  return Do
+}
+
+function montag(datum) {
+  var Mo=new Date()
+  Mo.setTime(datum.getTime() + (-((datum.getDay()+6) % 7)) * 86400000)
+  return Mo
+}
+
+
+</script>
+</body>
