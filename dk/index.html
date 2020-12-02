@@ -1,0 +1,354 @@
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
+<link rel="stylesheet" media="screen" href="Chart.min.css"> 
+<script type="text/javascript" src="Chart.min.js"></script>
+<script type="text/javascript" src="chartjs-plugin-annotation.min.js"></script>
+<script type="text/javascript" src="colors.js"></script>
+<script type="text/javascript" src="regioner.js"></script>
+</head>
+<body>
+<a class="button" href="../">Inhalt</a>
+<a class="button button-outline" href="#Anmerkungen">Anmerkungen / Quellen</a>
+<canvas id="myChart" style="width:990px;height: 792px;"></canvas>
+<br/>
+<h2 id="Anmerkungen">Anmerkungen</h2>
+<ul>
+<li>Letzte Aktualisierung: <span id="lastupdated"></span></li>
+<li>Diese Chart zeigt Werte, welche für die Entscheidungen bezüglich Risikogebieten / Quarantäneland seitens Deutschland und Dänemark herangezogen werden. Dies sind zum einen die 7-Tage Inzidenzen der Regionen in Dänemark. Aber auch die halbierten 14-Tage Inzidenzen für Schleswig-Holstein und Deutschland (durch die Halbierung entsteht eine gewisse Vergleichbarkeit mit den 7-Tage Inzidenzen).</li>
+<li>Die dänischen Daten vom SSI enthalten für die letzten 1-2 Tage meist noch sehr unvollständige Werte. Daher werden diese bei den regionalen Inzidenzen nicht angezeigt.</li>
+<li>Details zu den Entscheidungskriterien finden sich für Dänemark auf <a href="https://coronasmitte.dk/en/entry-into-denmark">coronasmitte.dk</a> und für Deutschland auf der Seite des <a href="https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Risikogebiete_neu.html">RKI</a></li>
+<li>Im unteren Teil werden Zeiträume für verschiedene Sperrungen/Maßnahmen markiert. Da diese Daten manuell gepflegt werden, kann es hier zu verzögerten Updates kommen.</li>
+</ul>
+<h2 id="Quellen">Quellen</h2>
+<ul>
+<li>Dänische Fallzahlen: <a href="https://covid19.ssi.dk/overvagningsdata/download-fil-med-overvaagningdata">covid19.ssi.dk</a></li>
+<li>Deutsche Fallzahlen: <a href="https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0">NPGEO Corona (RKI)</a></li>
+</ul>
+
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var opt = {
+        responsive:false,
+        title: {
+            display: true,
+            text: "Verlauf der 7-Tage Inzidenz für Regionen in Dänemark (SSI), Deutschland (RKI 14Tg. / 2) und Schleswig-Holstein (RKI 14Tg. / 2)"
+        },
+        scales: {
+            yAxes: [{
+                id: 'first-y-axis',
+                type: 'linear',
+                position: 'right',
+                //type: 'logarithmic'
+            }]
+        },
+        //https://github.com/chartjs/chartjs-plugin-annotation
+        annotation: {
+            annotations: [
+            {
+                type: "box",
+                xScaleID: "x-axis-0",
+                yScaleID: "first-y-axis",
+                xMin: strMax("2020-09-23",chdata.data.labels[0]),
+                //xMax: "2020-10-02",
+                yMax: 3,
+                yMin: 0,
+                //value: "2020-09-23",
+                //backgroundColor: window.chartColors.red,
+                borderColor: window.chartColors.red,
+                borderWidth: 0,
+            },
+            /*{
+                type: "line",
+                mode: "vertical",
+                scaleID: "x-axis-0",
+                value: "2020-09-28",
+                borderColor: 'rgba(0,0,0,0)',
+                borderWidth: 0,
+                label: {
+                  //backgroundColor: "red",
+                  backgroundColor: 'rgba(220,220,220,0)',
+                  //fontColor: window.chartColors.red,
+                  yAdjust: 2,
+                  fontColor: "white",
+                  fontSize: 10,
+                  content: "Risikogebiet Hovedstaden",
+                  position: "bottom",
+                  enabled: true
+                },
+            },*/
+            {
+                type: "line",
+                drawTime: 'afterDatasetsDraw',
+                mode: "horizontal",
+                scaleID: "first-y-axis",
+                value: 1.5,
+                borderColor: 'rgba(205,92,92,0)',
+                borderWidth: 0,
+                label: {
+                  //backgroundColor: "red",
+                  backgroundColor: 'rgba(220,220,220,0)',
+                  //fontColor: "white",
+                  fontColor: "black",
+                  fontSize: 10,
+                  //xAdjust: 28,
+                  //yAdjust: -8,
+                  content: "Risikogebiet Hovedstaden",
+                  position: "right",
+                  enabled: true
+                },           
+            },            
+            {
+                type: "box",
+                xScaleID: "x-axis-0",
+                yScaleID: "first-y-axis",
+                xMin: "2020-10-24",
+                //xMax: "2020-10-02",
+                yMax: 6,
+                yMin: 3.1,
+                //value: "2020-09-23",
+                //backgroundColor: window.chartColors.red,
+                borderColor: '#3399FF',
+                backgroundColor: '#3399FF',
+                borderWidth: 0,
+            },
+            {
+                type: "line",
+                drawTime: 'afterDatasetsDraw',
+                mode: "horizontal",
+                scaleID: "first-y-axis",
+                value: 4.5,
+                borderColor: 'rgba(205,92,92,0)',
+                borderWidth: 0,
+                label: {
+                  //backgroundColor: "red",
+                  backgroundColor: 'rgba(220,220,220,0)',
+                  fontColor: "black",
+                  //fontColor: "red",
+                  fontSize: 10,
+                  //xAdjust: 28,
+                  //yAdjust: -8,
+                  content: "Dänemark schließt die Grenze für Urlauber (excl. SH)",
+                  position: "right",
+                  enabled: true
+                },           
+            },
+            //2020-10-29 Testpflicht für Urlauber SH
+            {
+                type: "box",
+                xScaleID: "x-axis-0",
+                yScaleID: "first-y-axis",
+                xMin: strMax("2020-10-30",chdata.data.labels[0]),
+                //xMax: "2020-10-02",
+                yMax: 9,
+                yMin: 6.1,
+                //value: "2020-09-23",
+                backgroundColor: window.chartColors.green,
+                borderColor: window.chartColors.green,//#4BC0C0
+                borderWidth: 0,
+            },
+            {
+                type: "line",
+                drawTime: 'afterDatasetsDraw',
+                mode: "horizontal",
+                scaleID: "first-y-axis",
+                value: 7.5,
+                borderColor: 'rgba(205,92,92,0)',
+                borderWidth: 0,
+                label: {
+                  //backgroundColor: "red",
+                  backgroundColor: 'rgba(220,220,220,0)',
+                  fontColor: "black",
+                  fontSize: 10,
+                  //xAdjust: 28,
+                  //yAdjust: -8,
+                  content: "Risikogebiet Nordjylland + Testpflicht Urlauber SH",
+                  position: "right",
+                  enabled: true
+                },           
+            },            
+            {
+                type: "box",
+                xScaleID: "x-axis-0",
+                yScaleID: "first-y-axis",
+                xMin: strMax("2020-11-07",chdata.data.labels[0]),
+                yMax: 9.1,
+                yMin: 12.1,
+                //value: "2020-09-23",
+                backgroundColor: '#FFA0A0',
+                borderColor: '#FFA070',//#4BC0C0
+                borderWidth: 0,
+            },
+            {
+                type: "line",
+                drawTime: 'afterDatasetsDraw',
+                mode: "horizontal",
+                scaleID: "first-y-axis",
+                value: 10.5,
+                borderColor: 'rgba(205,92,92,0)',
+                borderWidth: 0,
+                label: {
+                  //backgroundColor: "red",
+                  backgroundColor: 'rgba(220,220,220,0)',
+                  fontColor: "black",
+                  fontSize: 10,
+                  //xAdjust: 28,
+                  //yAdjust: -8,
+                  content: "Ganz Dänemark ist Risikogebiet",
+                  position: "right",
+                  enabled: true
+                },           
+            },            
+            
+            
+/*            {            
+                type: "line",
+                mode: "vertical",
+                scaleID: "x-axis-0",
+                value: "2020-10-10",
+                borderColor: 'rgba(0,0,0,0)',
+                borderWidth: 0,
+                label: {
+                  backgroundColor: 'rgba(220,220,220,0)',
+                  fontColor: "black",
+                  fontSize: 10,
+                  yAdjust: 4,
+                  content: "Schließung für D",
+                  position: "bottom",
+                  enabled: true
+                },
+            },*/
+            {
+                type: "line",
+                drawTime: 'afterDatasetsDraw',
+//                drawTime: 'beforeDatasetsDraw',
+                mode: "horizontal",
+                scaleID: "first-y-axis",
+                value: "50",
+                //borderColor: 'rgba(255,0,0,0.5)',
+                borderColor: 'rgba(79,148,205,0.75)',
+                borderWidth: 2,
+                borderDash: [2, 2],
+                label: {
+                  //backgroundColor: "red",
+                  backgroundColor: 'rgba(220,220,220,0)',
+                  //fontColor: window.chartColors.red,
+                  fontColor: "black",
+                  fontSize: 10,
+                  yAdjust: -8,
+                  content: "RKI > Risikogebiet",
+                  position: "left",
+                  enabled: true
+                },
+            },
+            {
+                type: "line",
+                drawTime: 'afterDatasetsDraw',
+//                drawTime: 'beforeDatasetsDraw',
+                mode: "horizontal",
+                scaleID: "first-y-axis",
+                value: "30",
+//                borderColor: 'rgba(0,220,120,0.5)',
+                borderColor: 'rgba(205,92,92,0.75)',
+                borderWidth: 2,
+                borderDash: [2, 2],
+                label: {
+                  //backgroundColor: "red",
+                  backgroundColor: 'rgba(220,220,220,0)',
+                  //fontColor: window.chartColors.red,
+                  fontColor: "black",
+                  fontSize: 10,
+                  yAdjust: -8,
+                  content: "SSI > Quarantäneland",
+                  position: "left",
+                  enabled: true
+                },
+            }
+            
+
+            ]
+        }
+        
+        
+    };
+chdata.options=opt;
+
+//*************************  add annotations for last 10 weeks on Monday ***********************
+
+var Mo=montag(new Date())
+var dayTicks=86400000
+for(w = Mo.getTime() ; w >= Mo.getTime()-(10*7*dayTicks) ; w -= (7*dayTicks)) {
+
+    var kwMo = new Date(w)
+    var kwVal = kalenderwoche(kwMo)
+    
+    var oneAnnot = {
+                type: "line",
+                drawTime: "beforeDatasetsDraw",
+                mode: "vertical",
+                scaleID: "x-axis-0",
+                value: kwMo.toISOString().slice(0, 10),
+                borderColor: 'rgba(0,0,0,0.25)',
+                borderWidth: 0,
+                label: {
+                  //backgroundColor: "red",
+                  backgroundColor: 'rgba(220,220,220,1)',
+                  //fontColor: window.chartColors.red,
+                  xPadding: 3,
+                  yPadding: 3,
+                  //yAdjust: 2,
+                  fontColor: "black",
+                  fontSize: 8,
+                  content: "KW"+kwVal+" >",
+                  position: "top",
+                  enabled: true
+                },
+            }
+    chdata.options.annotation.annotations.push(oneAnnot)
+}
+//**********************************************************************************************
+
+setSpanContent("lastupdated",chdata.data.labels[chdata.data.labels.length-1])
+var myChart=new Chart(ctx,chdata)
+
+//**********************************************************************************************
+function setSpanContent(id,str) {
+    var span = document.getElementById(id);
+
+    while( span.firstChild ) {
+        span.removeChild( span.firstChild );
+    }
+    span.appendChild( document.createTextNode(str) );
+}
+
+//**********************************************************************************************
+function strMax(str1,str2) {
+    return (str1>=str2?str1:str2)
+}
+function strMin(str1,str2) {
+    return (str1<=str2?str1:str2)
+}
+
+//source/credits: http://www.salesianer.de/util/kalwoch.html
+function kalenderwoche(Datum) {
+    //var Datum=new Date(j,m-1,t)
+    var DoDat=donnerstag(Datum)
+    var kwjahr=DoDat.getFullYear()
+    var DoKW1=donnerstag(new Date(kwjahr,0,4))
+    return Math.floor(1.5+(DoDat.getTime()-DoKW1.getTime())/86400000/7)
+}
+
+function donnerstag(datum) {
+  var Do=new Date()
+  Do.setTime(datum.getTime() + (3-((datum.getDay()+6) % 7)) * 86400000)
+  return Do
+}
+
+function montag(datum) {
+  var Mo=new Date()
+  Mo.setTime(datum.getTime() + (-((datum.getDay()+6) % 7)) * 86400000)
+  return Mo
+}
+
+</script>
+</body>

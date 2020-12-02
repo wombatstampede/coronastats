@@ -1,5 +1,5 @@
 # coronastats
-Dieses Repository dient der Veröffentlichung von Auswertungen/Charts auf [![dieser Seite](https://wombatstampede.github.io/coronastats/)], die ich interessehalber als privates Projekt mit Hilfe verschiedener öffentlich verfügbarer Quellen erstellt habe.
+Dieses Repository dient der Veröffentlichung von Auswertungen/Charts auf [![https://wombatstampede.github.io/coronastats/](https://wombatstampede.github.io/coronastats/)], die ich interessehalber als privates Projekt mit Hilfe verschiedener öffentlich verfügbarer Quellen erstellt habe.
 
 ## Aktuell?
 Bei den jeweiligen Charts sollte ein Datum zu finden sein. Entweder wann die Daten zuletzt abgerufen wurden sind oder für welches neuestes Datum jeweils Daten in der Quelle vorkommen.
@@ -14,6 +14,12 @@ Die verwendeten Skripte für die Aufbereitung können noch Fehler enthalten oder
 Natürlich erfolgt eine Vorauswahl der Zeiträume und Datenreihen. Ich versuche aber bewußt auf eine Interpretation der Auswertungen zu verzichten.
 
 ## Quellen:
+Dänische Fallzahlen:
+[![covid19.ssi.dk](https://covid19.ssi.dk/overvagningsdata/download-fil-med-overvaagningdata)]
+
+Deutsche Fallzahlen:
+[![NPGEO Corona (RKI)](https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0")]
+
 Sterbezahlen Europa:
 Diese Daten stammen von [![EUROSTAT](https://ec.europa.eu/eurostat/)] aus dem Datensatz [![DEMO_R_MWK_TS](https://ec.europa.eu/eurostat/databrowser/view/DEMO_R_MWK_TS/default/table?lang=en)]. Dort finden sich auch detaillierte Angaben zu z.B. Datenherkunft und -genauigkeit.
 
