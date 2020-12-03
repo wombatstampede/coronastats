@@ -18,7 +18,7 @@ Natürlich erfolgt eine Vorauswahl der Zeiträume und Datenreihen. Ich versuche 
 ## Quellen:
 Fallzahlen Schleswig-Holstein:
 [www.schleswig-holstein.de](https://www.schleswig-holstein.de/DE/Schwerpunkte/Coronavirus/Zahlen/zahlen_node.html)
-Diese Zahlen werden tälich in Form von CSV-Dateien neu veröffentlicht. Zurückliegende Daten sind z.B. hier archiviert: [DE_COVID19_DATA](https://github.com/micb25/DE_COVID19_DATA)
+Diese Zahlen werden täglich in Form von CSV-Dateien neu veröffentlicht. Zurückliegende Daten sind z.B. hier archiviert: [DE_COVID19_DATA](https://github.com/micb25/DE_COVID19_DATA)
 
 Bevölkerungszahlen Schleswig-Holstein:
 [www.statistik-nord.de](https://www.statistik-nord.de/presse-veroeffentlichungen/thematische-veroeffentlichungen/fachveroeffentlichungen-bevoelkerung/dokumentenansicht/product/1134/bevoelkerung-in-schleswig-holstein-310)
