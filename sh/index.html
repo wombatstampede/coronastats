@@ -1,0 +1,146 @@
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
+<link rel="stylesheet" media="screen" href="Chart.min.css"> 
+<script type="text/javascript" src="Chart.min.js"></script>
+<script type="text/javascript" src="chartjs-plugin-annotation.min.js"></script>
+<script type="text/javascript" src="colors.js"></script>
+<script type="text/javascript" src="Kreis_PI.js"></script>
+</head>
+<body>
+<a class="button" href="../">Inhalt</a>
+<a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
+<canvas id="myChart" style="width:990px;height: 700px;"></canvas>
+<br/>
+<h2 id="Anmerkungen">Anmerkungen</h2>
+<ul>
+<li>Hospitalisierung (∑ 14-Tg.): Diese Linie zeigt die Summe der Hospitalisierungen in den jeweils 14 zurückliegenden Tagen.
+Die Zahl 14 ist nicht willkürlich gewählt, sondern basiert auf einer 
+<a href="https://www.ruhrbarone.de/mit-covid-19-ins-krankenhaus-1-von-5-patienten-stirbt-stationaer/192045">hier veröffentlichten Untersuchung</a> aus der sich ein durchschnittlicher Krankenhausaufenthalt (bzgl. COVID-19) von 13.7 Tagen ableiten lassen kann.</li>
+<li>Diese Grafik basiert auf der unter <a href="https://www.schleswig-holstein.de/DE/Schwerpunkte/Coronavirus/Zahlen/zahlen_node.html">www.schleswig-holstein.de</a>
+veröffentlichten <strong>&quot;CSV-Datei der Kreisdaten&quot;</strong>. Angezeigt werden daher die Unterschiede der Fallzahlen (Δ zum Vortag). Diese weichen zeitlich leicht ab von den dort gelisteten Fällen je Meldedatum. Siehe auch die Hinweise auf www.schleswig-holstein.de.</li>
+</ul>
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var opt = {
+        //animation: false,
+        responsive: false,
+        title: {
+            display: true,
+            //https://www.kreis-pinneberg.de
+            text: "Corona-Fälle im Kreis Pinneberg (Stand: "+chdata.labels[chdata.labels.length-1]+", Quelle:www.schleswig-holstein.de)",
+        },
+        scales: {
+            yAxes: [
+            {
+                id: 'first-y-axis',
+                type: 'linear',
+                position: 'right',
+                ticks: {
+                    min:0,
+                   //min:-2
+                }
+                //type: 'logarithmic'
+            },
+/*            {
+                id: 'second-y-axis',
+                type: 'linear',
+                position: 'left',
+                scaleLabel: {
+                    display: true,
+                    labelString: 'R(t)',
+                },
+                gridLines: {
+                    color: 'rgba(255, 0, 0, 0.15)',
+                    borderDash: [10,10],
+                },
+                ticks: {
+                   min:0,
+                }
+                //type: 'logarithmic'
+            },*/
+            ]
+        },
+        annotation: {
+            annotations: [
+            ]
+        },
+    }
+chdata.options=opt
+
+//*************************  add annotations for last 10 weeks on Monday ***********************
+
+var Mo=montag(new Date())
+var dayTicks=86400000
+for(w = Mo.getTime() ; w >= Mo.getTime()-(10*7*dayTicks) ; w -= (7*dayTicks)) {
+
+    var kwMo = new Date(w)
+    var kwVal = kalenderwoche(kwMo)
+    
+    var oneAnnot = {
+                type: "line",
+                drawTime: "beforeDatasetsDraw",
+                mode: "vertical",
+                scaleID: "x-axis-0",
+                value: kwMo.toISOString().slice(0, 10),
+                borderColor: 'rgba(0,0,0,0.25)',
+                borderWidth: 0,
+                label: {
+                  //backgroundColor: "red",
+                  backgroundColor: 'rgba(220,220,220,1)',
+                  //fontColor: window.chartColors.red,
+                  xPadding: 3,
+                  yPadding: 3,
+                  //yAdjust: 2,
+                  fontColor: "black",
+                  fontSize: 8,
+                  content: "KW"+kwVal+" >",
+                  position: "top",
+                  enabled: true
+                },
+            }
+    chdata.options.annotation.annotations.push(oneAnnot)
+}
+    
+//setSpanContent('stat_date',chdata.labels[chdata.labels.length-1])
+//**********************************************************************************************
+var myChart=new Chart(ctx,{
+        type:'bar',
+        data: chdata,
+        options: opt
+    })
+
+
+//**********************************************************************************************
+function setSpanContent(id,str) {
+    var span = document.getElementById(id);
+
+    while( span.firstChild ) {
+        span.removeChild( span.firstChild );
+    }
+    span.appendChild( document.createTextNode(str) );
+}
+//**********************************************************************************************
+//source/credits: http://www.salesianer.de/util/kalwoch.html
+function kalenderwoche(Datum) {
+    //var Datum=new Date(j,m-1,t)
+    var DoDat=donnerstag(Datum)
+    var kwjahr=DoDat.getFullYear()
+    var DoKW1=donnerstag(new Date(kwjahr,0,4))
+    return Math.floor(1.5+(DoDat.getTime()-DoKW1.getTime())/86400000/7)
+}
+
+function donnerstag(datum) {
+  var Do=new Date()
+  Do.setTime(datum.getTime() + (3-((datum.getDay()+6) % 7)) * 86400000)
+  return Do
+}
+
+function montag(datum) {
+  var Mo=new Date()
+  Mo.setTime(datum.getTime() + (-((datum.getDay()+6) % 7)) * 86400000)
+  return Mo
+}
+
+</script>
+</body>

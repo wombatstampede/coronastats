@@ -1,0 +1,107 @@
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
+<link rel="stylesheet" media="screen" href="Chart.min.css"> 
+<script type="text/javascript" src="Chart.min.js"></script>
+<!--<script type="text/javascript" src="chartjs-plugin-annotation.min.js"></script>-->
+<script type="text/javascript" src="chartjs-chart-matrix.min.js"></script>
+<script type="text/javascript" src="colors.js"></script>
+
+<script type="text/javascript" src="Data_PI_Alter.js"></script>
+</head>
+<body>
+<a class="button" href="../">Inhalt</a>
+<a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
+<p>Quelle / Stand: <a href="https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0">NPGEO Corona (RKI)</a>: <span id="rki_date"></span></p>
+<canvas id="myChart" style="width:990px;height: 250px;"></canvas>
+<br/><canvas id="legend" style="width:890px;height: 50px;padding-left:35px"></canvas>
+<br/><canvas id="myChart2" style="width:990px;height: 150px;"></canvas>
+<h2 id="Anmerkungen">Anmerkungen</h2>
+<ul>
+<li>Aktive Fälle: Die aktiven Fälle ergeben sich (lt. RKI) aus der Zahl der übermittelten Fälle abzüglich der Todesfälle 
+und der <strong>geschätzten</strong> Zahl der Genesenen. Genauere Angaben dazu finden sich z.B. in den Situationsberichten des RKI. Aufgrund unterschiedlicher Herangehensweisen und Datenverfügbarkeit kann es Unterschiede zu veröffentlichten Daten auf Kreis- und Landesebene geben.</li>
+<li>Für die Berechnung der Inzidenzen werden die Bevölkerungszahlen der Altersgruppen benötigt. Diese wurden vom Statistischen Amt für Hamburg und Schleswig-Holstein hier veröffentlicht. <a href="https://www.statistik-nord.de/presse-veroeffentlichungen/thematische-veroeffentlichungen/fachveroeffentlichungen-bevoelkerung/dokumentenansicht/product/1134/bevoelkerung-in-schleswig-holstein-310">&quot;Die Bevölkerung in Schleswig-Holstein nach Alter und Geschlecht 2019&quot;</a></li>
+</ul>
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var ctx2 = document.getElementById('myChart2').getContext('2d');
+var cleg= document.getElementById('legend').getContext('2d');
+
+chdata.options.responsive=false
+chdata.options.animation=false
+chdata.options.title= {
+            display: true,
+            text: "LK Pinneberg: 7-Tage Inzidenz je Altersgruppe und Datum (Quelle:RKI)"
+        }
+chdata.options.tooltips = {
+        callbacks: {
+            //title: function() { return '';},
+            title: function(items, data) {
+                var v = data.datasets[items[0].datasetIndex].data[items[0].index]
+                return [v.x+" / "+v.y+"J:"]
+            },
+            label: function(item, data) {
+                var v = data.datasets[item.datasetIndex].data[item.index]
+                return ["Inzidenz: " + Math.round(v.v*10)/10,"Fälle(7Tg): "+v.casesum]
+            }
+        },
+}
+chdata.options.scales.yAxes[0].position='right'
+chdata.options.scales.yAxes[0].offset=true
+chdata.options.scales.xAxes[0].offset=true
+
+chdata2.data.datasets[0].backgroundColor = window.chartColors.blue
+chdata2.options.responsive=false
+chdata2.options.animation=false
+chdata2.options.title= {
+            display: true,
+            text: "LK Pinneberg: Aktive Fälle (Quelle:RKI)"
+        }
+
+//Aktive Fälle: Die aktiven Fälle ergeben sich (lt. RKI) aus der Zahl der übermittelten Fälle abzüglich der Todesfälle 
+//und der geschätzten Zahl der Genesenen. Genauere Angaben dazu finden sich in den Situationsberichten des RKI.
+
+var legenddata=JSON.parse(JSON.stringify(chdata))
+legenddata.options.title.display=false
+//legenddata.data.datasets[0].label='Legende'
+legenddata.data.datasets[0].data=[]
+legenddata.data.datasets[0].backgroundColor = function(context) {
+				return inzColor(context.dataset.data[context.dataIndex].v)
+			},
+legenddata.options.scales.xAxes[0].labels=[]
+legenddata.options.scales.xAxes[0].gridlines={display:false}
+legenddata.options.scales.yAxes[0].gridlines={display:false}
+legenddata.options.scales.yAxes[0].labels=['Inzidenz']
+for (i=0; i<=150; i+=5) legenddata.data.datasets[0].data.push({x:i, y:'Inzidenz',v:i})
+for (i=0; i<=150; i+=5) legenddata.options.scales.xAxes[0].labels.push(i)
+
+
+//**********************************************************************************************
+setSpanContent('rki_date',chdata.options.scales.xAxes[0].labels[chdata.options.scales.xAxes[0].labels.length-1])
+
+var myChart=new Chart(ctx,chdata)
+var myLeg=new Chart(cleg,legenddata)
+var myChart2=new Chart(ctx2,chdata2)
+
+//**********************************************************************************************
+
+function inzColor(v) {
+    if (v<=50) return 'hsl('+Math.round(120.0-(v*120/50))+',75%,50%)'
+    else return 'hsl(0,75%,'+Math.round(Math.max(50-((v-50)/2),0))+'%)'
+}
+
+//**********************************************************************************************
+
+function setSpanContent(id,str) {
+    var span = document.getElementById(id);
+
+    while( span.firstChild ) {
+        span.removeChild( span.firstChild );
+    }
+    span.appendChild( document.createTextNode(str) );
+}
+
+
+
+</script>
+</body>

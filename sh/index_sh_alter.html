@@ -1,0 +1,110 @@
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
+<link rel="stylesheet" media="screen" href="Chart.min.css"> 
+<script type="text/javascript" src="Chart.min.js"></script>
+<!--<script type="text/javascript" src="chartjs-plugin-annotation.min.js"></script>-->
+<script type="text/javascript" src="chartjs-chart-matrix.min.js"></script>
+<script type="text/javascript" src="colors.js"></script>
+
+<script type="text/javascript" src="Data_SH_Alter.js"></script>
+</head>
+<body>
+<a class="button" href="../">Inhalt</a>
+<a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
+<canvas id="myChart" style="width:990px;height: 450px;"></canvas>
+<br/><canvas id="legend" style="width:890px;height: 50px;padding-left:35px"></canvas>
+<h2 id="Anmerkungen">Anmerkungen</h2>
+<ul>
+<li>Diese Grafik basiert auf der unter <a href="https://www.schleswig-holstein.de/DE/Schwerpunkte/Coronavirus/Zahlen/zahlen_node.html">www.schleswig-holstein.de</a>
+veröffentlichten <strong>&quot;CSV-Datei der Daten zu den Altersgruppen&quot;</strong></li>
+<li>Für die Berechnung der Inzidenzen werden die Bevölkerungszahlen der Altersgruppen benötigt. Diese wurden vom Statistischen Amt für Hamburg und Schleswig-Holstein hier veröffentlicht: <a href="https://www.statistik-nord.de/presse-veroeffentlichungen/thematische-veroeffentlichungen/fachveroeffentlichungen-bevoelkerung/dokumentenansicht/product/1134/bevoelkerung-in-schleswig-holstein-310">&quot;Die Bevölkerung in Schleswig-Holstein nach Alter und Geschlecht 2019&quot;</a></li>
+</ul>
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var cleg= document.getElementById('legend').getContext('2d');
+
+chdata.options.responsive=false
+chdata.options.animation=false
+chdata.options.title= {
+            display: true,
+            text: "SH: Inzidenz je Altersgruppe und Datum (Stand: "+chdata.options.scales.xAxes[0].labels[chdata.options.scales.xAxes[0].labels.length-1]+", Quelle:www.schleswig-holstein.de)"
+        }
+chdata.options.tooltips = {
+        callbacks: {
+            //title: function() { return '';},
+            title: function(items, data) {
+                var v = data.datasets[items[0].datasetIndex].data[items[0].index]
+                return [v.x+" / "+v.y+"J:"]
+            },
+            label: function(item, data) {
+                var v = data.datasets[item.datasetIndex].data[item.index]
+                return ["Inzidenz: " + Math.round(v.v*10)/10,"Fälle(7Tg): "+v.casesum]
+            }
+        },
+}
+chdata.options.scales.yAxes[0].position='right'
+chdata.options.scales.yAxes[0].offset=true
+chdata.options.scales.xAxes[0].offset=true
+
+var legenddata=JSON.parse(JSON.stringify(chdata))
+legenddata.options.title.display=false
+//legenddata.data.datasets[0].label='Legende'
+legenddata.data.datasets[0].data=[]
+legenddata.data.datasets[0].backgroundColor = function(context) {
+				return inzColor(context.dataset.data[context.dataIndex].v)
+			},
+legenddata.options.scales.xAxes[0].labels=[]
+legenddata.options.scales.xAxes[0].gridlines={display:false}
+legenddata.options.scales.yAxes[0].gridlines={display:false}
+legenddata.options.scales.yAxes[0].labels=['Inzidenz']
+for (i=0; i<=150; i+=5) legenddata.data.datasets[0].data.push({x:i, y:'Inzidenz',v:i})
+for (i=0; i<=150; i+=5) legenddata.options.scales.xAxes[0].labels.push(i)
+
+
+/* legende
+var chdata=2 
+	type: 'matrix',
+	data: {
+		datasets: [{
+			label: 'Inzidenz',
+            data:[],
+            backgroundColor(context) {
+				const v = context.dataset.data[context.dataIndex].v
+				if (v<=100) return 'hsl('+Math.round(120.0-(v*120/100))+',75%,50%)'
+				else return 'hsl(0,75%,'+Math.round(Math.max(50-((v-100)/4),0))+'%)'
+			},
+			width(context) {
+				const a = context.chart.chartArea
+				if (!a) return 0
+				return (a.right - a.left)/150
+			},
+			height(context) {
+				const a = context.chart.chartArea
+				if (!a) return 0
+				return (a.bottom - a.top)
+			},
+		}]
+	},
+	options: {
+		legend: { display: false },
+		scales: {
+			xAxes: [{type: 'category', labels: [], ticks: {display: true},gridlines:{display:false}}],
+			yAxes: [{type: 'category', labels: [], offset:true, ticks: {display: true},gridlines:{display:false}}],
+		},
+	}*/
+            
+//**********************************************************************************************
+
+var myChart=new Chart(ctx,chdata)
+var myLeg=new Chart(cleg,legenddata)
+
+
+function inzColor(v) {
+    if (v<=50) return 'hsl('+Math.round(120.0-(v*120/50))+',75%,50%)'
+    else return 'hsl(0,75%,'+Math.round(Math.max(50-((v-50)/2),0))+'%)'
+}
+
+
+</script>
+</body>
