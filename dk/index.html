@@ -10,11 +10,11 @@
 <body>
 <a class="button" href="../">Inhalt</a>
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen / Quellen</a>
-<canvas id="myChart" style="width:990px;height: 792px;"></canvas>
+<p>Stand: <span id="lastupdated"></span>. Letzte verwendete DK Falldaten: <span id="lastdkdata"></span>.</p>
+<canvas id="myChart" style="width:990px;height: 700px;"></canvas>
 <br/>
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
-<li>Letzte Aktualisierung: <span id="lastupdated"></span></li>
 <li>Diese Chart zeigt Werte, welche für die Entscheidungen bezüglich Risikogebieten / Quarantäneland seitens Deutschland und Dänemark herangezogen werden. Dies sind zum einen die 7-Tage Inzidenzen der Regionen in Dänemark. Aber auch die halbierten 14-Tage Inzidenzen für Schleswig-Holstein und Deutschland (durch die Halbierung entsteht eine gewisse Vergleichbarkeit mit den 7-Tage Inzidenzen).</li>
 <li>Die dänischen Daten vom SSI enthalten für die letzten 1-2 Tage meist noch sehr unvollständige Werte. Daher werden diese bei den regionalen Inzidenzen nicht angezeigt.</li>
 <li>Details zu den Entscheidungskriterien finden sich für Dänemark auf <a href="https://coronasmitte.dk/en/entry-into-denmark">coronasmitte.dk</a> und für Deutschland auf der Seite des <a href="https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Risikogebiete_neu.html">RKI</a></li>
@@ -23,16 +23,20 @@
 <h2 id="Quellen">Quellen</h2>
 <ul>
 <li>Dänische Fallzahlen: <a href="https://covid19.ssi.dk/overvagningsdata/download-fil-med-overvaagningdata">covid19.ssi.dk</a></li>
-<li>Deutsche Fallzahlen: <a href="https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0">NPGEO Corona (RKI)</a></li>
+<li>SH Fallzahlen/Inzidenz: <a href="https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0">NPGEO Corona (RKI)</a></li>
+<li>Deutsche Inzidenzen: <a href="https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide">ECDC cases of COVID-19 by country worldwide</a></li>
 </ul>
 
 <script>
 var ctx = document.getElementById('myChart').getContext('2d');
+var annot_fontsize=9
+var annot_height=4.5
+var annot_dist=0.3
 var opt = {
         responsive:false,
         title: {
             display: true,
-            text: "Verlauf der 7-Tage Inzidenz für Regionen in Dänemark (SSI), Deutschland (RKI 14Tg. / 2) und Schleswig-Holstein (RKI 14Tg. / 2)"
+            text: "Verlauf der 7-Tage Inzidenz für Regionen in Dänemark (SSI), Deutschland (ECDC 14Tg. / 2) und Schleswig-Holstein (RKI 14Tg. / 2)"
         },
         scales: {
             yAxes: [{
@@ -51,7 +55,7 @@ var opt = {
                 yScaleID: "first-y-axis",
                 xMin: strMax("2020-09-23",chdata.data.labels[0]),
                 //xMax: "2020-10-02",
-                yMax: 3,
+                yMax: annot_height,
                 yMin: 0,
                 //value: "2020-09-23",
                 //backgroundColor: window.chartColors.red,
@@ -82,7 +86,7 @@ var opt = {
                 drawTime: 'afterDatasetsDraw',
                 mode: "horizontal",
                 scaleID: "first-y-axis",
-                value: 1.5,
+                value: 0.5 * annot_height,
                 borderColor: 'rgba(205,92,92,0)',
                 borderWidth: 0,
                 label: {
@@ -90,7 +94,7 @@ var opt = {
                   backgroundColor: 'rgba(220,220,220,0)',
                   //fontColor: "white",
                   fontColor: "black",
-                  fontSize: 10,
+                  fontSize: annot_fontsize,
                   //xAdjust: 28,
                   //yAdjust: -8,
                   content: "Risikogebiet Hovedstaden",
@@ -104,8 +108,8 @@ var opt = {
                 yScaleID: "first-y-axis",
                 xMin: "2020-10-24",
                 //xMax: "2020-10-02",
-                yMax: 6,
-                yMin: 3.1,
+                yMax: 2*annot_height,
+                yMin: 1*annot_height+annot_dist,
                 //value: "2020-09-23",
                 //backgroundColor: window.chartColors.red,
                 borderColor: '#3399FF',
@@ -117,7 +121,7 @@ var opt = {
                 drawTime: 'afterDatasetsDraw',
                 mode: "horizontal",
                 scaleID: "first-y-axis",
-                value: 4.5,
+                value: 1.5 * annot_height,
                 borderColor: 'rgba(205,92,92,0)',
                 borderWidth: 0,
                 label: {
@@ -125,7 +129,7 @@ var opt = {
                   backgroundColor: 'rgba(220,220,220,0)',
                   fontColor: "black",
                   //fontColor: "red",
-                  fontSize: 10,
+                  fontSize: annot_fontsize,
                   //xAdjust: 28,
                   //yAdjust: -8,
                   content: "Dänemark schließt die Grenze für Urlauber (excl. SH)",
@@ -140,8 +144,8 @@ var opt = {
                 yScaleID: "first-y-axis",
                 xMin: strMax("2020-10-30",chdata.data.labels[0]),
                 //xMax: "2020-10-02",
-                yMax: 9,
-                yMin: 6.1,
+                yMax: 3 * annot_height,
+                yMin: 2 * annot_height+annot_dist,
                 //value: "2020-09-23",
                 backgroundColor: window.chartColors.green,
                 borderColor: window.chartColors.green,//#4BC0C0
@@ -152,14 +156,14 @@ var opt = {
                 drawTime: 'afterDatasetsDraw',
                 mode: "horizontal",
                 scaleID: "first-y-axis",
-                value: 7.5,
+                value: 2.5 * annot_height,
                 borderColor: 'rgba(205,92,92,0)',
                 borderWidth: 0,
                 label: {
                   //backgroundColor: "red",
                   backgroundColor: 'rgba(220,220,220,0)',
                   fontColor: "black",
-                  fontSize: 10,
+                  fontSize: annot_fontsize,
                   //xAdjust: 28,
                   //yAdjust: -8,
                   content: "Risikogebiet Nordjylland + Testpflicht Urlauber SH",
@@ -172,8 +176,8 @@ var opt = {
                 xScaleID: "x-axis-0",
                 yScaleID: "first-y-axis",
                 xMin: strMax("2020-11-07",chdata.data.labels[0]),
-                yMax: 9.1,
-                yMin: 12.1,
+                yMax: 4 * annot_height,
+                yMin: 3 * annot_height+annot_dist,
                 //value: "2020-09-23",
                 backgroundColor: '#FFA0A0',
                 borderColor: '#FFA070',//#4BC0C0
@@ -184,14 +188,14 @@ var opt = {
                 drawTime: 'afterDatasetsDraw',
                 mode: "horizontal",
                 scaleID: "first-y-axis",
-                value: 10.5,
+                value: 3.5 * annot_height,
                 borderColor: 'rgba(205,92,92,0)',
                 borderWidth: 0,
                 label: {
                   //backgroundColor: "red",
                   backgroundColor: 'rgba(220,220,220,0)',
                   fontColor: "black",
-                  fontSize: 10,
+                  fontSize: annot_fontsize,
                   //xAdjust: 28,
                   //yAdjust: -8,
                   content: "Ganz Dänemark ist Risikogebiet",
@@ -308,7 +312,8 @@ for(w = Mo.getTime() ; w >= Mo.getTime()-(10*7*dayTicks) ; w -= (7*dayTicks)) {
 }
 //**********************************************************************************************
 
-setSpanContent("lastupdated",chdata.data.labels[chdata.data.labels.length-1])
+setSpanContent("lastupdated",chdata.last_update)
+setSpanContent("lastdkdata",chdata.last_dk_data)
 var myChart=new Chart(ctx,chdata)
 
 //**********************************************************************************************
