@@ -310,6 +310,12 @@ for(w = Mo.getTime() ; w >= Mo.getTime()-(10*7*dayTicks) ; w -= (7*dayTicks)) {
             }
     chdata.options.annotation.annotations.push(oneAnnot)
 }
+
+//set pointradius
+for (i=0;i<chdata.data.datasets.length;i++) {
+    chdata.data.datasets[i].pointRadius=2
+}
+
 //**********************************************************************************************
 
 setSpanContent("lastupdated",chdata.last_update)

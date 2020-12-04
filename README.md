@@ -10,7 +10,7 @@ Die verwendeten Skripte für die Aufbereitung können noch Fehler enthalten oder
 Daher: Alle Angaben ohne Gewähr.
 
 Es liegt in der Natur der Sache, daß die verwendeten Daten nicht immer vollständig sind. Insbesondere je kürzer der Zeitpunkt zurückliegt desto größer ist die Wahrscheinlichkeit, daß noch Daten ergänzt werden.
-Im Zweifelsfall finden sich dazu Hinweise bei der verlinkten Datenquellen.
+Im Regelfall finden sich dazu Hinweise bei den verlinkten Datenquellen.
 
 ## Unvoreingenommen?
 Natürlich erfolgt eine Vorauswahl der Zeiträume und Datenreihen. Ich versuche aber bewußt auf eine Interpretation der Auswertungen zu verzichten.
