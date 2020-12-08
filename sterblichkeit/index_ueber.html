@@ -1,6 +1,6 @@
 <head>
 <meta charset="utf-8">
-<title>Sterbefälle / Übersterblichkeit in Europa (ausgewählte Länder)</title>
+<title>Übersterblichkeit und COVID-19 Sterbefälle im Vergleich</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
 <script type="text/javascript" src="Chart.min.js"></script>
@@ -34,29 +34,36 @@
 </head>
 <body>
 <a class="button" href="../">Inhalt</a>
-<a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
+<a class="button button-outline" href="#Anmerkungen">Anmerkungen / Quellen</a>
 <a class="button button-outline" href="javascript:bigCharts()">Große Charts</a>
 <a class="button button-outline" href="javascript:smallCharts()">Kleine Charts</a>
-<h1>Übersterblichkeit im Vergleich zu Covid-19 Sterbefällen</h1>
-<p>Stand: <a href="https://ec.europa.eu/eurostat">https://ec.europa.eu/eurostat</a>: <span id="eurostat_date"></span>, <a href="https://www.ecdc.europa.eu/en/coronavirus">https://www.ecdc.europa.eu/en/coronavirus</a>: <span id="ecdc_date"></span>, <a href="https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm">https://www.cdc.gov/(...)/excess_deaths.htm</a>: <span id="cdc_date"></span></p>
+<h1>Übersterblichkeit und COVID-19 Sterbefälle im Vergleich</h1>
+<p>Stand: EUROSTAT: <span id="eurostat_date"></span>, ECDC: <span id="ecdc_date"></span>, CDC: <span id="cdc_date"></span></p>
 <div class="container-all">
 </div>
 <!-- <p><strong>Übersterblichkeit:</strong> Beschreibt hier die Abweichung vom Vorjahresdurchschnitt (Intervall für die Bildung des Durchschnittes ist je Land angegeben). Der prozentuale Wert entspricht dem Anteil der kumulierten Abweichung an den gesamten durchschnittlichen Sterbefällen bis zur aktuell zuletzt verzeichneten Kalenderwoche (KW). Der abschließende Wert (oben) zeigt also die Gesamtabweichung zum Durchschnitt im bekannten Zeitraum in % sowie in Sterbefällen.</p> -->
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
 <li><strong>Erläuterung:</strong><br/>
-Diese Grafiken stellen je Land die allgemeine Sterblichkeit (blau für 2020+) bzw. Übersterblichkeit (Fläche in hellrot) je Kalenderwoche den gemeldeten Covid-19 Sterbefällen (in grün) gegenüber. Die Sterbefälle der Vorjahre werden ebenfalls in anderen Farben gezeigt.</li>
+Diese Grafiken stellen je Land die allgemeine Sterblichkeit (blau für 2020+) bzw. Übersterblichkeit (Fläche in hellrot) je Kalenderwoche den gemeldeten COVID-19 Sterbefällen (in grün) gegenüber. Die Sterbefälle der Vorjahre werden ebenfalls in anderen Farben gezeigt.</li>
 <li><strong>Übersterblichkeit:</strong><br/>
 Beschreibt hier die Abweichung vom Vorjahresdurchschnitt ab dem 01.01.2020. Das Intervall für die Bildung des Durchschnittes ist je Land in der Legende angegeben. Im Falle der USA wird als Durchschnitt der vom CDC gelieferte Wert "Average expected number of deaths" verwendet. Der prozentuale Wert (rote Linie) entspricht dem Anteil der kumulierten Abweichung an den gesamten durchschnittlichen Sterbefällen im jeweils gleichen Zeitraum. Der abschließende Wert (oben) zeigt also die Gesamtabweichung zum Durchschnitt im bekannten Zeitraum in % sowie in Sterbefällen. Je nach Land, kann dieser Zeitraum (siehe vertikale rote Linie) weit vor der aktuellen KW (siehe vertikale grüne Linie) enden. Negative Werte zeigen entsprechend eine unterdurchschnittliche Sterblichkeit.</li>
 <li><strong>Abweichungen:</strong><br/>
 Unterschiedliche Werte im Vergleich zu anderen Auswertungen ergeben sich z.B. durch andere Intervalle über die der Vorjahresdurchschnitt gebildet wurde sowie andere betrachtete/verfügbare Zeiträume.</li>
 <li><strong>Werte:</strong><br/>
 In dieser Statistik werden auch als 'provisional' oder 'estimated' gekennzeichnete Werte verwendet. Insbesondere die Angaben bzgl. Sterbefällen in den letzten Wochen können - je nach Land unterschiedlich - noch besonders unvollständig sein.</li>
-<li><strong>Covid-19:</strong><br/>
-Dies sind die an das ECDC gemeldeten Covid-19 Todesfälle je KW (in grün). Der abschließende Wert (unten) nennt die kumulierten bislang gemeldeten Covid-19 Todesfälle gemäß ECDC (Aktualität, siehe Titelzeile).</li>
+<li><strong>COVID-19:</strong><br/>
+Dies sind die an das ECDC gemeldeten COVID-19 Todesfälle je KW (in grün). Der abschließende Wert (unten) nennt die kumulierten bislang gemeldeten COVID-19 Todesfälle gemäß ECDC (Aktualität, siehe Titelzeile).</li>
 <li><strong>USA:</strong><br/>
-Die Sterbefälle/Übersterblichkeit stammt vom CDC. Die Sterbefälle entsprechen dem Wert "Predicted number of deaths from all causes". Details dazu finden sich beim <a href="https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm">CDC</a>.</li>
+Die Sterbefälle/Übersterblichkeit stammen vom CDC. Die Sterbefälle entsprechen dem Wert "Predicted number of deaths from all causes". Details dazu finden sich beim <a href="https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm">CDC</a>.</li>
 </ul>
+<h2 id="Quellen">Quellen</h2>
+<ul>
+<li>EUROSTAT: <a href="https://ec.europa.eu/eurostat">https://ec.europa.eu/eurostat</a>: <span id="eurostat_date"></span> (Sterbefalldaten Europa)</li>
+<li>ECDC: <a href="https://www.ecdc.europa.eu/en/coronavirus">https://www.ecdc.europa.eu/en/coronavirus</a> (Sterbefalldaten COVID-19)</li>
+<li>CDC: <a href="https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm">https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm</a> (Sterbefalldaten USA)</li>
+</ul>
+
 <!-- <p><strong>Zeitraum:</strong> Betrachtete Zeiträume richten sich nach der Datenverfügbarkeit je Land.</p> -->
 <!-- <canvas id="myChart" style="width:600px;height: 300px;"></canvas> -->
 <script>
