@@ -90,15 +90,15 @@ var chdata={
 				{x: '2020-12-07', y: 'Alle', v: 53.7576457, casesum: 1561},{x: '2020-12-07', y: '00-09', v: 29.9935339, casesum: 77},{x: '2020-12-07', y: '10-19', v: 78.983504, casesum: 218},{x: '2020-12-07', y: '20-29', v: 79.696964, casesum: 255},{x: '2020-12-07', y: '30-39', v: 64.566231, casesum: 217},{x: '2020-12-07', y: '40-49', v: 59.5790316, casesum: 210},{x: '2020-12-07', y: '50-59', v: 51.6753095, casesum: 256},{x: '2020-12-07', y: '60-69', v: 32.4594944, casesum: 118},{x: '2020-12-07', y: '70-79', v: 27.3712453, casesum: 81},{x: '2020-12-07', y: '80-89', v: 47.5279856, casesum: 85},{x: '2020-12-07', y: '90+', v: 152.692948, casesum: 44},
 				{x: '2020-12-08', y: 'Alle', v: 56.2371783, casesum: 1633},{x: '2020-12-08', y: '00-09', v: 30.7725867, casesum: 79},{x: '2020-12-08', y: '10-19', v: 78.2588847, casesum: 216},{x: '2020-12-08', y: '20-29', v: 79.0718898, casesum: 253},{x: '2020-12-08', y: '30-39', v: 71.7071966, casesum: 241},{x: '2020-12-08', y: '40-49', v: 59.2953219, casesum: 209},{x: '2020-12-08', y: '50-59', v: 55.106873, casesum: 273},{x: '2020-12-08', y: '60-69', v: 33.0096553, casesum: 120},{x: '2020-12-08', y: '70-79', v: 27.7091619, casesum: 82},{x: '2020-12-08', y: '80-89', v: 59.8293466, casesum: 107},{x: '2020-12-08', y: '90+', v: 183.925597, casesum: 53}
 			],
-			backgroundColor(context) {
+			backgroundColor: function(context) {
 				return inzColor(context.dataset.data[context.dataIndex].v)
 			},
-			width(context) {
+			width: function(context) {
 				const a = context.chart.chartArea
 				if (!a) return 0
 				return (a.right - a.left) / 85.5
 			},
-			height(context) {
+			height: function(context) {
 				const a = context.chart.chartArea
 				if (!a) return 0
 				return (a.bottom - a.top) / 11.5

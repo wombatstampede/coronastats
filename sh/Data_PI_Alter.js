@@ -95,15 +95,15 @@ var chdata={
 				{x: '2020-12-07', y: 'Alle', v: 88.2623702, casesum: 279},{x: '2020-12-07', y: '00-04', v: 53.2375058, casesum: 8},{x: '2020-12-07', y: '05-14', v: 67.351406, casesum: 20},{x: '2020-12-07', y: '15-34', v: 144.623067, casesum: 95},{x: '2020-12-07', y: '35-59', v: 93.0103181, casesum: 107},{x: '2020-12-07', y: '60-79', v: 45.2673695, casesum: 31},{x: '2020-12-07', y: '80+', v: 72.1695986, casesum: 16},
 				{x: '2020-12-08', y: 'Alle', v: 97.7529476, casesum: 309},{x: '2020-12-08', y: '00-04', v: 66.5468823, casesum: 10},{x: '2020-12-08', y: '05-14', v: 47.1459842, casesum: 14},{x: '2020-12-08', y: '15-34', v: 141.57837, casesum: 93},{x: '2020-12-08', y: '35-59', v: 96.4873393, casesum: 111},{x: '2020-12-08', y: '60-79', v: 62.7902222, casesum: 43},{x: '2020-12-08', y: '80+', v: 166.892197, casesum: 37}
 			],
-			backgroundColor(context) {
+			backgroundColor: function(context) {
 				return inzColor(context.dataset.data[context.dataIndex].v)
 			},
-			width(context) {
+			width: function(context) {
 				const a = context.chart.chartArea
 				if (!a) return 0
 				return (a.right - a.left) / 90.5
 			},
-			height(context) {
+			height: function(context) {
 				const a = context.chart.chartArea
 				if (!a) return 0
 				return (a.bottom - a.top) / 7.5
