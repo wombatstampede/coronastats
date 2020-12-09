@@ -48,8 +48,7 @@
 Diese Grafiken stellen je Land die allgemeine Sterblichkeit (blau für 2020+) bzw. Übersterblichkeit (Fläche in hellrot) je Kalenderwoche den gemeldeten COVID-19 Sterbefällen (in grün) gegenüber. Die Sterbefälle der Vorjahre werden ebenfalls in anderen Farben gezeigt.</li>
 <li><strong>Übersterblichkeit:</strong><br/>
 Beschreibt hier die Abweichung vom Vorjahresdurchschnitt ab dem 01.01.2020. Das Intervall für die Bildung des Durchschnittes ist je Land in der Legende angegeben. Im Falle der USA wird als Durchschnitt der vom CDC gelieferte Wert "Average expected number of deaths" verwendet. Der prozentuale Wert (rote Linie) entspricht dem Anteil der kumulierten Abweichung an den gesamten durchschnittlichen Sterbefällen im jeweils gleichen Zeitraum. Der abschließende Wert (oben) zeigt also die Gesamtabweichung zum Durchschnitt im bekannten Zeitraum in % sowie in Sterbefällen. Je nach Land, kann dieser Zeitraum (siehe vertikale rote Linie) weit vor der aktuellen KW (siehe vertikale grüne Linie) enden. Negative Werte zeigen entsprechend eine unterdurchschnittliche Sterblichkeit.</li>
-<li><strong>Abweichungen:</strong><br/>
-Unterschiedliche Werte im Vergleich zu anderen Auswertungen ergeben sich z.B. durch andere Intervalle über die der Vorjahresdurchschnitt gebildet wurde sowie andere betrachtete/verfügbare Zeiträume.</li>
+<li><strong>Abweichungen/Zeitraum:</strong><br/>Die Übersterblichkeit wird hier ab dem 01.01.2020 summiert. Andere Auswertungen beginnen z.B. damit erst beim ersten Covid-19 Infektions- oder Sterbefall im jeweiligen Land. Ebenso können unterschiedliche Vorjahreszeiträume für die Bildung des Durchschnitts verwendet werden. Dies führt zu unterschiedlichen Ergebnissen im Vergleich zu ähnlichen Auswertungen und sollte bei der Interpretation berücksichtigt werden.</li>
 <li><strong>Werte:</strong><br/>
 In dieser Statistik werden auch als 'provisional' oder 'estimated' gekennzeichnete Werte verwendet. Insbesondere die Angaben bzgl. Sterbefällen in den letzten Wochen können - je nach Land unterschiedlich - noch besonders unvollständig sein.</li>
 <li><strong>COVID-19:</strong><br/>
@@ -234,6 +233,7 @@ window.onload = function() {
     setSpanContent("cdc_date",ch_statsUS.cdc_date)
     chdata.push(chdataUS[0])
     chdata.forEach(function(details) {
+        //test: details.datasets[0].display=false
         if ((coInclude=="*") || (coInclude.indexOf(details.cocode)>=0)) {
             var div = document.createElement('div');
             div.classList.add('chart-container');
