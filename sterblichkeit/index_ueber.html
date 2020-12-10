@@ -30,13 +30,19 @@
 		flex-wrap: wrap;
 		justify-content: center;
 	}
+    a.button[data-state='active'],
+    a.button[data-state='active']:focus {
+        background-color: #A9BCF5;
+    }
 </style>
 </head>
 <body>
 <a class="button" href="../">Inhalt</a>
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen / Quellen</a>
-<a class="button button-outline" href="javascript:bigCharts()">Große Charts</a>
-<a class="button button-outline" href="javascript:smallCharts()">Kleine Charts</a>
+<a class="button button-outline" id="btnbigcharts" data-state="notactive" href="javascript:bigCharts()">Große Charts</a>
+<a class="button button-outline" id="btnsmallcharts" data-state="active" href="javascript:smallCharts()">Kleine Charts</a>
+<a class="button button-outline" id="btnfirstjan" data-state="notactive" href="javascript:recalcCharts(true)">Ab dem 01.01.</a>
+<a class="button button-outline" id="btnfirstcovid" data-state="active" href="javascript:recalcCharts(false)">Ab dem 01. Covid-19 Todesfall</a>
 <h1>Übersterblichkeit und COVID-19 Sterbefälle im Vergleich</h1>
 <p>Stand: EUROSTAT: <span id="eurostat_date"></span>, ECDC: <span id="ecdc_date"></span>, CDC: <span id="cdc_date"></span></p>
 <div class="container-all">
@@ -46,9 +52,9 @@
 <ul>
 <li><strong>Erläuterung:</strong><br/>
 Diese Grafiken stellen je Land die allgemeine Sterblichkeit (blau für 2020+) bzw. Übersterblichkeit (Fläche in hellrot) je Kalenderwoche den gemeldeten COVID-19 Sterbefällen (in grün) gegenüber. Die Sterbefälle der Vorjahre werden ebenfalls in anderen Farben gezeigt.</li>
+<li><strong>Abweichungen/Zeitraum:</strong><br/>Die Übersterblichkeit wird hier ab dem ersten dokumentierten Covid-19 Todesfall summiert (siehe schwarze vertikale Linie). Alternativ kann die Übersterblichkeit ab Jahresbeginn summiert werden. Dies führt jeweils zu unterschiedlichen Ergebnissen was bei der Interpretation berücksichtigt werden sollte.</li>
 <li><strong>Übersterblichkeit:</strong><br/>
-Beschreibt hier die Abweichung vom Vorjahresdurchschnitt ab dem 01.01.2020. Das Intervall für die Bildung des Durchschnittes ist je Land in der Legende angegeben. Im Falle der USA wird als Durchschnitt der vom CDC gelieferte Wert "Average expected number of deaths" verwendet. Der prozentuale Wert (rote Linie) entspricht dem Anteil der kumulierten Abweichung an den gesamten durchschnittlichen Sterbefällen im jeweils gleichen Zeitraum. Der abschließende Wert (oben) zeigt also die Gesamtabweichung zum Durchschnitt im bekannten Zeitraum in % sowie in Sterbefällen. Je nach Land, kann dieser Zeitraum (siehe vertikale rote Linie) weit vor der aktuellen KW (siehe vertikale grüne Linie) enden. Negative Werte zeigen entsprechend eine unterdurchschnittliche Sterblichkeit.</li>
-<li><strong>Abweichungen/Zeitraum:</strong><br/>Die Übersterblichkeit wird hier ab dem 01.01.2020 summiert. Andere Auswertungen beginnen z.B. damit erst beim ersten Covid-19 Infektions- oder Sterbefall im jeweiligen Land. Ebenso können unterschiedliche Vorjahreszeiträume für die Bildung des Durchschnitts verwendet werden. Dies führt zu unterschiedlichen Ergebnissen im Vergleich zu ähnlichen Auswertungen und sollte bei der Interpretation berücksichtigt werden.</li>
+Beschreibt hier die Abweichung vom Vorjahresdurchschnitt ab dem ersten Covid-19 Todesfall (alternativ: 01.01.2020). Das Intervall für die Bildung des Durchschnittes ist je Land in der Legende angegeben. Es kann nach Datenverfügbarkeit variieren. Im Falle der USA wird als Durchschnitt der vom CDC gelieferte Wert "Average expected number of deaths" verwendet. Der prozentuale Wert (rote Linie) entspricht dem Anteil der kumulierten Abweichung an den gesamten durchschnittlichen Sterbefällen im jeweils gleichen Zeitraum. Der abschließende Wert (oben) zeigt also die Gesamtabweichung zum Durchschnitt im bekannten Zeitraum in % sowie in Sterbefällen. Je nach Land, kann dieser Zeitraum (siehe vertikale rote Linie) weit vor der aktuellen KW (siehe vertikale grüne Linie) enden. Negative Werte zeigen entsprechend eine unterdurchschnittliche Sterblichkeit.</li>
 <li><strong>Werte:</strong><br/>
 In dieser Statistik werden auch als 'provisional' oder 'estimated' gekennzeichnete Werte verwendet. Insbesondere die Angaben bzgl. Sterbefällen in den letzten Wochen können - je nach Land unterschiedlich - noch besonders unvollständig sein.</li>
 <li><strong>COVID-19:</strong><br/>
@@ -159,9 +165,19 @@ function createConfig(details) {
                 },
                 ]
             },
+            annot_covidfirst: {
+                        _tag: 'covidfirst',
+                        type: "line",
+                        mode: "vertical",
+                        scaleID: "x-axis-0",
+                        value: 0,
+                        borderColor: 'rgba(0,0,0,0.5)',
+                        borderWidth: 1,
+            },
             annotation: {
                 annotations: [
                     {
+                        _tag: 'excess',
                         type: "line",
                         mode: "vertical",
                         scaleID: "x-axis-0",
@@ -181,6 +197,7 @@ function createConfig(details) {
                         },
                     },
                     {
+                        _tag: 'covid',
                         type: "line",
                         mode: "vertical",
                         scaleID: "x-axis-0",
@@ -226,6 +243,9 @@ function createConfig(details) {
 
     
 //**********************************************************************************************
+var charts=[]
+var chartconfig=[]
+var chartctx=[]
 window.onload = function() {
 	var container = document.querySelector('.container-all');
     setSpanContent("ecdc_date",ch_stats.ecdc_date)
@@ -235,23 +255,142 @@ window.onload = function() {
     chdata.forEach(function(details) {
         //test: details.datasets[0].display=false
         if ((coInclude=="*") || (coInclude.indexOf(details.cocode)>=0)) {
-            var div = document.createElement('div');
-            div.classList.add('chart-container');
+            var div = document.createElement('div')
+            div.classList.add('chart-container')
 
-            var canvas = document.createElement('canvas');
-            div.appendChild(canvas);
-            container.appendChild(div);
+            var canvas = document.createElement('canvas')
+            div.appendChild(canvas)
+            container.appendChild(div)
 
-            var ctx = canvas.getContext('2d');
-            var config = createConfig(details);
-            new Chart(ctx, config);
+            var ctx = canvas.getContext('2d')
+            var config = createConfig(details)
+            calcExcess(config,false)
+
+            chartconfig.push(config)
+            var cht=new Chart(ctx, config)
+            charts.push(cht)
+            chartctx.push(ctx)
         }
     });
 }
 
+
+function recalcCharts(byYearStart) {
+    setBtnState("btnfirstjan",byYearStart?'active':'false')
+    setBtnState("btnfirstcovid",(!byYearStart)?'active':'false')
+    for (var c=0; c<charts.length;c++) {
+        console.log("recalc: "+c)
+        calcExcess(chartconfig[c],byYearStart)
+        var cht=charts[c]
+        cht.update()
+    }
+}
+
+//**********************************************************************************************
+function calcExcess(config,byYearStart) {
+    var covid = getDataByTag(config.data,'covid')
+    var excess = getDataByTag(config.data,'excess')
+    var avg = getDataByTag(config.data,'avg')
+    var labels=config.data.labels
+    var cases = getDataByTag(config.data,'2020')
+    
+    var aCovidFirst = getAnnotByTag(config,'covidfirst')
+    var aCovid = getAnnotByTag(config,'covid')
+    var aExcess = getAnnotByTag(config,'excess')
+    
+    if (covid && excess && avg && cases && aCovid && aExcess) {
+        var firstCovidCWix=0
+        var lastCasesCWix=0
+        
+        if (byYearStart) {
+            if (aCovidFirst) {
+                config.options.annotation.annotations.splice(getAnnotIxByTag(config,'covidfirst'),1)
+            }
+        } else {
+            if (!aCovidFirst) {
+                aCovidFirst=config.options.annot_covidfirst
+                config.options.annotation.annotations.push(aCovidFirst)
+            }
+        }
+        
+        if (byYearStart) {
+            firstCovidCWix=0 //start at 2020-01-01
+        } else {
+            for (var i=0; i<labels.length;i++) {
+                if ((typeof covid.data[i]!=='undefined') && (covid.data[i]!=0)) {
+                    firstCovidCWix=i
+                    break
+                }
+            }
+        }
+        for (var i=0; i<labels.length;i++) {
+            if (typeof cases.data[i]==='undefined') {
+                lastCasesCWix=i-1
+                break
+            }
+        }
+        var sumExcess=0
+        var sumAvg=0
+        var maxExcess=0
+        excess.data=[]
+        for (var i=0; i<labels.length;i++) {
+            if ((i>=firstCovidCWix) && (i<=lastCasesCWix)) {
+                sumExcess += (cases.data[i]-avg.data[i])
+                sumAvg += avg.data[i]
+                var eVal=(sumExcess/sumAvg)*100
+                if (eVal>maxExcess) maxExcess=eVal
+                
+                excess.data.push(eVal)
+            }
+            else excess.data.push(undefined)
+        }
+        //todo -> redo cases Array
+        //aCovid.value=labels[lastCasesCWix]
+        if (!byYearStart) {
+            aCovidFirst.value=labels[firstCovidCWix]
+        }
+        aExcess.value=labels[lastCasesCWix]
+        aExcess.label.content = ""+(Math.round(excess.data[lastCasesCWix]*10)/10)+"%, "+Math.round(sumExcess)
+        config.options.scales.yAxes[1].ticks.max = (maxExcess>20?maxExcess:20)
+        //console.log(config.data.cocode+" #1:"+firstCovidCWix+" last:"+lastCasesCWix)
+    }
+    else console.log("Missing data on "+config.data.cocode)
+}
+
+function getDataByTag(data,tagmatch) {
+    for (var el of data.datasets) {
+        if (el['_tag']==tagmatch) {
+            //console.log("tagmatch: "+tagmatch+" le "+el.data.length)
+            return el
+        }
+    }
+    console.log("data tag: "+tagmatch+" not found!")
+    return null
+}
+
+function getAnnotByTag(config,tagmatch) {
+    for (var el of config.options.annotation.annotations) {
+        //console.log("atag: "+el['_tag'])
+        if (el['_tag']==tagmatch) return el
+    }
+    //console.log("annot tag: "+tagmatch+" not found!")
+    return null
+}
+function getAnnotIxByTag(config,tagmatch) {
+    for (var i=0;i<config.options.annotation.annotations.length;i++) {
+        if (config.options.annotation.annotations[i]['_tag']==tagmatch) return i
+    }
+    //console.log("annot tag: "+tagmatch+" not found!")
+    return -1
+}
+
+
 //**********************************************************************************************
 
 function bigCharts() {
+    setBtnState("btnbigcharts",'active')
+    setBtnState("btnsmallcharts",'notactive')
+
     var elements = document.getElementsByClassName('chart-container');
     for(var i = 0; i < elements.length; i++){
         //elements[i].style.width='1000px'
@@ -264,6 +403,8 @@ function bigCharts() {
 }
 
 function smallCharts() {
+    setBtnState("btnbigcharts",'notactive')
+    setBtnState("btnsmallcharts",'active')
     var elements = document.getElementsByClassName('chart-container');
     for(var i = 0; i < elements.length; i++){
         //elements[i].style.width=''
@@ -285,6 +426,12 @@ function setSpanContent(id,str) {
     }
     span.appendChild( document.createTextNode(str) );
 }
+
+function setBtnState(id,strState) {
+    var elem = document.getElementById(id);
+    if (elem) elem.setAttribute('data-state',strState)
+}
+
 
 function cssrules() {
     var rules = {};
