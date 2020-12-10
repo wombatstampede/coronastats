@@ -34,6 +34,10 @@
     a.button[data-state='active']:focus {
         background-color: #A9BCF5;
     }
+    
+    a.button.button-outline.button-small {
+        padding: 0 1rem;
+    }
 </style>
 </head>
 <body>
@@ -45,6 +49,7 @@
 <a class="button button-outline" id="btnfirstcovid" data-state="active" href="javascript:recalcCharts(false)">Ab dem 01. Covid-19 Todesfall</a>
 <h1>Übersterblichkeit und COVID-19 Sterbefälle im Vergleich</h1>
 <p>Stand: EUROSTAT: <span id="eurostat_date"></span>, ECDC: <span id="ecdc_date"></span>, CDC: <span id="cdc_date"></span></p>
+<div id="countrySelect"><a class="button button-outline button-small" href="javascript:toggleCountry('None')">Keins</a></div>
 <div class="container-all">
 </div>
 <!-- <p><strong>Übersterblichkeit:</strong> Beschreibt hier die Abweichung vom Vorjahresdurchschnitt (Intervall für die Bildung des Durchschnittes ist je Land angegeben). Der prozentuale Wert entspricht dem Anteil der kumulierten Abweichung an den gesamten durchschnittlichen Sterbefällen bis zur aktuell zuletzt verzeichneten Kalenderwoche (KW). Der abschließende Wert (oben) zeigt also die Gesamtabweichung zum Durchschnitt im bekannten Zeitraum in % sowie in Sterbefällen.</p> -->
@@ -79,6 +84,14 @@ Die Sterbefälle/Übersterblichkeit stammen vom CDC. Die Sterbefälle entspreche
 //    var coInclude="DE DK SE CH"
 //    var coInclude="*"
 /****************************/
+
+//fix/workaround for wkhtmltoimage
+Function.prototype.bind = Function.prototype.bind || function (thisp) {
+  var fn = this;
+  return function () {
+    return fn.apply(thisp, arguments);
+  };
+};
 
 
 //var ctx = document.getElementById('myChart').getContext('2d');
@@ -245,7 +258,7 @@ function createConfig(details) {
 //**********************************************************************************************
 var charts=[]
 var chartconfig=[]
-var chartctx=[]
+var chartdiv={}
 window.onload = function() {
 	var container = document.querySelector('.container-all');
     setSpanContent("ecdc_date",ch_stats.ecdc_date)
@@ -253,26 +266,68 @@ window.onload = function() {
     setSpanContent("cdc_date",ch_statsUS.cdc_date)
     chdata.push(chdataUS[0])
     chdata.forEach(function(details) {
+        var coShow=(coInclude=="*") || (coInclude.indexOf(details.cocode)>=0)
         //test: details.datasets[0].display=false
-        if ((coInclude=="*") || (coInclude.indexOf(details.cocode)>=0)) {
-            var div = document.createElement('div')
-            div.classList.add('chart-container')
+        addCountrySelect(details.cocode,details.coname,coShow)
+            
+        var div = document.createElement('div')
+        div.classList.add('chart-container')
+        
+        div.style.display = coShow?'block':'none'
+        div.setAttribute('id','ccont'+details.cocode)
 
-            var canvas = document.createElement('canvas')
-            div.appendChild(canvas)
-            container.appendChild(div)
+        var canvas = document.createElement('canvas')
+        div.appendChild(canvas)
+        container.appendChild(div)
 
-            var ctx = canvas.getContext('2d')
-            var config = createConfig(details)
-            calcExcess(config,false)
+        var ctx = canvas.getContext('2d')
+        var config = createConfig(details)
+        calcExcess(config,false)
 
-            chartconfig.push(config)
-            var cht=new Chart(ctx, config)
-            charts.push(cht)
-            chartctx.push(ctx)
-        }
+        chartconfig.push(config)
+        var cht=new Chart(ctx, config)
+        charts.push(cht)
+        
+        chartdiv[details.cocode]=div
+        
     });
 }
+
+//**********************************************************************************************
+
+function addCountrySelect(ccode,cname,isActive) {
+    var cs = document.getElementById('countrySelect')
+    if (cs) {
+        var csBtn = document.createElement('a')
+        csBtn.classList.add('button')
+        csBtn.classList.add('button-outline')
+        csBtn.classList.add('button-small')
+        csBtn.setAttribute('data-state',isActive?'active':'')
+        csBtn.setAttribute('id','cbtn'+ccode)
+        csBtn.setAttribute('title',cname)
+        csBtn.setAttribute('href','javascript:toggleCountry("'+ccode+'")')
+        csBtn.appendChild(document.createTextNode(ccode))
+        cs.appendChild(csBtn)
+    }
+
+}
+
+function toggleCountry(ccode) {
+    if (ccode!='None') {
+        var csBtn=document.getElementById('cbtn'+ccode)
+        isVis = (chartdiv[ccode].style.display == 'block')
+        isVis = !isVis
+        csBtn.setAttribute('data-state',isVis?'active':'')
+        chartdiv[ccode].style.display = isVis?'block':'none'
+    } else {
+        chdata.forEach(function(details) {
+            var csBtn=document.getElementById('cbtn'+details.cocode)
+            csBtn.setAttribute('data-state','')
+            chartdiv[details.cocode].style.display = 'none'
+        })
+    }
+}
+//**********************************************************************************************
 
 
 function recalcCharts(byYearStart) {
@@ -358,10 +413,10 @@ function calcExcess(config,byYearStart) {
 }
 
 function getDataByTag(data,tagmatch) {
-    for (var el of data.datasets) {
-        if (el['_tag']==tagmatch) {
+    for (var i=0;i<data.datasets.length;i++) {
+        if (data.datasets[i]['_tag']==tagmatch) {
             //console.log("tagmatch: "+tagmatch+" le "+el.data.length)
-            return el
+            return data.datasets[i]
         }
     }
     console.log("data tag: "+tagmatch+" not found!")
@@ -369,9 +424,8 @@ function getDataByTag(data,tagmatch) {
 }
 
 function getAnnotByTag(config,tagmatch) {
-    for (var el of config.options.annotation.annotations) {
-        //console.log("atag: "+el['_tag'])
-        if (el['_tag']==tagmatch) return el
+    for (var i=0;i<config.options.annotation.annotations.length;i++) {
+        if (config.options.annotation.annotations[i]['_tag']==tagmatch) return config.options.annotation.annotations[i]
     }
     //console.log("annot tag: "+tagmatch+" not found!")
     return null
