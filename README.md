@@ -30,7 +30,7 @@ Deutsche Fallzahlen:
 [NPGEO Corona (RKI)](https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0")
 
 Sterbezahlen Europa:
-Diese Daten stammen von [EUROSTAT](https://ec.europa.eu/eurostat/) aus dem Datensatz [DEMO_R_MWK_TS](https://ec.europa.eu/eurostat/databrowser/view/DEMO_R_MWK_TS/default/table?lang=en). Dort finden sich auch detaillierte Angaben zu z.B. Datenherkunft und -genauigkeit.
+Diese Daten stammen von [EUROSTAT](https://ec.europa.eu/eurostat/) aus dem Datensatz [DEMO_R_MWK_TS](https://ec.europa.eu/eurostat/estat-navtree-portlet-prod/BulkDownloadListing?dir=data&sort=1&sort=2&start=d). Dort finden sich auch detaillierte Angaben zu z.B. Datenherkunft und -genauigkeit.
 
 Fallzahlen Europa:
 Diese Daten stammen vom [ECDC](https://www.ecdc.europa.eu) genauer: [Daily number of new reported cases of COVID-19 by country worldwide](https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide).
