@@ -256,10 +256,7 @@ function createConfig(details) {
 
     
 //**********************************************************************************************
-var charts=[]
-var chartconfig=[]
-var chartdiv={}
-var chartcocode=[]
+var charts={}
 var isBigCharts=false
 window.onload = function() {
 	var container = document.querySelector('.container-all');
@@ -269,8 +266,6 @@ window.onload = function() {
     chdata.push(chdataUS[0])
     chdata.forEach(function(details) {
         var coShow=(coInclude=="*") || (coInclude.indexOf(details.cocode)>=0)
-        //test: details.datasets[0].display=false
-        addCountrySelect(details.cocode,details.coname,coShow)
             
         var div = document.createElement('div')
         div.classList.add('chart-container')
@@ -286,12 +281,14 @@ window.onload = function() {
         var config = createConfig(details)
         calcExcess(config,false)
 
-        chartconfig.push(config)
         var cht=new Chart(ctx, config)
-        charts.push(cht)
-        
-        chartdiv[details.cocode]=div
-        chartcocode.push(details.cocode)
+        charts[details.cocode] = {
+            cocode: details.cocode,
+            chart: cht,
+            config: config,
+            div: div
+        }
+        addCountrySelect(details.cocode,details.coname,coShow)
         
     });
 }
@@ -311,32 +308,26 @@ function addCountrySelect(ccode,cname,isActive) {
         csBtn.setAttribute('href','javascript:toggleCountry("'+ccode+'")')
         csBtn.appendChild(document.createTextNode(ccode))
         cs.appendChild(csBtn)
+        charts[ccode].button = csBtn
     }
 
 }
 
 function toggleCountry(ccode) {
     if (ccode!='None') {
-        var csBtn=document.getElementById('cbtn'+ccode)
-        var cindex=-1;
-        for (i=0; i<=chartcocode.length; i++) {
-            if (chartcocode[i]==ccode) {
-                cindex=i
-                break
-            }
-        }    
-        isVis = (chartdiv[ccode].style.display == 'block')
+        var csBtn=charts[ccode].button //document.getElementById('cbtn'+ccode)
+        
+        isVis = (charts[ccode].div.style.display == 'block')
         isVis = !isVis
         csBtn.setAttribute('data-state',isVis?'active':'')
-        chartdiv[ccode].style.display = isVis?'block':'none'
+        charts[ccode].div.style.display = isVis?'block':'none'
         
-        updateChartSizeIfVisible(cindex) 
+        updateChartSizeIfVisible(charts[ccode]) 
     } else {
-        chdata.forEach(function(details) {
-            var csBtn=document.getElementById('cbtn'+details.cocode)
-            csBtn.setAttribute('data-state','')
-            chartdiv[details.cocode].style.display = 'none'
-        })
+        for (var key in charts) {
+            charts[key].button.setAttribute('data-state','')
+            charts[key].div.style.display = 'none'
+        }
     }
 }
 //**********************************************************************************************
@@ -345,11 +336,10 @@ function toggleCountry(ccode) {
 function recalcCharts(byYearStart) {
     setBtnState("btnfirstjan",byYearStart?'active':'false')
     setBtnState("btnfirstcovid",(!byYearStart)?'active':'false')
-    for (var c=0; c<charts.length;c++) {
-        console.log("recalc: "+c)
-        calcExcess(chartconfig[c],byYearStart)
-        var cht=charts[c]
-        cht.update()
+    for (var key in charts) {
+        console.log("recalc: "+key)
+        calcExcess(charts[key].config,byYearStart)
+        charts[key].chart.update()
     }
 }
 
@@ -458,19 +448,9 @@ function bigCharts() {
     setBtnState("btnsmallcharts",'notactive')
     isBigCharts=true
     
-    for (var i=0;i<chartcocode.length;i++) {
-        updateChartSizeIfVisible(i)
+    for (var key in charts) {
+        updateChartSizeIfVisible(charts[key])
     }
-/*
-    var elements = document.getElementsByClassName('chart-container');
-    for(var i = 0; i < elements.length; i++){
-        //elements[i].style.width='1000px'
-        if (elements[i].style.display!='none'))
-            elements[i].classList.add('big-chart')
-    }
-    for (var id in Chart.instances) {
-        Chart.instances[id].resize()
-    }*/
 }
 
 function smallCharts() {
@@ -478,35 +458,24 @@ function smallCharts() {
     setBtnState("btnsmallcharts",'active')
     isBigCharts=false
     
-    for (var i=0;i<chartcocode.length;i++) {
-        updateChartSizeIfVisible(i)
+    for (var key in charts) {
+        updateChartSizeIfVisible(charts[key])
     }
-/*    
-    var elements = document.getElementsByClassName('chart-container');
-    for(var i = 0; i < elements.length; i++){
-        //elements[i].style.width=''
-        elements[i].classList.remove('big-chart')
-    }
-    for (var id in Chart.instances) {
-        Chart.instances[id].resize()
-    }
-    */
 }
 
-function updateChartSizeIfVisible(cindex) {
-    var cocode=chartcocode[cindex]
-    var element=chartdiv[cocode]
-    console.log("cocode: "+cocode+" cindex "+cindex+" elementid "+element.id)
-    if (isBigCharts) {
-        if (!element.classList.contains('big-chart')) {
-            element.classList.add('big-chart')
-            charts[cindex].resize()
+function updateChartSizeIfVisible(achart) {
+    //console.log("cocode: "+cocode+" cindex "+cindex+" elementid "+element.id)
+    if (achart.div.style.display == 'block') {
+        if (isBigCharts) {
+            if (!achart.div.classList.contains('big-chart')) {
+                achart.div.classList.add('big-chart')
+            }
+        } else {
+            if (achart.div.classList.contains('big-chart')) {
+                achart.div.classList.remove('big-chart')
+            }
         }
-    } else {
-        if (element.classList.contains('big-chart')) {
-            element.classList.remove('big-chart')
-            charts[cindex].resize()
-        }
+        achart.chart.resize()
     }
 }
 
