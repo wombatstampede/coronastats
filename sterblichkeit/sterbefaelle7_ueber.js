@@ -1,6 +1,6 @@
 var ch_stats={
 ecdc_date: '2020-12-12',
-eurostat_date: '2020-12-12',
+eurostat_date: '2020-12-13',
 }
 var chdata=[
 {
