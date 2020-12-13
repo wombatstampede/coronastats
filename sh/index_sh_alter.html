@@ -5,7 +5,7 @@
 <meta property="og:image" content="index_sh_alter.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<meta property="og:updated_time" content="2020-12-13T10:31:55+01:00" />
+<meta property="og:updated_time" content="2020-12-13T11:21:36+01:00" />
 <title>Altersverteilung der Corona-Fälle in Schleswig-Holstein</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
@@ -20,7 +20,7 @@
 <a class="button" href="../">Inhalt</a>
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
 <canvas id="myChart" style="width:990px;height: 450px;"></canvas>
-<br/><canvas id="legend" style="width:890px;height: 50px;padding-left:35px"></canvas>
+<br/><canvas id="legend" style="width:990px;height: 50px;padding-left:35px"></canvas>
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
 <li>Diese Grafik basiert auf der unter <a href="https://www.schleswig-holstein.de/DE/Schwerpunkte/Coronavirus/Zahlen/zahlen_node.html">www.schleswig-holstein.de</a>
@@ -65,8 +65,8 @@ legenddata.options.scales.xAxes[0].labels=[]
 legenddata.options.scales.xAxes[0].gridlines={display:false}
 legenddata.options.scales.yAxes[0].gridlines={display:false}
 legenddata.options.scales.yAxes[0].labels=['Inzidenz']
-for (i=0; i<=150; i+=5) legenddata.data.datasets[0].data.push({x:i, y:'Inzidenz',v:i})
-for (i=0; i<=150; i+=5) legenddata.options.scales.xAxes[0].labels.push(i)
+for (i=0; i<=500; i+=10) legenddata.data.datasets[0].data.push({x:i, y:'Inzidenz',v:i})
+for (i=0; i<=500; i+=10) legenddata.options.scales.xAxes[0].labels.push(i)
 
 
 /* legende
@@ -109,9 +109,10 @@ var myLeg=new Chart(cleg,legenddata)
 
 function inzColor(v) {
     if (v<=50) return 'hsl('+Math.round(120.0-(v*120/50))+',75%,50%)'
-    else return 'hsl(0,75%,'+Math.round(Math.max(50-((v-50)/2),0))+'%)'
+    else if (v<=500) return 'hsl('+Math.round(Math.max(359-((v-50)*(160/450)),199))+',75%,'+(50-((v-50)*(25/450)))+'%)'
+    else return 'hsl(199,75%,'+Math.round(Math.max(25-((v-450)/6),0))+'%)'
+//    else return 'hsl(0,75%,'+Math.round(Math.max(50-((v-50)/2),0))+'%)'
 }
-
 
 </script>
 </body>
