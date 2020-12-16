@@ -108,6 +108,30 @@ function createConfig(details) {
                     padding: 6,
                 }
             }, 
+            hover: {
+                intersect: false
+            },
+            tooltips: {
+                mode: 'x',
+                callbacks: {
+                    //title: function() { return '';},
+                    /*title: function(items, data) {
+                        var v = data.datasets[items[0].datasetIndex].data[items[0].index]
+                        return [v.x+" / "+v.y+"J:"]
+                    },*/
+                    label: function(item, data) {
+                        var label = data.datasets[item.datasetIndex].label
+                        if (label.substr(0,4)=='Über') {
+                            return 'Überst.: '+(Math.round(item.value*10)/10)+'%, ∑ '+Math.round(data._excsum[item.index]);
+                        } else if (label.substr(0,4)=='Covi') {
+                            return 'Covid-19: '+Math.round(item.value)+', ∑ '+Math.round(data._covidsum[item.index]);
+                        }
+                        else return label+': '+Math.round(item.value);
+                        //var v = data.datasets[item.datasetIndex].data[item.index]
+                        //return ["Inzidenz: " + Math.round(v.v*10)/10,"Fälle(7Tg): "+v.casesum]
+                    }
+                },
+            },
             scales: {
                 xAxes: [
                 {
@@ -146,7 +170,6 @@ function createConfig(details) {
                         min:0,
                         fontSize: 10,
                     }
-                    //type: 'logarithmic'
                 },
                 {
                     id: 'second-y-axis',
@@ -166,9 +189,7 @@ function createConfig(details) {
                         min: -5,
                         max: (details.maxperc>20?details.maxperc:20),
                         fontSize: 8,
-    //                   min:0,
                     }
-                    //type: 'logarithmic'
                 },
                 ]
             },
@@ -384,16 +405,26 @@ function calcExcess(config,byYearStart) {
         var sumAvg=0
         var maxExcess=0
         excess.data=[]
+        config.data._excsum = []
+        config.data._covidsum = []
+        var covidsum=0
         for (var i=0; i<labels.length;i++) {
+            if (typeof covid.data[i]!=='undefined')
+                covidsum+=covid.data[i]
             if ((i>=firstCovidCWix) && (i<=lastCasesCWix)) {
                 sumExcess += (cases.data[i]-avg.data[i])
                 sumAvg += avg.data[i]
                 var eVal=(sumExcess/sumAvg)*100
                 if (eVal>maxExcess) maxExcess=eVal
                 
+                config.data._excsum.push(sumExcess)
                 excess.data.push(eVal)
             }
-            else excess.data.push(undefined)
+            else {
+                excess.data.push(undefined)
+                config.data._excsum.push(undefined)
+            }
+            config.data._covidsum.push(covidsum)
         }
         //todo -> redo cases Array
         //aCovid.value=labels[lastCasesCWix]
