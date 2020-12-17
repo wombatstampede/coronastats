@@ -127,8 +127,12 @@ function createConfig(details) {
                     },*/
                     label: function(item, data) {
                         var label = data.datasets[item.datasetIndex].label
+                        var case2020 = data._cases.data[item.index]
+                        var avg = data._avg.data[item.index]
+                        //(Math.round(excess.data[lastCasesCWix]*10)/10)+"%
                         if (label.substr(0,4)=='Über') {
-                            return 'Überst.: '+(Math.round(item.value*10)/10)+'%, ∑ '+Math.round(data._excsum[item.index]);
+                            return 'Überst.: '+(Math.round(((case2020-avg)/avg)*1000)/10)+"%, "+Math.round(case2020-avg)+
+                                    ', ∑ '+(Math.round(item.value*10)/10)+'%, '+Math.round(data._excsum[item.index]);
                         } else if (label.substr(0,4)=='Covi') {
                             return 'Covid-19: '+Math.round(item.value)+', ∑ '+Math.round(data._covidsum[item.index]);
                         }
@@ -375,6 +379,10 @@ function calcExcess(config,byYearStart) {
     var aCovidFirst = getAnnotByTag(config,'covidfirst')
     var aCovid = getAnnotByTag(config,'covid')
     var aExcess = getAnnotByTag(config,'excess')
+    
+    config.data._avg=avg //set links to data as variables for use in tooltips
+    config.data._cases=cases
+    
     
     if (covid && excess && avg && cases && aCovid && aExcess) {
         var firstCovidCWix=0
