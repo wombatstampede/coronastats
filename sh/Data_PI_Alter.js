@@ -123,7 +123,7 @@ var chdata2={
 	data: {
 		datasets: [{
 			label: 'Aktive Fälle ',
-			data: [661,13,36,142,248,115,106
+			data: [620,11,35,133,236,110,94
 			],
 		}]
 	},
