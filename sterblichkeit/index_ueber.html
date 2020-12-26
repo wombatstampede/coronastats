@@ -53,6 +53,7 @@
 <a class="button button-outline" id="btnsmallcharts" data-state="active" href="javascript:smallCharts()">Kleine Charts</a>
 <a class="button button-outline" id="btnfirstjan" data-state="notactive" href="javascript:recalcCharts(true)">Ab dem 01.01.</a>
 <a class="button button-outline" id="btnfirstcovid" data-state="active" href="javascript:recalcCharts(false)">Ab dem 1. Covid-19 Todesfall</a>
+<a class="button button-outline" id="btnprogn" data-state="notactive" href="javascript:prognose()">Prognose</a>
 <h1>Übersterblichkeit und COVID-19 Sterbefälle im Vergleich</h1>
 <p>Stand: EUROSTAT: <span id="eurostat_date"></span>, ECDC: <span id="ecdc_date"></span>, CDC: <span id="cdc_date"></span></p>
 <div id="countrySelect"><a class="button button-outline button-small" href="javascript:toggleCountry('None')">Keins</a></div>
@@ -65,6 +66,8 @@ Diese Grafiken stellen je Land die allgemeine Sterblichkeit (blau für 2020+) bz
 <li><strong>Abweichungen/Zeitraum:</strong><br/>Die Übersterblichkeit wird hier ab dem ersten dokumentierten Covid-19 Todesfall summiert (siehe schwarze vertikale Linie). Alternativ kann die Übersterblichkeit ab Jahresbeginn summiert werden. Dies führt jeweils zu unterschiedlichen Ergebnissen was bei der Interpretation berücksichtigt werden sollte.</li>
 <li><strong>Übersterblichkeit:</strong><br/>
 Beschreibt hier die Abweichung vom Vorjahresdurchschnitt ab dem ersten Covid-19 Todesfall (alternativ: 01.01.2020). Das Intervall für die Bildung des Durchschnittes ist je Land in der Legende angegeben. Es kann nach Datenverfügbarkeit variieren. Im Falle der USA wird als Durchschnitt der vom CDC gelieferte Wert "Average expected number of deaths" verwendet. Der prozentuale Wert (rote Linie) entspricht dem Anteil der kumulierten Abweichung an den gesamten durchschnittlichen Sterbefällen im jeweils gleichen Zeitraum. Der abschließende Wert (oben) zeigt also die Gesamtabweichung zum Durchschnitt im bekannten Zeitraum in % sowie in Sterbefällen. Je nach Land, kann dieser Zeitraum (siehe vertikale rote Linie) weit vor der aktuellen KW (siehe vertikale grüne Linie) enden. Negative Werte zeigen entsprechend eine unterdurchschnittliche Sterblichkeit.</li>
+<li><strong>Prognose: (Experiment!)</strong><br/>
+Wird diese Funktion aktiviert, so wird versucht eine grobe Prognose der Übersterblichkeit anhand der Entwicklung der gemeldeten Covid-19 Sterbezahlen zu "erraten". Es handelt es sich hier um eine experimentelle Funktion, daher ist sie normalerweise auch abgeschaltet. Die Prognose startet bei der vorletzten ermittelten Übersterblichkeit und schreibt diese anhand des Deltas der wöchentlich gemeldeten Covid-19 Sterbezahlen fort. Das Ergebnis wird in Blau angezeigt.</li>
 <li><strong>Werte:</strong><br/>
 In dieser Statistik werden auch als 'provisional' oder 'estimated' gekennzeichnete Werte verwendet. Insbesondere die Angaben bzgl. Sterbefällen in den letzten Wochen können - je nach Land unterschiedlich - noch besonders unvollständig sein.</li>
 <li><strong>COVID-19:</strong><br/>
@@ -212,6 +215,25 @@ function createConfig(details) {
                         borderColor: 'rgba(0,0,0,0.5)',
                         borderWidth: 1,
             },
+            annot_progn: {
+                        _tag: 'progn',
+                        type: "line",
+                        mode: "vertical",
+                        scaleID: "x-axis-0",
+                        value: 0,
+                        borderColor: 'rgba(0,0,255,0.25)',
+                        borderWidth: 1,
+                        label: {
+                          backgroundColor: 'rgba(100,220,220,0)',
+                          yAdjust: 20,
+                          xAdjust: -25,
+                          fontColor: "rgb(0,0,255)",
+                          fontSize: 10,
+                          content: "",
+                          position: "center",
+                          enabled: true
+                        },
+            },
             annotation: {
                 annotations: [
                     {
@@ -225,6 +247,7 @@ function createConfig(details) {
                         label: {
                           //backgroundColor: "red",
                           backgroundColor: 'rgba(100,220,220,0)',
+                          xAdjust: 25,
                           //fontColor: window.chartColors.red,
                           //yAdjust: 2,
                           fontColor: "rgb(100,0,0)",
@@ -249,6 +272,7 @@ function createConfig(details) {
                           //yAdjust: 2,
                           fontColor: "rgb(0,102,76)",
                           fontSize: 10,
+                          xAdjust: 11,
                           content: details.covid_sum,
                           position: "bottom",
                           enabled: true
@@ -304,7 +328,7 @@ window.onload = function() {
 
         var ctx = canvas.getContext('2d')
         var config = createConfig(details)
-        calcExcess(config,false)
+        calcExcess(config,false,false)
 
         var cht=new Chart(ctx, config)
         charts[details.cocode] = {
@@ -355,34 +379,81 @@ function toggleCountry(ccode) {
         }
     }
 }
+
 //**********************************************************************************************
 
-
-function recalcCharts(byYearStart) {
-    setBtnState("btnfirstjan",byYearStart?'active':'false')
-    setBtnState("btnfirstcovid",(!byYearStart)?'active':'false')
+function prognose() {
+    var byYearStart=getBtnState("btnfirstjan")
+    var addProgn=getBtnState("btnprogn")
+    
+    addProgn=!addProgn //toggle
+    setBtnState("btnprogn",addProgn?'active':'false')
     for (var key in charts) {
         console.log("recalc: "+key)
-        calcExcess(charts[key].config,byYearStart)
+        calcExcess(charts[key].config,byYearStart,addProgn)
         charts[key].chart.update()
     }
 }
 
 //**********************************************************************************************
-function calcExcess(config,byYearStart) {
+
+function recalcCharts(byYearStart) {
+    var addProgn=getBtnState("btnprogn")
+    setBtnState("btnfirstjan",byYearStart?'active':'false')
+    setBtnState("btnfirstcovid",(!byYearStart)?'active':'false')
+    for (var key in charts) {
+        console.log("recalc: "+key)
+        calcExcess(charts[key].config,byYearStart,addProgn)
+        charts[key].chart.update()
+    }
+}
+
+//**********************************************************************************************
+function calcExcess(config,byYearStart,addProgn) {
     var covid = getDataByTag(config.data,'covid')
     var excess = getDataByTag(config.data,'excess')
     var avg = getDataByTag(config.data,'avg')
     var labels=config.data.labels
     var cases = getDataByTag(config.data,'2020')
+    var progn = getDataByTag(config.data,'progn')
     
     var aCovidFirst = getAnnotByTag(config,'covidfirst')
     var aCovid = getAnnotByTag(config,'covid')
     var aExcess = getAnnotByTag(config,'excess')
+    var aProgn = getAnnotByTag(config,'progn')
     
     config.data._avg=avg //set links to data as variables for use in tooltips
     config.data._cases=cases
     
+    if (addProgn) {
+        if (progn==null) {
+            var progn={
+                label: 'Prognose',
+                _tag: 'progn',
+                borderColor: '#3399ff',
+                pointRadius: 0,
+                borderWidth: 1.5,
+                lineTension: 0,
+                order: 201,
+                fill: '-4',
+                backgroundColor: 'rgba(0,0,255,0.15)',
+                data: []
+            }
+            config.data.datasets.push(progn)
+        }
+        progn.data=[]
+    }
+    if (!addProgn && (progn!=null)) {
+        config.data.datasets.splice(getDataIxByTag(config.data,'progn'),1)
+    }
+    if (addProgn) {
+        if (!aProgn){
+            aProgn=config.options.annot_progn
+            config.options.annotation.annotations.push(aProgn)
+        }        
+    } else {
+        if (aProgn!=null) config.options.annotation.annotations.splice(getAnnotIxByTag(config,'progn'),1)
+    }
     
     if (covid && excess && avg && cases && aCovid && aExcess) {
         var firstCovidCWix=0
@@ -418,6 +489,12 @@ function calcExcess(config,byYearStart) {
         var sumExcess=0
         var sumAvg=0
         var maxExcess=0
+        
+        var prognSumExcess=0 //for progn, get values of 1 week before last data
+        var prognSumAvg=0
+        var prognExc=0
+        var lastProgn=0
+        
         excess.data=[]
         config.data._excsum = []
         config.data._covidsum = []
@@ -439,6 +516,28 @@ function calcExcess(config,byYearStart) {
                 config.data._excsum.push(undefined)
             }
             config.data._covidsum.push(covidsum)
+            
+            if (addProgn) {
+                if ((i<lastCasesCWix-1) || (typeof covid.data[i]=='undefined') ||
+                    (typeof avg.data[i]=='undefined')) {
+                    progn.data.push(undefined)
+                } else {
+                    lastProgn=i
+                    if (i==lastCasesCWix-1) {
+                        prognSumExcess=sumExcess
+                        prognSumAvg=sumAvg
+                        prognExc=(cases.data[i]-avg.data[i])
+                    } else {
+                        prognExc+=(covid.data[i]-covid.data[i-1])
+                        prognSumExcess+=prognExc
+                        prognSumAvg+=avg.data[i]
+                    }
+                    //console.log(""+i+": c:"+covid.data[i]+"/a:"+avg.data[i]+"/"+prognSumExcess+"/"+prognSumAvg)
+                    progn.data.push(avg.data[i]+prognExc)
+                }
+            }
+            
+            
         }
         //todo -> redo cases Array
         //aCovid.value=labels[lastCasesCWix]
@@ -448,6 +547,16 @@ function calcExcess(config,byYearStart) {
         aExcess.value=labels[lastCasesCWix]
         aExcess.label.content = ""+(Math.round(excess.data[lastCasesCWix]*10)/10)+"%, "+Math.round(sumExcess)
         config.options.scales.yAxes[1].ticks.max = (maxExcess>20?maxExcess:20)
+        
+        if (addProgn && aProgn) {
+            aProgn.value=labels[lastProgn]
+            if (!isNaN(prognSumExcess) && !isNaN(prognSumAvg)) {
+                aProgn.label.content = ""+(Math.round((prognSumExcess*100.0/prognSumAvg)*10)/10)+"%, "+Math.round(prognSumExcess)
+            } else {
+                aProgn.label.content = ""
+            }
+        }
+        
         //console.log(config.data.cocode+" #1:"+firstCovidCWix+" last:"+lastCasesCWix)
     }
     else console.log("Missing data on "+config.data.cocode)
@@ -460,8 +569,16 @@ function getDataByTag(data,tagmatch) {
             return data.datasets[i]
         }
     }
-    console.log("data tag: "+tagmatch+" not found!")
+    //console.log("data tag: "+tagmatch+" not found!")
     return null
+}
+
+function getDataIxByTag(data,tagmatch) {
+    for (var i=0;i<data.datasets.length;i++) {
+        if (data.datasets[i]['_tag']==tagmatch) return i
+    }
+    //console.log("data tag: "+tagmatch+" not found!")
+    return -1
 }
 
 function getAnnotByTag(config,tagmatch) {
@@ -528,6 +645,12 @@ function setSpanContent(id,str) {
     }
     span.appendChild( document.createTextNode(str) );
 }
+
+function getBtnState(id) {
+    var elem = document.getElementById(id);
+    return (elem.getAttribute('data-state')=='active')
+}
+
 
 function setBtnState(id,strState) {
     var elem = document.getElementById(id);
