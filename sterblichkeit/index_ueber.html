@@ -72,7 +72,7 @@ Wird diese Funktion aktiviert, so wird versucht eine grobe Prognose der Überste
 <li><strong>Werte:</strong><br/>
 In dieser Statistik werden auch als 'provisional' oder 'estimated' gekennzeichnete Werte verwendet. Insbesondere die Angaben bzgl. Sterbefällen in den letzten Wochen können - je nach Land unterschiedlich - noch besonders unvollständig sein.</li>
 <li><strong>COVID-19:</strong><br/>
-Dies sind die von der Johns Hopkins University zusammengetragenen bzw. (alternativ) an das ECDC gemeldeten COVID-19 Todesfälle je KW (in grün). Der abschließende Wert (unten) nennt die kumulierten bislang gemeldeten COVID-19 Todesfälle gemäß Johns Hopkins bzw. ECDC (Aktualität, siehe Titelzeile). Die Datenquelle kann über die Buttons oben umgestellt werden.</li>
+Dies sind die von der Johns Hopkins University zusammengetragenen bzw. (alternativ) an das ECDC gemeldeten COVID-19 Todesfälle je KW (in grün). Der abschließende Wert (unten) nennt die bis zur letzten vollständigen Kalenderwoche kumulierten gemeldeten COVID-19 Todesfälle gemäß Johns Hopkins University bzw. ECDC (Aktualität, siehe Titelzeile). Die Datenquelle kann über die Buttons oben umgestellt werden.</li>
 <li><strong>USA:</strong><br/>
 Die Sterbefälle/Übersterblichkeit stammen vom CDC. Die Sterbefälle entsprechen dem Wert "Predicted number of deaths from all causes". Details dazu finden sich beim <a href="https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm">CDC</a>. Aufgrund der Vergleichbarkeit wurden die US-Kalenderwochen (beginnen Sonntags) auf europäische Kalenderwochen (beginnen Montags) abgebildet. So kann es im Zeitbezug zu minimalen Abweichungen kommen.</li>
 </ul>
@@ -228,11 +228,11 @@ function createConfig(details) {
                         label: {
                           backgroundColor: 'rgba(100,220,220,0)',
                           yAdjust: 20,
-                          xAdjust: -25,
+                          xAdjust: 25,
                           fontColor: "rgb(0,0,255)",
                           fontSize: 10,
                           content: "",
-                          position: "center",
+                          position: "top",
                           enabled: true
                         },
             },
@@ -249,7 +249,7 @@ function createConfig(details) {
                         label: {
                           //backgroundColor: "red",
                           backgroundColor: 'rgba(100,220,220,0)',
-                          xAdjust: 25,
+                          xAdjust: 30,
                           //fontColor: window.chartColors.red,
                           //yAdjust: 2,
                           fontColor: "rgb(100,0,0)",
