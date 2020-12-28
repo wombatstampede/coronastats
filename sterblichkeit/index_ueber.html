@@ -51,11 +51,8 @@
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen / Quellen</a>
 <h1>Übersterblichkeit und COVID-19 Sterbefälle im Vergleich</h1>
 <p>Stand: EUROSTAT: <span id="eurostat_date"></span>, ECDC: <span id="ecdc_date"></span>, Johns Hopkins University: <span id="jh_date"></span>, CDC: <span id="cdc_date"></span></p>
-<a class="button button-outline" id="btnbigcharts" data-state="notactive" href="javascript:bigCharts()">Große Charts</a>
-<a class="button button-outline" id="btnsmallcharts" data-state="active" href="javascript:smallCharts()">Kleine Charts</a>
-<a class="button button-outline" id="btnfirstjan" data-state="notactive" href="javascript:byYearStart(true)">Ab dem 01.01.</a>
-<a class="button button-outline" id="btnfirstcovid" data-state="active" href="javascript:byYearStart(false)">Ab dem 1. Covid-19 Todesfall</a> <a class="button button-outline" id="btnecdcdata" data-state="notactive" href="javascript:dataSourceECDC(true)">ECDC</a>
-<a class="button button-outline" id="btnjhdata" data-state="active" href="javascript:dataSourceECDC(false)">JHU</a>
+<a class="button button-outline" id="btnbigcharts" data-state="notactive" href="javascript:bigCharts()">Große Charts</a><a class="button button-outline" id="btnsmallcharts" data-state="active" href="javascript:smallCharts()">Kleine Charts</a>
+<a class="button button-outline" id="btnfirstjan" data-state="notactive" href="javascript:byYearStart(true)">Ab dem 01.01.</a><a class="button button-outline" id="btnfirstcovid" data-state="active" href="javascript:byYearStart(false)">Ab dem 1. Covid-19 Todesfall</a> <a class="button button-outline" id="btnecdcdata" data-state="notactive" href="javascript:dataSourceECDC(true)">ECDC</a><a class="button button-outline" id="btnjhdata" data-state="active" href="javascript:dataSourceECDC(false)">JHU</a>
 <a class="button button-outline" id="btnprogn" data-state="notactive" href="javascript:prognose()">Prognose</a>
 <div id="countrySelect"><a class="button button-outline button-small" href="javascript:toggleCountry('None')">Keins</a></div>
 <div class="container-all">
@@ -566,6 +563,9 @@ function calcExcess(config,byYearStart,addProgn,useECDCData) {
                         prognExc=(cases.data[i]-avg.data[i])
                     } else {
                         prognExc+=(covid.data[i]-covid.data[i-1])
+                        if (i==lastCasesCWix) { //not less than excess deaths on last 2020 cases data pt
+                            prognExc=Math.max(prognExc,cases.data[i]-avg.data[i])
+                        }
                         prognSumExcess+=prognExc
                         prognSumAvg+=avg.data[i]
                     }
