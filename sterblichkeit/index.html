@@ -5,13 +5,14 @@
 <script type="text/javascript" src="Chart.min.js"></script>
 <script type="text/javascript" src="chartjs-plugin-annotation.min.js"></script>
 <script type="text/javascript" src="colors.js"></script>
-<script type="text/javascript" src="inzidenz7.js"></script>
+<script type="text/javascript" src="inzidenz7_jh.js"></script>
 </head>
 <body>
 <a class="button" href="../">Inhalt</a>
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
-<p>Quelle / Stand: <a href="https://www.ecdc.europa.eu/en/coronavirus">https://www.ecdc.europa.eu/en/coronavirus</a>: <span id="ecdc_date"></span></p>
-<canvas id="myChart" style="width:1300px;height: 792px;"></canvas>
+<p>Quelle / Stand: Johns Hopkins University <a href="https://github.com/CSSEGISandData/COVID-19">https://github.com/CSSEGISandData/COVID-19</a>: <span id="jh_date"></span></p>
+<!-- <p>Quelle / Stand: <a href="https://www.ecdc.europa.eu/en/coronavirus">https://www.ecdc.europa.eu/en/coronavirus</a>: <span id="jh_date"></span></p> -->
+<canvas id="myChart" style="width:1300px;height: 792px;"></canvas> 
 <br/>
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
@@ -25,7 +26,8 @@ var opt = {
         animation: false,
         title: {
             display: true,
-            text: "Covid-19 7-Tage Inzidenzverlauf Europa (ausgewählte Staaten), Quelle: Fallzahlen ecdc.europa.eu"
+            text: "Covid-19 7-Tage Inzidenzverlauf Europa (ausgewählte Staaten), Quelle: Fallzahlen Johns Hopkins University"
+//            text: "Covid-19 7-Tage Inzidenzverlauf Europa (ausgewählte Staaten), Quelle: Fallzahlen ecdc.europa.eu"
         },
         legend: {
             position: 'right',
@@ -141,7 +143,8 @@ for(w = Mo.getTime() ; w >= Mo.getTime()-(10*7*dayTicks) ; w -= (7*dayTicks)) {
 }
  */   
 //**********************************************************************************************
-setSpanContent("ecdc_date",chdata.ecdc_date)
+//setSpanContent("ecdc_date",chdata.ecdc_date)
+setSpanContent("jh_date",chdata.jh_date)
 setSpanContent("filled_up",chdata.filled_up)
 
 
