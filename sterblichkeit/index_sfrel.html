@@ -5,12 +5,13 @@
 <script type="text/javascript" src="Chart.min.js"></script>
 <script type="text/javascript" src="chartjs-plugin-annotation.min.js"></script>
 <script type="text/javascript" src="colors.js"></script>
-<script type="text/javascript" src="sterbefaelle7_rel.js"></script>
+<script type="text/javascript" src="sterbefaelle7_rel_jh.js"></script>
 </head>
 <body>
 <a class="button" href="../">Inhalt</a>
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
-<p>Quelle / Stand: <a href="https://www.ecdc.europa.eu/en/coronavirus">https://www.ecdc.europa.eu/en/coronavirus</a>: <span id="ecdc_date"></span></p>
+<p>Quelle / Stand: Johns Hopkins University <a href="https://github.com/CSSEGISandData/COVID-19">https://github.com/CSSEGISandData/COVID-19</a>: <span id="jh_date"></span></p>
+<!-- <p>Quelle / Stand: <a href="https://www.ecdc.europa.eu/en/coronavirus">https://www.ecdc.europa.eu/en/coronavirus</a>: <span id="ecdc_date"></span></p> -->
 <canvas id="myChart" style="width:1300px;height: 792px;"></canvas>
 <br/>
 <h2 id="Anmerkungen">Anmerkungen</h2>
@@ -25,7 +26,8 @@ var opt = {
         animation: false,
         title: {
             display: true,
-            text: "∑ Covid-19 Sterbefälle / 1 Million Einwohner / Kalenderwoche Europa (ausgewählte Staaten), Quelle: ecdc.europa.eu"
+//            text: "∑ Covid-19 Sterbefälle / 1 Million Einwohner / Kalenderwoche Europa (ausgewählte Staaten), Quelle: ecdc.europa.eu"
+            text: "∑ Covid-19 Sterbefälle / 1 Million Einwohner / Kalenderwoche Europa (ausgewählte Staaten), Quelle: Johns Hopkins University"
         },
         legend: {
             position: 'right',
@@ -149,6 +151,7 @@ for(w = Mo.getTime() ; w >= Mo.getTime()-(10*7*dayTicks) ; w -= (7*dayTicks)) {
  */   
 //**********************************************************************************************
 setSpanContent("ecdc_date",chdata.ecdc_date)
+setSpanContent("jh_date",chdata.jh_date)
 
 var myChart=new Chart(ctx,{
         type:'line',
@@ -159,11 +162,12 @@ var myChart=new Chart(ctx,{
 //**********************************************************************************************
 function setSpanContent(id,str) {
     var span = document.getElementById(id);
-
-    while( span.firstChild ) {
-        span.removeChild( span.firstChild );
+    if (span) {
+        while( span.firstChild ) {
+            span.removeChild( span.firstChild );
+        }
+        span.appendChild( document.createTextNode(str) );
     }
-    span.appendChild( document.createTextNode(str) );
 }
 //**********************************************************************************************
 //source/credits: http://www.salesianer.de/util/kalwoch.html
