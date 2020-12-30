@@ -5,7 +5,7 @@
 <meta property="og:image" content="index.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<meta property="og:updated_time" content="2020-12-30T14:19:14+01:00" />
+<meta property="og:updated_time" content="2020-12-30T20:36:49+01:00" />
 <title>Corona-Fälle im Kreis Pinneberg</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
@@ -108,6 +108,12 @@ for(w = Mo.getTime() ; w >= Mo.getTime()-(10*7*dayTicks) ; w -= (7*dayTicks)) {
             }
     chdata.options.annotation.annotations.push(oneAnnot)
 }
+
+for (i=0;i<chdata.datasets.length;i++) {
+    chdata.datasets[i].pointHitRadius=15
+    //chdata.datasets[i].pointHoverRadius=5
+}
+
 
 //setSpanContent('stat_date',chdata.labels[chdata.labels.length-1])
 //**********************************************************************************************

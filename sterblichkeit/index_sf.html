@@ -101,6 +101,12 @@ var newLegendClickHandler = function (e, legendItem) {
 }
 opt.legend.onClick=newLegendClickHandler
 
+for (i=0;i<chdata.datasets.length;i++) {
+    chdata.datasets[i].pointHitRadius=15
+    //chdata.datasets[i].pointHoverRadius=5
+}
+
+
 var myChart=new Chart(ctx,{
         type:'line',
         data: chdata,
