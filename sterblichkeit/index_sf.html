@@ -1,4 +1,10 @@
 <head>
+<meta property="og:title" content="Covid-19 Sterbefälle (absolut) pro Kalenderwoche Europa (ausgewählte Staaten)" />
+<meta property="og:description" content="Summierte Darstellung der Sterbefälle in Europa" />
+<meta property="og:image" content="index_sf.jpg" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="de_DE" />
+<meta property="og:updated_time" content="#CURRTS#" />
 <title>Covid-19 Sterbefälle (absolut) pro Kalenderwoche Europa (ausgewählte Staaten)</title>
 <meta charset="utf-8">
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
@@ -12,6 +18,7 @@
 <body>
 <a class="button" href="../">Inhalt</a>
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
+<h1>Covid-19 Sterbefälle (absolut) pro Kalenderwoche in Europa</h1>
 <p>Quelle / Stand: Johns Hopkins University <a href="https://github.com/CSSEGISandData/COVID-19">https://github.com/CSSEGISandData/COVID-19</a>: <span id="jh_date"></span></p>
 <!-- <p>Quelle / Stand: <a href="https://www.ecdc.europa.eu/en/coronavirus">https://www.ecdc.europa.eu/en/coronavirus</a>: <span id="ecdc_date"></span></p> -->
 
@@ -80,8 +87,9 @@ recalcFill()
 
 var defaultLegendClickHandler = Chart.defaults.global.legend.onClick
 var newLegendClickHandler = function (e, legendItem) {
-    var index = legendItem.datasetIndex;
-    let ci = this.chart
+    var index = legendItem.datasetIndex
+    //let ci = this.chart --> syntax error in wkhtmltoimage preview
+    var ci = this.chart
     if (index>0) {
         ci.data.datasets[index].hidden=!ci.data.datasets[index].hidden
         //console.log("index:"+index+" hidden: "+ci.data.datasets[index].hidden)
