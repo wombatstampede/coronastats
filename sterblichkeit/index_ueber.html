@@ -65,7 +65,7 @@ Diese Grafiken stellen je Land die allgemeine Sterblichkeit (blau für 2020+) bz
 <li><strong>Übersterblichkeit:</strong><br/>
 Beschreibt hier die Abweichung vom Vorjahresdurchschnitt ab dem ersten Covid-19 Todesfall (alternativ: 01.01.2020). Das Intervall für die Bildung des Durchschnittes ist je Land in der Legende angegeben. Es kann nach Datenverfügbarkeit variieren. Im Falle der USA wird als Durchschnitt der vom CDC gelieferte Wert "Average expected number of deaths" verwendet. Der prozentuale Wert (rote Linie) entspricht dem Anteil der kumulierten Abweichung an den gesamten durchschnittlichen Sterbefällen im jeweils gleichen Zeitraum. Der abschließende Wert (oben) zeigt also die Gesamtabweichung zum Durchschnitt im bekannten Zeitraum in % sowie in Sterbefällen. Je nach Land, kann dieser Zeitraum (siehe vertikale rote Linie) weit vor der aktuellen KW (siehe vertikale grüne Linie) enden. Negative Werte zeigen entsprechend eine unterdurchschnittliche Sterblichkeit.</li>
 <li><strong>Prognose: (Experiment!)</strong><br/>
-Wird diese Funktion aktiviert, so wird versucht eine grobe Prognose der Übersterblichkeit anhand der Entwicklung der gemeldeten Covid-19 Sterbezahlen zu "erraten". Es handelt es sich hier um eine experimentelle Funktion, daher ist sie normalerweise auch abgeschaltet. Die Prognose startet bei der vorletzten ermittelten Übersterblichkeit und schreibt diese anhand des Deltas der wöchentlich gemeldeten Covid-19 Sterbezahlen fort. Das Ergebnis wird in Blau angezeigt.</li>
+Wird diese Funktion aktiviert, so wird versucht eine grobe Prognose der Übersterblichkeit anhand der Entwicklung der gemeldeten Covid-19 Sterbezahlen zu "erraten". Es handelt es sich hier um eine experimentelle Funktion, daher ist sie normalerweise auch abgeschaltet. Die Prognose startet bei der vorletzten ermittelten Übersterblichkeit und schreibt diese orientiert an den wöchentlich gemeldeten Covid-19 Sterbezahlen fort. Das Ergebnis wird in Blau angezeigt.</li>
 <li><strong>Werte:</strong><br/>
 In dieser Statistik werden auch als 'provisional' oder 'estimated' gekennzeichnete Werte verwendet. Insbesondere die Angaben bzgl. Sterbefällen in den letzten Wochen können - je nach Land unterschiedlich - noch besonders unvollständig sein.</li>
 <li><strong>COVID-19:</strong><br/>
@@ -441,6 +441,9 @@ function calcExcess(config,byYearStart,addProgn,useECDCData) {
     var labels=config.data.labels
     var cases = getDataByTag(config.data,'2020')
     var progn = getDataByTag(config.data,'progn')
+    var usePrognFactor = false
+    var prognFactor
+    var prognFactorReduce
     
     var aCovidFirst = getAnnotByTag(config,'covidfirst')
     var aCovid = getAnnotByTag(config,'covid')
@@ -561,8 +564,29 @@ function calcExcess(config,byYearStart,addProgn,useECDCData) {
                         prognSumExcess=sumExcess
                         prognSumAvg=sumAvg
                         prognExc=(cases.data[i]-avg.data[i])
+                        
+                        if ((avg.data[i]>0) && (prognExc>covid.data[i])) {
+                            usePrognFactor=true //excess mortality exceeds covid-19 deaths -> use a factor and gradually reduce to 1
+                            
+                            if (covid.data[i]/avg.data[i]<0.05) {
+                                prognExc=covid.data[i] //low case# fix
+                                if (covid.data[i]>1) Math.min(prognExc/covid.data[i],5)
+                                else prognFactor=1 
+                                prognFactorReduce=0.6
+                            } else {
+                                prognFactorReduce=0.8
+                                prognFactor=Math.min(prognExc/covid.data[i],5)
+                            }
+                            //console.log(config.data.cocode+": usePrognFactor "+prognFactor+" * "+prognFactorReduce)
+                        }
                     } else {
-                        prognExc+=(covid.data[i]-covid.data[i-1])
+                        //two methods: either use factor (which decreases over time) * covid deaths 
+                        if (usePrognFactor) {
+                            prognFactor=1+((prognFactor-1)*prognFactorReduce)
+                            prognExc=covid.data[i]*prognFactor
+                        } else { //or: +-covid deths difference on excess mortality
+                            prognExc+=(covid.data[i]-covid.data[i-1])
+                        }
                         if (i==lastCasesCWix) { //not less than excess deaths on last 2020 cases data pt
                             prognExc=Math.max(prognExc,cases.data[i]-avg.data[i])
                         }
