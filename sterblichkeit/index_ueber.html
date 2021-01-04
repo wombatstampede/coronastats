@@ -50,7 +50,7 @@
 <a class="button" href="../">Inhalt</a>
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen / Quellen</a>
 <h1>Übersterblichkeit und COVID-19 Sterbefälle im Vergleich</h1>
-<p>Stand: EUROSTAT: <span id="eurostat_date"></span>, ECDC: <span id="ecdc_date"></span>, Johns Hopkins University: <span id="jh_date"></span>, CDC: <span id="cdc_date"></span></p>
+<p>Stand: EUROSTAT: <span id="eurostat_date"></span>, DESTATIS: <span id="destatis_date"></span>, ECDC: <span id="ecdc_date"></span>, Johns Hopkins University: <span id="jh_date"></span>, CDC: <span id="cdc_date"></span></p>
 <a class="button button-outline" id="btnbigcharts" data-state="notactive" href="javascript:bigCharts()">Große Charts</a><a class="button button-outline" id="btnsmallcharts" data-state="active" href="javascript:smallCharts()">Kleine Charts</a>
 <a class="button button-outline" id="btnfirstjan" data-state="notactive" href="javascript:byYearStart(true)">Ab dem 01.01.</a><a class="button button-outline" id="btnfirstcovid" data-state="active" href="javascript:byYearStart(false)">Ab dem 1. Covid-19 Todesfall</a> <a class="button button-outline" id="btnecdcdata" data-state="notactive" href="javascript:dataSourceECDC(true)">ECDC</a><a class="button button-outline" id="btnjhdata" data-state="active" href="javascript:dataSourceECDC(false)">JHU</a>
 <a class="button button-outline" id="btnprogn" data-state="notactive" href="javascript:prognose()">Prognose</a>
@@ -75,7 +75,8 @@ Die Sterbefälle/Übersterblichkeit stammen vom CDC. Die Sterbefälle entspreche
 </ul>
 <h2 id="Quellen">Quellen</h2>
 <ul>
-<li>EUROSTAT: <a href="https://ec.europa.eu/eurostat">https://ec.europa.eu/eurostat</a>: <span id="eurostat_date"></span> (Sterbefalldaten Europa)</li>
+<li>EUROSTAT: <a href="https://ec.europa.eu/eurostat">https://ec.europa.eu/eurostat</a> (Sterbefalldaten Europa)</li>
+<li>DESTATIS: <a href="https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Bevoelkerung/Sterbefaelle-Lebenserwartung/Tabellen/sonderauswertung-sterbefaelle.html">https://www.destatis.de</a> (Sonderauswertung Sterbefalldaten Deutschland)</li>
 <li>ECDC: <a href="https://www.ecdc.europa.eu/en/coronavirus">https://www.ecdc.europa.eu/en/coronavirus</a> (Sterbefalldaten COVID-19)</li>
 <li>JHU: <a href="https://github.com/CSSEGISandData/COVID-19">https://github.com/CSSEGISandData/COVID-19</a> (Sterbefalldaten Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE))</li>
 <li>CDC: <a href="https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm">https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm</a> (Sterbefalldaten USA)</li>
@@ -338,6 +339,7 @@ window.onload = function() {
 	var container = document.querySelector('.container-all');
     setSpanContent("ecdc_date",ch_stats.ecdc_date)
     setSpanContent("eurostat_date",ch_stats.eurostat_date)
+    setSpanContent("destatis_date",ch_stats.destatis_date)
     setSpanContent("jh_date",ch_stats.jh_date)
     setSpanContent("cdc_date",ch_statsUS.cdc_date)
     chdata.push(chdataUS[0])
