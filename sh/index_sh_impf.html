@@ -1,18 +1,16 @@
 <head>
 <meta charset="utf-8">
-<meta property="og:title" content="COVID-19-Fälle im Kreis Pinneberg" />
-<meta property="og:description" content="COVID-19-Fälle, Inzidenz, Hospitalisierung und Sterbefälle im zeitlichen Verlauf" />
-<meta property="og:image" content="index.jpg" />
+<meta property="og:title" content="COVID-19 Impfungen in Schleswig-Holstein und Hamburg" />
+<meta property="og:description" content="als Grafik über den zeitlichen Verlauf" />
+<meta property="og:image" content="index_sh_impf.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<meta property="og:updated_time" content="2021-01-05T17:08:21+01:00" />
-<title>COVID-19-Fälle im Kreis Pinneberg</title>
+<title>COVID-19 Impfungen in Schleswig-Holstein und Hamburg</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
 <script type="text/javascript" src="Chart.min.js"></script>
 <script type="text/javascript" src="chartjs-plugin-annotation.min.js"></script>
-<script type="text/javascript" src="colors.js"></script>
-<script type="text/javascript" src="Kreis_PI.js"></script>
+<script type="text/javascript" src="Data_SH_Impf.js"></script>
 </head>
 <body>
 <a class="button" href="../">Inhalt</a>
@@ -21,65 +19,47 @@
 <br/>
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
-<li>Hospitalisierung (∑ 14-Tg.): Diese Linie zeigt die Summe der Hospitalisierungen in den jeweils 14 zurückliegenden Tagen.
-Die Zahl 14 ist nicht willkürlich gewählt, sondern basiert auf einer 
-<a href="https://www.ruhrbarone.de/mit-covid-19-ins-krankenhaus-1-von-5-patienten-stirbt-stationaer/192045">hier veröffentlichten Untersuchung</a> aus der sich ein durchschnittlicher Krankenhausaufenthalt (bzgl. COVID-19) von 13.7 Tagen ableiten lassen kann.</li>
-<li>Diese Grafik basiert auf der unter <a href="https://www.schleswig-holstein.de/DE/Schwerpunkte/Coronavirus/Zahlen/zahlen_node.html">www.schleswig-holstein.de</a>
-veröffentlichten <strong>&quot;CSV-Datei der Kreisdaten&quot;</strong> sowie der dort gezeigten Tabellen mit Daten je Kreis. Aufgrund verschiedener Veröffentlichungszeitpunkte kann es zu Abweichungen zu Daten des RKI kommen.</li>
+<li>Diese Grafik basiert auf den vom RKI veröffentlichten <a href="https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Impfquotenmonitoring.html">Impfquoten</a>. Konkret werden die aus dieser Quelle von der <a href="https://github.com/ard-data/2020-rki-impf-archive">ARD aufbereitete Dateien</a> verwendet.</li>
 </ul>
 <script>
 var ctx = document.getElementById('myChart').getContext('2d');
 var opt = {
-        //animation: false,
         responsive: false,
         title: {
             display: true,
-            //https://www.kreis-pinneberg.de
-            text: "COVID-19-Fälle im Kreis Pinneberg (Stand: "+chdata.labels[chdata.labels.length-1]+", Quelle:www.schleswig-holstein.de)",
+            text: "COVID-19-Impfungen (Quelle: RKI/ARD)"
+        },
+        legend: {
+            labels: {
+                boxWidth: 25,
+            }
         },
         scales: {
-            yAxes: [
-            {
+            yAxes: [{
                 id: 'first-y-axis',
-                type: 'linear',
                 position: 'right',
-                ticks: {
-                    min:0,
-                   //min:-2
-                }
-                //type: 'logarithmic'
-            },
-/*            {
-                id: 'second-y-axis',
                 type: 'linear',
-                position: 'left',
-                scaleLabel: {
-                    display: true,
-                    labelString: 'R(t)',
-                },
-                gridLines: {
-                    color: 'rgba(255, 0, 0, 0.15)',
-                    borderDash: [10,10],
-                },
                 ticks: {
-                   min:0,
+                    maxTicksLimit: 50,
+                    min:0,
+                    //min:-2
                 }
                 //type: 'logarithmic'
-            },*/
-            ]
+            }]
         },
         annotation: {
             annotations: [
             ]
         },
-    }
-chdata.options=opt
+    };
+chdata.options=opt;
 
-//*************************  add annotations for last n weeks on Monday ***********************
+//*************************  add annotations for last 10 weeks on Monday ***********************
 
+/*
 var Mo=montag(new Date())
 var dayTicks=86400000
-for(w = Mo.getTime() ; w >= Mo.getTime()-(20*7*dayTicks) ; w -= (7*dayTicks)) {
+for(w = Mo.getTime() ; w >= Mo.getTime()-(10*7*dayTicks) ; w -= (7*dayTicks)) {
 
     var kwMo = new Date(w)
     var kwVal = kalenderwoche(kwMo)
@@ -108,31 +88,21 @@ for(w = Mo.getTime() ; w >= Mo.getTime()-(20*7*dayTicks) ; w -= (7*dayTicks)) {
             }
     chdata.options.annotation.annotations.push(oneAnnot)
 }
+ */   
+//**********************************************************************************************
 
+//chdata.datasets.splice(3,1)//Summe Hospitalisierung 14 Tg. entfernen
 for (i=0;i<chdata.datasets.length;i++) {
     chdata.datasets[i].pointHitRadius=15
     //chdata.datasets[i].pointHoverRadius=5
 }
 
-
-//setSpanContent('stat_date',chdata.labels[chdata.labels.length-1])
-//**********************************************************************************************
 var myChart=new Chart(ctx,{
         type:'bar',
         data: chdata,
         options: opt
     })
-
-
-//**********************************************************************************************
-function setSpanContent(id,str) {
-    var span = document.getElementById(id);
-
-    while( span.firstChild ) {
-        span.removeChild( span.firstChild );
-    }
-    span.appendChild( document.createTextNode(str) );
-}
+    
 //**********************************************************************************************
 //source/credits: http://www.salesianer.de/util/kalwoch.html
 function kalenderwoche(Datum) {
