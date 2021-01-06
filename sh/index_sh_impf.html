@@ -1,20 +1,31 @@
 <head>
 <meta charset="utf-8">
-<meta property="og:title" content="COVID-19 Impfungen in Schleswig-Holstein und Hamburg" />
-<meta property="og:description" content="als Grafik über den zeitlichen Verlauf" />
+<meta property="og:title" content="COVID-19 Impfungen in Deutschland" />
+<meta property="og:description" content="als Grafik über den zeitlichen Verlauf nach Bundesland" />
 <meta property="og:image" content="index_sh_impf.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<title>COVID-19 Impfungen in Schleswig-Holstein und Hamburg</title>
+<title>COVID-19 Impfungen in Deutschland</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
 <script type="text/javascript" src="Chart.min.js"></script>
 <script type="text/javascript" src="chartjs-plugin-annotation.min.js"></script>
 <script type="text/javascript" src="Data_SH_Impf.js"></script>
+<style>
+    a.button[data-state='active'],
+    a.button[data-state='active']:focus {
+        background-color: #A9BCF5;
+    }
+    
+    a.button.button-outline.button-small {
+        padding: 0 1rem;
+    }
+</style> 
 </head>
 <body>
 <a class="button" href="../">Inhalt</a>
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
+<div id="countySelect"></div> 
 <canvas id="myChart" style="width:990px;height: 700px;"></canvas>
 <br/>
 <h2 id="Anmerkungen">Anmerkungen</h2>
@@ -52,7 +63,6 @@ var opt = {
             ]
         },
     };
-chdata.options=opt;
 
 //*************************  add annotations for last 10 weeks on Monday ***********************
 
@@ -91,18 +101,65 @@ for(w = Mo.getTime() ; w >= Mo.getTime()-(10*7*dayTicks) ; w -= (7*dayTicks)) {
  */   
 //**********************************************************************************************
 
-//chdata.datasets.splice(3,1)//Summe Hospitalisierung 14 Tg. entfernen
-for (i=0;i<chdata.datasets.length;i++) {
-    chdata.datasets[i].pointHitRadius=15
-    //chdata.datasets[i].pointHoverRadius=5
+var currentCounty="SH"
+var cht={
+        type:'bar',
+        data: chdata[currentCounty],
+        options: opt
+        }
+
+for (var key in chdata) {
+    addCountySelect(key,chdata[key]._name,(key==currentCounty))
+    
+    for (i=0;i<chdata[key].datasets.length;i++) {
+        chdata[key].datasets[i].pointHitRadius=15
+        //chdata.datasets[i].pointHoverRadius=5
+    }
 }
 
-var myChart=new Chart(ctx,{
-        type:'bar',
-        data: chdata,
-        options: opt
-    })
-    
+var myChart=new Chart(ctx,cht)
+
+//**********************************************************************************************
+
+function addCountySelect(ccode,cname,isActive) {
+    var cs = document.getElementById('countySelect')
+    if (cs) {
+        var csBtn = document.createElement('a')
+        csBtn.classList.add('button')
+        csBtn.classList.add('button-outline')
+        csBtn.classList.add('button-small')
+        csBtn.setAttribute('data-state',isActive?'active':'')
+        csBtn.setAttribute('id','cbtn'+ccode)
+        csBtn.setAttribute('title',cname)
+        csBtn.setAttribute('href','javascript:selectCounty("'+ccode+'")')
+        csBtn.appendChild(document.createTextNode(ccode))
+        cs.appendChild(csBtn)
+    }
+
+} 
+
+function selectCounty(ccode) {
+    if (ccode!=currentCounty) {
+        setBtnState('cbtn'+currentCounty,'')
+        currentCounty=ccode
+        setBtnState('cbtn'+currentCounty,'active')
+        
+        cht.data=chdata[ccode]
+        cht.options.title.text="COVID-19 Impfungen in "+chdata[ccode]._name
+        myChart.update()
+    }
+}
+ 
+function getBtnState(id) {
+    var elem = document.getElementById(id);
+    return (elem.getAttribute('data-state')=='active')
+}
+
+function setBtnState(id,strState) {
+    var elem = document.getElementById(id);
+    if (elem) elem.setAttribute('data-state',strState)
+}
+
 //**********************************************************************************************
 //source/credits: http://www.salesianer.de/util/kalwoch.html
 function kalenderwoche(Datum) {
