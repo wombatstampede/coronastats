@@ -5,7 +5,7 @@
 <meta property="og:image" content="index.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<meta property="og:updated_time" content="2021-01-06T07:03:34+01:00" />
+<meta property="og:updated_time" content="2021-01-06T12:42:00+01:00" />
 <title>COVID-19-Fälle im Kreis Pinneberg</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
@@ -112,6 +112,21 @@ for(w = Mo.getTime() ; w >= Mo.getTime()-(20*7*dayTicks) ; w -= (7*dayTicks)) {
 for (i=0;i<chdata.datasets.length;i++) {
     chdata.datasets[i].pointHitRadius=15
     //chdata.datasets[i].pointHoverRadius=5
+}
+
+opt.tooltips = {
+        callbacks: {
+            title: function(items, data) {
+                var weekdays=["So","Mo","Di","Mi","Do","Fr","Sa","So"]
+                var dashDate = data.labels[items[0].index]
+                var lblDate=new Date(dashDate.substr(0,4),dashDate.substr(5,2)-1,dashDate.substr(8,2))
+                return [dashDate+" ("+weekdays[lblDate.getDay()]+")"]
+            },
+/*            label: function(item, data) {
+                var v = data.datasets[item.datasetIndex].data[item.index]
+                return ["Inzidenz: " + Math.round(v.v*10)/10,"Fälle(7Tg): "+v.casesum]
+            }*/
+        },
 }
 
 
