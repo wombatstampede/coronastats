@@ -62,51 +62,41 @@ var opt = {
             annotations: [
             ]
         },
-    };
-
-//*************************  add annotations for last 10 weeks on Monday ***********************
-
-/*
-var Mo=montag(new Date())
-var dayTicks=86400000
-for(w = Mo.getTime() ; w >= Mo.getTime()-(10*7*dayTicks) ; w -= (7*dayTicks)) {
-
-    var kwMo = new Date(w)
-    var kwVal = kalenderwoche(kwMo)
-    
-    var oneAnnot = {
-                type: "line",
-                drawTime: "beforeDatasetsDraw",
-                mode: "vertical",
-                scaleID: "x-axis-0",
-                value: kwMo.toISOString().slice(0, 10),
-                borderColor: 'rgba(0,0,0,0.25)',
-                borderWidth: 0,
-                label: {
-                  //backgroundColor: "red",
-                  backgroundColor: 'rgba(220,220,220,1)',
-                  //fontColor: window.chartColors.red,
-                  xPadding: 3,
-                  yPadding: 3,
-                  //yAdjust: 2,
-                  fontColor: "black",
-                  fontSize: 8,
-                  content: "KW"+kwVal+" >",
-                  position: "top",
-                  enabled: true
+        tooltips: {
+            callbacks: {
+                title: function(items, data) {
+                    var weekdays=["So","Mo","Di","Mi","Do","Fr","Sa","So"]
+                    var dashDate = data.labels[items[0].index]
+                    var lblDate=new Date(dashDate.substr(0,4),dashDate.substr(5,2)-1,dashDate.substr(8,2))
+                    return [dashDate+" ("+weekdays[lblDate.getDay()]+")"]
                 },
-            }
-    chdata.options.annotation.annotations.push(oneAnnot)
+                label: function(item, data) {
+                    var v = data.datasets[item.datasetIndex].data[item.index]
+                    var llist=[data.datasets[item.datasetIndex].label+": "+v]
+                    if (item.datasetIndex==0) {
+                        if (typeof data.data_NEW[item.index]!=='undefined')
+                            llist.push("Diff. zum Vortag: "+data.data_NEW[item.index])
+                        if (typeof data.data_RATE[item.index]!=='undefined')
+                            llist.push("Impf./1000 Einw.: "+data.data_RATE[item.index].toPrecision(2))
+                    }
+                    return llist
+                }
+            },        
+        }
 }
- */   
-//**********************************************************************************************
-
 var currentCounty="SH"
 var cht={
         type:'bar',
         data: chdata[currentCounty],
         options: opt
         }
+setChtTitle(currentCounty)
+
+function setChtTitle(ccode) {
+    cht.options.title.text="COVID-19 Impfungen in "+chdata[ccode]._name
+}
+
+//**********************************************************************************************
 
 for (var key in chdata) {
     addCountySelect(key,chdata[key]._name,(key==currentCounty))
@@ -145,7 +135,7 @@ function selectCounty(ccode) {
         setBtnState('cbtn'+currentCounty,'active')
         
         cht.data=chdata[ccode]
-        cht.options.title.text="COVID-19 Impfungen in "+chdata[ccode]._name
+        setChtTitle(ccode)
         myChart.update()
     }
 }
