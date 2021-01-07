@@ -51,12 +51,47 @@ var opt = {
                 position: 'right',
                 type: 'linear',
                 ticks: {
-                    maxTicksLimit: 50,
+                    maxTicksLimit: 16,
                     min:0,
-                    //min:-2
+                    callback: function(value, index, values) {
+                        if (!cht._show_rate) {
+                            return value
+                        } else {
+                            return value + " (" + (cht._ratefactor*value).toFixed(2)+")"
+                        }
+                    }
+                },
+                scaleLabel: {
+                        display: true,
+                        labelString: 'Impfungen (Impfungen / 1000 Einw.)',
+                        lineHeight: 1,
+                        fontSize:10,
+                        padding:0,
                 }
                 //type: 'logarithmic'
-            }]
+            },
+/*            { //doesn't always fit
+                id: 'second-y-axis',
+                position: 'left',
+                type: 'linear',
+                stacked: true,
+                //gridLines:{display:false},
+                ticks: {
+                    beginAtZero: true,
+                    maxTicksLimit: 10,
+                },
+                gridLines: {
+                    display: false
+                },
+                scaleLabel: {
+                        display: true,
+                        labelString: 'Imfquote in %',
+                        lineHeight: 1,
+                        fontSize:10,
+                        padding:0,
+                },
+                //type: 'logarithmic'
+            }*/]
         },
         annotation: {
             annotations: [
@@ -77,7 +112,7 @@ var opt = {
                         if (typeof data.data_NEW[item.index]!=='undefined')
                             llist.push("Diff. zum Vortag: "+data.data_NEW[item.index])
                         if (typeof data.data_RATE[item.index]!=='undefined')
-                            llist.push("Impf./1000 Einw.: "+data.data_RATE[item.index].toPrecision(2))
+                            llist.push("Impf./1000 Einw.: "+data.data_RATE[item.index].toFixed(2))
                     }
                     return llist
                 }
@@ -107,9 +142,31 @@ for (var key in chdata) {
     }
 }
 
+updateRate()
+
 var myChart=new Chart(ctx,cht)
 
 //**********************************************************************************************
+function updateRate() {
+    var max_RATE=0
+    var max_Val=0
+    cht._show_rate=false
+    cht._ratefactor=1
+    var data=cht.data
+    for (i=0;i < data.data_RATE.length;i++) {
+        if ((typeof data.data_RATE[i]!=='undefined') && (typeof data.datasets[0].data[i]!=='undefined')) {
+    //console.log(data.data_RATE[i] + "/" + data.datasets[0].data[i])
+            if ((data.data_RATE[i]>max_RATE) && (data.datasets[0].data[i]>0)) {
+                max_RATE=data.data_RATE[i]
+                cht._ratefactor=max_RATE/data.datasets[0].data[i]
+                cht._show_rate=true
+            }
+        }
+    }
+    console.log("Rate:"+max_RATE)
+    //cht.options.scales.yAxes[1].ticks.max=max_RATE/10
+}
+
 
 function addCountySelect(ccode,cname,isActive) {
     var cs = document.getElementById('countySelect')
@@ -136,6 +193,7 @@ function selectCounty(ccode) {
         
         cht.data=chdata[ccode]
         setChtTitle(ccode)
+        updateRate()
         myChart.update()
     }
 }
