@@ -62,7 +62,33 @@ var opt = {
                     maxTicksLimit: 50,
                     min:0,
                     //min:-2
-                }
+                },
+                scaleLabel: {
+                        display: true,
+                        labelString: 'Sterbefälle je KW',
+                        lineHeight: 1,
+                        fontSize:10,
+                        padding:0,
+                },
+                //type: 'logarithmic'
+            },{
+                id: 'second-y-axis',
+                position: 'left',
+                type: 'linear',
+                stacked: true,
+                //gridLines:{display:false},
+                ticks: {
+                    maxTicksLimit: 50,
+                    min:0,
+                    //min:-2
+                },
+                scaleLabel: {
+                        display: true,
+                        labelString: '∑ Sterbefälle kumulativ',
+                        lineHeight: 1,
+                        fontSize:10,
+                        padding:0,
+                },
                 //type: 'logarithmic'
             }],
             xAxes: [{
@@ -78,12 +104,21 @@ var opt = {
     };
 chdata.options=opt;
 
+chdata.datasets.push({label: 'Sterbefälle kumulativ',
+    borderColor: 'red',
+    pointRadius: 0,
+    fill: false,
+    yAxisID: 'second-y-axis',
+    data: []},
+    )
+
 setSpanContent("ecdc_date",chdata.ecdc_date)
 setSpanContent("jh_date",chdata.jh_date)
 
 addValueAnnots(opt,chdata.datasets[0].data.length-1)
 
 recalcFill()
+recalcSum()
 
 var defaultLegendClickHandler = Chart.defaults.global.legend.onClick
 var newLegendClickHandler = function (e, legendItem) {
@@ -94,6 +129,7 @@ var newLegendClickHandler = function (e, legendItem) {
         ci.data.datasets[index].hidden=!ci.data.datasets[index].hidden
         //console.log("index:"+index+" hidden: "+ci.data.datasets[index].hidden)
         recalcFill()
+        recalcSum()
         addValueAnnots(ci.options,ci.data.datasets[0].data.length-1)
         ci.update()
     }
@@ -106,7 +142,6 @@ for (i=0;i<chdata.datasets.length;i++) {
     //chdata.datasets[i].pointHoverRadius=5
 }
 
-
 var myChart=new Chart(ctx,{
         type:'line',
         data: chdata,
@@ -114,8 +149,6 @@ var myChart=new Chart(ctx,{
     })
 
 //**********************************************************************************************
-
-
 function recalcFill() {
     var sums=[]
     var fill=chdata.datasets[0].data
@@ -123,7 +156,7 @@ function recalcFill() {
     
     var numvis=0
     var maxcnt=0
-    for (i=1; i<chdata.datasets.length; i++) {
+    for (i=1; i<chdata.datasets.length-1; i++) {
         if (!chdata.datasets[i].hidden) numvis++
     }
     //console.log("numvis: "+numvis+" half: "+Math.round(numvis/2))
@@ -134,7 +167,7 @@ function recalcFill() {
     for (w=0; w<fill.length; w++) {
         var wsum=0
         var cnt=0
-        for (i=1; (i<chdata.datasets.length) && (cnt<maxcnt); i++) {
+        for (i=1; (i<chdata.datasets.length-1) && (cnt<maxcnt); i++) {
             if (!chdata.datasets[i].hidden) {
                 wsum+=chdata.datasets[i].data[w]
                 cnt++
@@ -152,6 +185,28 @@ function recalcFill() {
 }
 
 //**********************************************************************************************
+function recalcSum() {
+    var fill=chdata.datasets[0].data
+    var sumsds=chdata.datasets[chdata.datasets.length-1]
+    sumsds.data=[]
+    var sums=sumsds.data
+    
+    
+    //console.log("numvis: "+numvis+" half: "+Math.round(numvis/2))
+    
+    var wsum=0
+    for (w=0; w<fill.length; w++) {
+        for (i=1; i<chdata.datasets.length-1; i++) {
+            if (!chdata.datasets[i].hidden) {
+                wsum+=chdata.datasets[i].data[w]
+            }
+        }
+        sums.push(wsum)
+    }
+}
+
+
+//**********************************************************************************************
 
 function addValueAnnots(opt,ix) {
     var offs=chdata.datasets[0].data[ix]
@@ -160,7 +215,7 @@ function addValueAnnots(opt,ix) {
     
     opt.annotation.annotations=[]
     
-    for (i=1; i<chdata.datasets.length; i++) {
+    for (i=1; i<chdata.datasets.length-1; i++) {
         var ds=chdata.datasets[i]
         if (!ds.hidden) {
             var inz=ds.data[ds.data.length-1]
