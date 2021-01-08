@@ -359,6 +359,7 @@ window.onload = function() {
         var ctx = canvas.getContext('2d')
         var config = createConfig(details)
         calcExcess(config,byYearStart,addProgn,useECDCData)
+        calcSums(config)
 
         var cht=new Chart(ctx, config)
         charts[details.cocode] = {
@@ -455,9 +456,30 @@ function recalcCharts() {
     for (var key in charts) {
         //console.log("recalc: "+key)
         calcExcess(charts[key].config,byYearStart,addProgn,useECDCData)
+        calcSums(charts[key].config)
         charts[key].chart.update()
     }
 }
+
+//**********************************************************************************************
+function calcSums(config) { //maybe calc sums dynamically in label until data point, think of difference 52cw<>53cw
+    var ds=config.data.datasets
+    for (var i=0;i<ds.length;i++) {
+        var sum_all=0
+        var sum_y_1=0
+        for (w=0;w<config.data.labels.length;w++) {
+            var val = ds[i].data[w]
+            if (typeof val!=='undefined') {
+                sum_all+=val
+                if (w<53)
+                    sum_y_1+=val
+            }
+        }
+        ds[i]._sum_all=sum_all
+        ds[i]._sum_y_1=sum_y_1
+    }
+}
+
 
 //**********************************************************************************************
 function calcExcess(config,byYearStart,addProgn,useECDCData) {
@@ -483,6 +505,7 @@ function calcExcess(config,byYearStart,addProgn,useECDCData) {
     if (useECDCData) {
         covid.data=config.data._ecdc_data
     } else {
+        //console.log("data: "+config.data.cocode)
         covid.data=config.data._jh_data
     }
     
