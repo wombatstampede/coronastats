@@ -601,7 +601,7 @@ function calcExcess(config,byYearStart,addProgn,useECDCData) {
                                 else prognFactor=1 
                                 prognFactorReduce=0.6
                             } else {
-                                prognFactorReduce=0.8
+                                prognFactorReduce=0.6
                                 prognFactor=Math.min(prognExc/covid.data[i],5)
                             }
                             //console.log(config.data.cocode+": usePrognFactor "+prognFactor+" * "+prognFactorReduce)
