@@ -5,7 +5,7 @@
 <meta property="og:image" content="index.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<meta property="og:updated_time" content="2021-01-08T09:24:50+01:00" />
+<meta property="og:updated_time" content="2021-01-08T14:23:06+01:00" />
 <title>COVID-19-Fälle im Kreis Pinneberg</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
@@ -38,6 +38,13 @@ var opt = {
             text: "COVID-19-Fälle im Kreis Pinneberg (Stand: "+chdata.labels[chdata.labels.length-1]+", Quelle:www.schleswig-holstein.de)",
         },
         scales: {
+            xAxes: [
+            {
+                gridLines: {
+                    display:false
+                }
+            }
+            ],
             yAxes: [
             {
                 id: 'first-y-axis',

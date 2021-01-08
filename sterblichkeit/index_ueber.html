@@ -655,7 +655,22 @@ function calcExcess(config,byYearStart,addProgn,useECDCData) {
                 aCovidLastDay.xMin=aCovid.value-(1/14)
                 aCovidLastDay.xMax=aCovid.value+(1/14)
                 aCovidLastDay.yMin=0
-                aCovidLastDay.yMax=(config.data.jh_covid_sum-covidsum)*(7/config.data.jh_last_covid_dayoffset)
+                
+                var incompleteWeekCovid=config.data.jh_covid_sum-covidsum
+                var lastWeekCovid=covid.data[lastCovidCWix]
+                var scaleUpToWeek=(7/config.data.jh_last_covid_dayoffset) //scale incomplete week value up to 7 days est. value
+                
+                //console.log("lastcovidday: "+config.data.cocode+": diff: "+incompleteWeekCovid+", offs: "+config.data.jh_last_covid_dayoffset+", lastcdata: "+lastWeekCovid+", scaledDownCData:"+(lastWeekCovid/scaleUpToWeek))
+                //
+                //v1. scale case sum in new week to number of days in week
+                //aCovidLastDay.yMax=incompleteWeekCovid*scaleUpToWeek
+                //
+                //console.log("lastcovidday: "+config.data.cocode+",v1: "+aCovidLastDay.yMax)
+                //
+                //v2: scale only difference
+                //todo: simplify term
+                aCovidLastDay.yMax=lastWeekCovid+((incompleteWeekCovid-(lastWeekCovid/scaleUpToWeek))*scaleUpToWeek)
+                //console.log("lastcovidday: "+config.data.cocode+",v2: "+aCovidLastDay.yMax)
             }
         }
         

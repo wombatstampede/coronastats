@@ -31,6 +31,7 @@
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
 <li>Diese Grafik basiert auf den vom RKI veröffentlichten <a href="https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Impfquotenmonitoring.html">Impfquoten</a>. Konkret werden <a href="https://github.com/ard-data/2020-rki-impf-archive">Dateien</a> verwendet, die die <a href="https://github.com/ard-data/2020-rki-impf-archive">ARD</a> aus den RKI-Daten aufbereitet.</li>
+<li>Die gestrichelten Abschnitte repräsentieren lediglich eine simple Interpolation der Impfzahlenentwicklung der letzten zwei Tage auf die Folgetage.</li>
 </ul>
 <script>
 var ctx = document.getElementById('myChart').getContext('2d');
@@ -43,6 +44,10 @@ var opt = {
         legend: {
             labels: {
                 boxWidth: 25,
+                filter: function (item,data) {
+                    if (item.text.indexOf('Prognose') == -1) return item
+                    else return false
+                }
             }
         },
         scales: {
@@ -136,24 +141,94 @@ function setChtTitle(ccode) {
 for (var key in chdata) {
     addCountySelect(key,chdata[key]._name,(key==currentCounty))
     
-    for (i=0;i<chdata[key].datasets.length;i++) {
+    for (var i=0;i<chdata[key].datasets.length;i++) {
         chdata[key].datasets[i].pointHitRadius=15
         //chdata.datasets[i].pointHoverRadius=5
     }
 }
 
 updateRate()
+addEstimate()
 
 var myChart=new Chart(ctx,cht)
 
 //**********************************************************************************************
+function addEstimate() {
+    var lookBack = 3
+    var goForward = 3
+    //var maxY=0
+    
+    var data=cht.data
+    if (typeof data._hasEstimate=='undefined') {
+        data._hasEstimate=true
+        var estDSOffset=data.datasets.length
+        
+        //add estimate datasets
+        for (var i=0; i<estDSOffset; i++) { 
+            var estStartIx=data.datasets[0].data.length-1
+            ofDS=data.datasets[i]
+            console.log(i+": "+ofDS.label+"/"+estStartIx)
+            //for (var d=0; d<ofDS.data.length; d++)
+            //    maxY=Math.max(ofDS.data[d],maxY)
+            
+            newDS={
+                    type: 'line',
+                    label: ofDS.label + " (Prognose)",
+                    fill: false,
+                    borderColor: ofDS.borderColor,
+                    borderDash: [5,10],
+                    pointRadius: 0,
+                    pointBackgroundColor: ofDS.pointBackgroundColor,
+                    data:[]
+                }
+            //move back until there's data
+            while ((estStartIx>=0) && (typeof ofDS.data[estStartIx] == 'undefined')) 
+                estStartIx--
+            //enough data available to extrapolate?
+            if ((estStartIx>=lookBack-1) && (typeof ofDS.data[estStartIx-lookBack+1] !== undefined)) {
+                //add empty data for previous dates
+                for (var d=0;d<estStartIx;d++)
+                    newDS.data.push(undefined)
+                
+                var diffPerDay=Math.round((ofDS.data[estStartIx]-ofDS.data[estStartIx-lookBack+1])/(lookBack-1))
+                //console.log(i+"/"+data.labels[estStartIx]+":"+ofDS.data[estStartIx]+"/"+data.labels[estStartIx-lookBack+1]+":"+ofDS.data[estStartIx-lookBack+1])
+                //console.log("diff: "+(ofDS.data[estStartIx]-ofDS.data[estStartIx-lookBack+1])+"/day:"+diffPerDay)
+                //start at end (with same value)
+                newDS.data.push(ofDS.data[estStartIx])
+                
+                //add extrapolated data
+                for (var d=estStartIx+1;d<estStartIx+goForward+1;d++) {
+                    var newY=newDS.data[d-1]+diffPerDay
+                    //maxY=Math.max(newY,maxY)
+                    newDS.data.push(newY)
+                    console.log(i+"/"+newY)
+                }
+            }
+            
+            data.datasets.push(newDS)
+        }
+        //add new date labels
+        var lastLblDate=data.labels[data.labels.length-1]
+        var lblDate=new Date(lastLblDate.substr(0,4),lastLblDate.substr(5,2)-1,lastLblDate.substr(8,2))
+        //console.log(lastLblDate+"/"+lblDate)
+        lblDate.setTime(lblDate.getTime()+(60*60*12*1000)) //toISO is not TimeZone-safe, for now just add 12h to stay "in the middle" (EU)
+        var newLblLen=data.labels.length+goForward
+        for (var d=data.labels.length;d<newLblLen;d++) {
+            lblDate.setTime(lblDate.getTime()+(60*60*24*1000)) //add a day (ignores DST changes, but enough here)
+            console.log(lblDate)
+            var dateStr=lblDate.toISOString().substr(0,10)
+            data.labels.push(dateStr)
+        }
+    }
+}
+
 function updateRate() {
     var max_RATE=0
     var max_Val=0
     cht._show_rate=false
     cht._ratefactor=1
     var data=cht.data
-    for (i=0;i < data.data_RATE.length;i++) {
+    for (var i=0;i < data.data_RATE.length;i++) {
         if ((typeof data.data_RATE[i]!=='undefined') && (typeof data.datasets[0].data[i]!=='undefined')) {
     //console.log(data.data_RATE[i] + "/" + data.datasets[0].data[i])
             if ((data.data_RATE[i]>max_RATE) && (data.datasets[0].data[i]>0)) {
@@ -194,6 +269,7 @@ function selectCounty(ccode) {
         cht.data=chdata[ccode]
         setChtTitle(ccode)
         updateRate()
+        addEstimate()
         myChart.update()
     }
 }
