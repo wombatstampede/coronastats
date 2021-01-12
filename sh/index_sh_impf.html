@@ -167,9 +167,7 @@ function addEstimate() {
         for (var i=0; i<estDSOffset; i++) { 
             var estStartIx=data.datasets[0].data.length-1
             ofDS=data.datasets[i]
-            console.log(i+": "+ofDS.label+"/"+estStartIx)
-            //for (var d=0; d<ofDS.data.length; d++)
-            //    maxY=Math.max(ofDS.data[d],maxY)
+            //console.log(i+": "+ofDS.label+"/"+estStartIx)
             
             newDS={
                     type: 'line',
@@ -183,15 +181,18 @@ function addEstimate() {
                     data:[]
                 }
             //move back until there's data
-            while ((estStartIx>=0) && (typeof ofDS.data[estStartIx] == 'undefined')) 
+//            while ((estStartIx>=0) && (typeof ofDS.data[estStartIx] == 'undefined')) 
+            while ((estStartIx>=0) && isNaN(ofDS.data[estStartIx]) )
                 estStartIx--
             var myLookBack=lookBack
-            if ((estStartIx>=myLookBack-1) && (typeof ofDS.data[estStartIx-myLookBack+1] == undefined)) {
+//            if ((estStartIx>=myLookBack-1) && (typeof ofDS.data[estStartIx-myLookBack+1] == undefined)) {
+            if ((estStartIx>=myLookBack-1) && isNaN(ofDS.data[estStartIx-myLookBack+1])) {
                 myLookBack+=1 //extend lookback by max +1 if data isn't avail on start-lookback
             }
-            console.log("lb: "+myLookBack+" eSix: "+estStartIx)
             //enough data available to extrapolate?
-            if ((estStartIx>=myLookBack-1) && (typeof ofDS.data[estStartIx-myLookBack+1] !== undefined)) {
+            if ((estStartIx>=myLookBack-1) && !isNaN(ofDS.data[estStartIx-myLookBack+1])) {
+//            if ((estStartIx>=myLookBack-1) && (typeof ofDS.data[estStartIx-myLookBack+1] !== undefined)) {
+            //console.log("lb: "+myLookBack+" eSix: "+estStartIx)
                 //add empty data for previous dates
                 for (var d=0;d<estStartIx;d++)
                     newDS.data.push(undefined)
@@ -207,7 +208,7 @@ function addEstimate() {
                     var newY=newDS.data[d-1]+diffPerDay
                     //maxY=Math.max(newY,maxY)
                     newDS.data.push(newY)
-                    console.log(i+"/"+newY)
+                    //console.log(i+"/"+newY)
                 }
             }
             
@@ -221,7 +222,7 @@ function addEstimate() {
         var newLblLen=data.labels.length+goForward
         for (var d=data.labels.length;d<newLblLen;d++) {
             lblDate.setTime(lblDate.getTime()+(60*60*24*1000)) //add a day (ignores DST changes, but enough here)
-            console.log(lblDate)
+            //console.log(lblDate)
             var dateStr=lblDate.toISOString().substr(0,10)
             data.labels.push(dateStr)
         }
@@ -244,7 +245,7 @@ function updateRate() {
             }
         }
     }
-    console.log("Rate:"+max_RATE)
+    //console.log("Rate:"+max_RATE)
     //cht.options.scales.yAxes[1].ticks.max=max_RATE/10
 }
 
