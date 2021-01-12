@@ -159,10 +159,10 @@ function recalcFill() {
     for (i=1; i<chdata.datasets.length-1; i++) {
         if (!chdata.datasets[i].hidden) numvis++
     }
-    //console.log("numvis: "+numvis+" half: "+Math.round(numvis/2))
     
     maxcnt=Math.round(numvis/2)
     if (numvis<2) maxcnt=0 //no fills if only 1 value is visible
+    //console.log("numvis: "+numvis+" half: "+Math.round(numvis/2)+" maxcnt: "+maxcnt)
     
     for (w=0; w<fill.length; w++) {
         var wsum=0

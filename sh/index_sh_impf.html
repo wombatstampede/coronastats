@@ -185,13 +185,18 @@ function addEstimate() {
             //move back until there's data
             while ((estStartIx>=0) && (typeof ofDS.data[estStartIx] == 'undefined')) 
                 estStartIx--
+            var myLookBack=lookBack
+            if ((estStartIx>=myLookBack-1) && (typeof ofDS.data[estStartIx-myLookBack+1] == undefined)) {
+                myLookBack+=1 //extend lookback by max +1 if data isn't avail on start-lookback
+            }
+            console.log("lb: "+myLookBack+" eSix: "+estStartIx)
             //enough data available to extrapolate?
-            if ((estStartIx>=lookBack-1) && (typeof ofDS.data[estStartIx-lookBack+1] !== undefined)) {
+            if ((estStartIx>=myLookBack-1) && (typeof ofDS.data[estStartIx-myLookBack+1] !== undefined)) {
                 //add empty data for previous dates
                 for (var d=0;d<estStartIx;d++)
                     newDS.data.push(undefined)
                 
-                var diffPerDay=Math.round((ofDS.data[estStartIx]-ofDS.data[estStartIx-lookBack+1])/(lookBack-1))
+                var diffPerDay=Math.round((ofDS.data[estStartIx]-ofDS.data[estStartIx-myLookBack+1])/(myLookBack-1))
                 //console.log(i+"/"+data.labels[estStartIx]+":"+ofDS.data[estStartIx]+"/"+data.labels[estStartIx-lookBack+1]+":"+ofDS.data[estStartIx-lookBack+1])
                 //console.log("diff: "+(ofDS.data[estStartIx]-ofDS.data[estStartIx-lookBack+1])+"/day:"+diffPerDay)
                 //start at end (with same value)
