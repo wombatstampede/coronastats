@@ -31,10 +31,29 @@
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
 <li>Diese Grafik basiert auf den vom RKI veröffentlichten <a href="https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Impfquotenmonitoring.html">Impfquoten</a>. Konkret werden <a href="https://github.com/ard-data/2020-rki-impf-archive">Dateien</a> verwendet, die die <a href="https://github.com/ard-data/2020-rki-impf-archive">ARD</a> aus den RKI-Daten aufbereitet.</li>
+<li>Für SH und HH werden auch prozentuale Anteile für die Indikation nach Alter und Pflegeheim-Bewohnern angezeigt. Hierzu bitte den jeweiligen Datenpunkt anklicken. Da zwei Impfungen je Person vorgenommen werden, liegt der Zielwert bei maximal 200%</li>
 <li>Die gestrichelten Abschnitte repräsentieren lediglich eine simple Interpolation der Impfzahlenentwicklung der letzten zwei Tage auf die Folgetage.</li>
 </ul>
 <script>
 var ctx = document.getElementById('myChart').getContext('2d');
+var cStats = {
+        'SH': { pflege: 35100, ueber80: 207658, insgesamt: 2911431},
+        'HH': { pflege: 16300, ueber80: 107709, insgesamt: 1850266},
+//DE        
+//https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Gesundheit/Pflege/Publikationen/_publikationen-innen-pflegestatistik-deutschland-ergebnisse.html 
+//https://www.destatis.de/DE/Themen/Querschnitt/Statistische-Wochenberichte/wochenberichte-gesamtpaket-xlsx.html
+        'DE': { pflege: 818317, ueber80: 5681135 , insgesamt: 83191000},
+
+//https://www.destatis.de/DE/Presse/Pressemitteilungen/2020/12/PD20_N082_122.html
+//80+
+//Sachsen: 349000, SA: 182000, TH 127
+//BW 720 138, BY 831 499, BE 211 227, BRA 197 346, HB 45 522,  HH 107 709, HE 404 039
+//MV 404 039, NI 554 368, NRW 1 216 715, RP 1 216 715, SAAR 75 795, SACH 75 795, SANH 182 164,
+//SH 207 658, TH 169 482
+    }
+var currentCounty="SH"
+
+
 var opt = {
         responsive: false,
         title: {
@@ -111,20 +130,35 @@ var opt = {
                     return [dashDate+" ("+weekdays[lblDate.getDay()]+")"]
                 },
                 label: function(item, data) {
-                    var v = data.datasets[item.datasetIndex].data[item.index]
-                    var llist=[data.datasets[item.datasetIndex].label+": "+v]
+                    var ds= data.datasets[item.datasetIndex]
+                    var v = ds.data[item.index]
+                    var llist=[ds.label+": "+v]
+                    var stats=cStats[currentCounty]
+                    
                     if (item.datasetIndex==0) {
                         if (typeof data.data_NEW[item.index]!=='undefined')
                             llist.push("Diff. zum Vortag: "+data.data_NEW[item.index])
                         if (typeof data.data_RATE[item.index]!=='undefined')
                             llist.push("Impf./1000 Einw.: "+data.data_RATE[item.index].toFixed(2))
+                    } else if (ds.label.indexOf('Prognose')>=0) {
+                        //console.log()
+                        if (!isNaN(data.datasets[0].data[item.index]))
+                            llist=null
+                    }
+                    if (llist!=null) {
+                        if ((ds.label.indexOf('nach Alter')>=0) && (typeof stats !== 'undefined')) {
+                            llist[0]+=' ('+((v/stats.ueber80)*100).toFixed(2)+'%)'
+                        } else if ((ds.label.indexOf('Pflegeheim')>=0) && (typeof stats !== 'undefined')) {
+                            llist[0]+=' ('+((v/stats.pflege)*100).toFixed(2)+'%)'
+                        } else if ((ds.label.indexOf('kumulativ')>=0) && (typeof stats !== 'undefined')) {
+                            llist[0]+=' ('+((v/stats.insgesamt)*100).toFixed(2)+'%)'
+                        }
                     }
                     return llist
                 }
             },        
         }
 }
-var currentCounty="SH"
 var cht={
         type:'bar',
         data: chdata[currentCounty],
