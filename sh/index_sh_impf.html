@@ -25,14 +25,15 @@
 <body>
 <a class="button" href="../">Inhalt</a>
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
-<p><strong>Hinweis: Aufgrund von Umstellungen in der Datenquelle wird diese Grafik momentan nicht aktualisiert.</strong></p>
+<!-- <p><strong>Hinweis: Aufgrund von Umstellungen in der Datenquelle wird diese Grafik momentan nicht aktualisiert.</strong></p> -->
 <div id="countySelect"></div> 
 <canvas id="myChart" style="width:990px;height: 700px;"></canvas>
 <br/>
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
 <li>Diese Grafik basiert auf den vom RKI veröffentlichten <a href="https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Impfquotenmonitoring.html">Impfquoten</a>. Konkret werden <a href="https://github.com/ard-data/2020-rki-impf-archive">Dateien</a> verwendet, die die <a href="https://github.com/ard-data/2020-rki-impf-archive">ARD</a> aus den RKI-Daten aufbereitet.</li>
-<li>Für SH und HH werden auch prozentuale Anteile für die Indikation nach Alter und Pflegeheim-Bewohnern angezeigt. Hierzu bitte den jeweiligen Datenpunkt anklicken. Da zwei Impfungen je Person vorgenommen werden, liegt der Zielwert bei maximal 200%</li>
+<li>Für SH und HH werden auch prozentuale Anteile für die Indikation nach Alter und Pflegeheim-Bewohnern angezeigt. Hierzu bitte den jeweiligen Datenpunkt anklicken.</li>
+<li>Momentan wird die Summe aus Erst- und Zweitimpfung ausgewiesen. Daher liegt der Zielwert bei maximal 200%. Es ist aber geplant Erst- und Zweitimpfungen separat aufzulisten.</li>
 <li>Die gestrichelten Abschnitte repräsentieren lediglich eine simple Interpolation der Impfzahlenentwicklung der letzten zwei Tage auf die Folgetage.</li>
 </ul>
 <script>
@@ -47,10 +48,10 @@ var cStats = {
 
 //https://www.destatis.de/DE/Presse/Pressemitteilungen/2020/12/PD20_N082_122.html
 //80+
-//Sachsen: 349000, SA: 182000, TH 127
-//BW 720 138, BY 831 499, BE 211 227, BRA 197 346, HB 45 522,  HH 107 709, HE 404 039
-//MV 404 039, NI 554 368, NRW 1 216 715, RP 1 216 715, SAAR 75 795, SACH 75 795, SANH 182 164,
-//SH 207 658, TH 169 482
+//Sachsen: 349000, SA: 182000, TH 127 (k?)
+//BW 720138, BY 831499, BE 211227, BRA 197346, HB 45522,  HH 107 709, HE 404039
+//MV 404039, NI 554368, NRW 1216715, RP 1216715, SAAR 75795, SACH 75 795, SANH 182164,
+//SH 207658, TH 169482
     }
 var currentCounty="SH"
 
@@ -93,30 +94,8 @@ var opt = {
                         fontSize:10,
                         padding:0,
                 }
-                //type: 'logarithmic'
             },
-/*            { //doesn't always fit
-                id: 'second-y-axis',
-                position: 'left',
-                type: 'linear',
-                stacked: true,
-                //gridLines:{display:false},
-                ticks: {
-                    beginAtZero: true,
-                    maxTicksLimit: 10,
-                },
-                gridLines: {
-                    display: false
-                },
-                scaleLabel: {
-                        display: true,
-                        labelString: 'Imfquote in %',
-                        lineHeight: 1,
-                        fontSize:10,
-                        padding:0,
-                },
-                //type: 'logarithmic'
-            }*/]
+            ]
         },
         annotation: {
             annotations: [
