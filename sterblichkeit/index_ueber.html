@@ -30,6 +30,13 @@
    	.big-chart {
 		width: 1000px;
     }
+    .chart-info {
+		font-size: 0.6em;
+        display: none;
+    }
+    div.big-chart .chart-info {
+		font-size: 1em;
+    }
 	.container-all {
 		display: flex;
 		flex-direction: row;
@@ -354,7 +361,17 @@ window.onload = function() {
 
         var canvas = document.createElement('canvas')
         div.appendChild(canvas)
+
+        //display info about selection
+        var divInfo = document.createElement('div')
+        //divInfo.innerHTML='Hello World:<br/>Hello World2'
+        divInfo.classList.add('chart-info')
+        div.appendChild(divInfo)
+        
         container.appendChild(div)
+
+
+
 
         var ctx = canvas.getContext('2d')
         var config = createConfig(details)
