@@ -5,7 +5,7 @@
 <meta property="og:image" content="index.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<meta property="og:updated_time" content="2021-01-27T07:04:53+01:00" />
+<meta property="og:updated_time" content="2021-01-27T09:55:27+01:00" />
 <title>COVID-19-Fälle im Kreis Pinneberg</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
@@ -21,10 +21,17 @@
 <br/>
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
-<li>Hospitalisierung (∑ 14-Tg.): Diese Linie zeigt die Summe der Hospitalisierungen in den jeweils 14 zurückliegenden Tagen.
+<li><strong>7-Tg. Inz.:</strong><br />
+Zeigt für den neuesten Tag die auf schleswig-holstein.de gezeigte regionale Inzidenz. Für zurückliegende Tage wird die Inzidenz anhand der Nachmeldungen täglich aktualisiert.
+</li>
+<li><strong>7-Tg. Inz. veröff.:</strong><br />
+Zeigt rückwirkend alle gemeldeten 7-Tage Inzidenzen ohne Korrekturen durch Nachmeldungen an Folgetagen. Größere Abweichungen sind meist einem kompletten Meldeausfall an den jeweiligen Tagen geschuldet.
+<br/>(Jede Datenreihe kann durch Klick auf die Legende ein-/ausgeblendet werden.)
+</li>
+<li><strong>Hospitalisierung (∑ 14-Tg.)</strong><br />Diese Linie zeigt die Summe der Hospitalisierungen in den jeweils 14 zurückliegenden Tagen.
 Die Zahl 14 ist nicht willkürlich gewählt, sondern basiert auf einer 
 <a href="https://www.ruhrbarone.de/mit-covid-19-ins-krankenhaus-1-von-5-patienten-stirbt-stationaer/192045">hier veröffentlichten Untersuchung</a> aus der sich ein durchschnittlicher Krankenhausaufenthalt (bzgl. COVID-19) von 13.7 Tagen ableiten lassen kann.</li>
-<li>Diese Grafik basiert auf der unter <a href="https://www.schleswig-holstein.de/DE/Schwerpunkte/Coronavirus/Zahlen/zahlen_node.html">www.schleswig-holstein.de</a>
+<li><strong>Daten</strong><br />Diese Grafik basiert auf der unter <a href="https://www.schleswig-holstein.de/DE/Schwerpunkte/Coronavirus/Zahlen/zahlen_node.html">www.schleswig-holstein.de</a>
 veröffentlichten <strong>&quot;CSV-Datei der Kreisdaten&quot;</strong> sowie der dort gezeigten Tabellen mit Daten je Kreis. Aufgrund verschiedener Veröffentlichungszeitpunkte kann es zu Abweichungen zu Daten des RKI kommen.</li>
 </ul>
 <script>
@@ -37,6 +44,11 @@ var opt = {
             //https://www.kreis-pinneberg.de
             text: "COVID-19-Fälle im Kreis Pinneberg (Stand: "+chdata.labels[chdata.labels.length-1]+", Quelle:www.schleswig-holstein.de)",
         },
+        legend: {
+                labels: {
+                    boxWidth: 10,
+                }
+        },  
         scales: {
             xAxes: [
             {
