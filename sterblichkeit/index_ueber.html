@@ -508,8 +508,8 @@ function rangeSelected(chartinstance,start,end) {
             dInfo.style.display = 'block'
             
             aSel=setAnnotVisibility(chartinstance.config,aSel,true)
-            aSel.xMin=start
-            aSel.xMax=end
+            aSel.xMin=start-0.5
+            aSel.xMax=end+0.5
             
             var y2020 = getDataByTag(cdata,'2020')
             var covid = getDataByTag(cdata,'covid')
