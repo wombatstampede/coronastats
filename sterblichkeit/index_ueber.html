@@ -11,6 +11,7 @@
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
 <script type="text/javascript" src="Chart.min.js"></script>
 <script type="text/javascript" src="chartjs-plugin-annotation.min.js"></script>
+<script type="text/javascript" src="chartjs-plugin-crosshair_modif.js"></script>
 <script type="text/javascript" src="sterbefaelle7_ueber.js"></script>
 <script type="text/javascript" src="sterbefaelle7_ueber_us.js"></script>
 <style>
@@ -126,6 +127,24 @@ function createConfig(details) {
             }, 
             hover: {
                 intersect: false
+            },
+            plugins: {
+                crosshair: {
+                    sync: {
+                        enabled: false
+                    },
+                    snapping: {
+                        enabled: false
+                    },
+                    callbacks: {
+                        beforeZoom: function(chartinst, start, end) {// called before zoom, return false to prevent zoom
+                            rangeSelected(chartinst,start,end)
+                            return false;
+                        },
+                        afterZoom: function(chartinst,start, end) {// called after zoom
+                        }
+                    }
+                }
             },
             tooltips: {
                 mode: 'x',
@@ -366,6 +385,7 @@ window.onload = function() {
         var divInfo = document.createElement('div')
         //divInfo.innerHTML='Hello World:<br/>Hello World2'
         divInfo.classList.add('chart-info')
+        divInfo.setAttribute('id','cinfo'+details.cocode)
         div.appendChild(divInfo)
         
         container.appendChild(div)
@@ -457,6 +477,56 @@ function byYearStart(isByYearStart) {
         
         recalcCharts()
     }
+}
+
+//**********************************************************************************************
+function rangeSelected(chartinstance,start,end) {
+    //show/hide cinfo<CC>
+    //chartinst.config.data /.config.options
+    //divInfo.innerHTML='Hello World:<br/>Hello World2'
+    var cdata=chartinstance.config.data
+     var dInfo = document.getElementById('cinfo'+chartinstance.config.data.cocode);
+     var dContent =""
+     if (dInfo) {
+        if (start==end) {
+            dInfo.style.display = 'none' //does never happen
+        } else {
+            dInfo.style.display = 'block'
+            
+            var y2020 = getDataByTag(cdata,'2020')
+            var covid = getDataByTag(cdata,'covid')
+            var avg = getDataByTag(cdata,'avg')
+            
+            dContent+='Ausgewählter Bereich: '+cdata.labels[start]+' - '+cdata.labels[end]+
+                        ' ('+(end-start)+' Wochen)<br />'
+            dContent+='∑ '+y2020.label+': '+dataSum(y2020.data,start,end)+'<br />'
+            dContent+='∑ '+covid.label+': '+dataSum(covid.data,start,end)+'<br />'
+            dInfo.innerHTML=dContent
+        }
+     }
+}
+
+//sum of data values from start to end (undefined values are seen = 0)
+function dataSum(data_arr,start,end) {
+    var sum=0
+    for (var i=start;(i<=end) && (i<data_arr.length);i++) {
+        if (typeof data_arr[i]!=='undefined') {
+            sum+=data_arr[i]
+        }
+    }
+    return sum
+}
+
+//diff of 2 data arrays from start to end, if one or both values at index are undefined -> no diff is added for that index
+//diff is: data_arr1 - data_arr2
+function dataDiff(data_arr1,data_arr2,start,end) {
+    var diff=0
+    for (var i=start;(i<=end) && (i<data_arr1.length) && (i<data_arr2.length);i++) {
+        if ((typeof data_arr1[i]!=='undefined') && (typeof data_arr2[i]!=='undefined')) {
+            diff+=data_arr1[i]-data_arr2[i]
+        }
+    }
+    return diff
 }
 
 
