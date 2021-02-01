@@ -284,6 +284,20 @@ function createConfig(details) {
                 backgroundColor: 'rgba(0,0,0,0.25)',
                 borderWidth: 1,
             },
+            annot_selection: {
+                _tag: 'selection',
+                type: "box",
+                drawTime: 'beforeDatasetsDraw',
+                xScaleID: "x-axis-0",
+                yScaleID: "y-axis-0",
+                xMin: 10,
+                xMax: 20,
+                //yMin: 0,
+                //yMax: 2000,
+                //borderColor: 'BurlyWood',
+                borderColor: 'rgba(100,149,237,0.4)',//CornflowerBlue
+                backgroundColor: 'rgba(100,149,237,0.25)'
+            },
             annotation: {
                 annotations: [
                     {
@@ -330,6 +344,7 @@ function createConfig(details) {
                     },
                     {
                         type: "line",
+                        _tag: 'nowcw',
                         mode: "vertical",
                         scaleID: "x-axis-0",
                         value: kalenderwoche(new Date())-0.99, /*lastcw is correct, why then?*/
@@ -481,29 +496,34 @@ function byYearStart(isByYearStart) {
 
 //**********************************************************************************************
 function rangeSelected(chartinstance,start,end) {
-    //show/hide cinfo<CC>
-    //chartinst.config.data /.config.options
-    //divInfo.innerHTML='Hello World:<br/>Hello World2'
     var cdata=chartinstance.config.data
-     var dInfo = document.getElementById('cinfo'+chartinstance.config.data.cocode);
-     var dContent =""
-     if (dInfo) {
+    var dInfo = document.getElementById('cinfo'+chartinstance.config.data.cocode);
+    var dContent =""
+    if (dInfo) {
+        let aSel = chartinstance.config.options.annot_selection
         if (start==end) {
-            dInfo.style.display = 'none' //does never happen
+            dInfo.style.display = 'none' //need to change?
+            setAnnotVisibility(chartinstance.config,aSel,false)
         } else {
             dInfo.style.display = 'block'
+            
+            aSel=setAnnotVisibility(chartinstance.config,aSel,true)
+            aSel.xMin=start
+            aSel.xMax=end
             
             var y2020 = getDataByTag(cdata,'2020')
             var covid = getDataByTag(cdata,'covid')
             var avg = getDataByTag(cdata,'avg')
             
             dContent+='Ausgewählter Bereich: '+cdata.labels[start]+' - '+cdata.labels[end]+
-                        ' ('+(end-start)+' Wochen)<br />'
+                        ' ('+(end-start+1)+' Wochen)<br />'
             dContent+='∑ '+y2020.label+': '+dataSum(y2020.data,start,end)+'<br />'
+            dContent+='∑ '+avg.label+': '+dataSum(avg.data,start,end)+'<br />'
+            dContent+='∑ Übersterblichkeit: '+dataDiff(y2020.data,avg.data,start,end)+'<br />'
             dContent+='∑ '+covid.label+': '+dataSum(covid.data,start,end)+'<br />'
-            dInfo.innerHTML=dContent
+            dInfo.innerHTML=dContent            
         }
-     }
+    }
 }
 
 //sum of data values from start to end (undefined values are seen = 0)
@@ -834,6 +854,27 @@ function getAnnotIxByTag(config,tagmatch) {
     return -1
 }
 
+//add remove annotation from annotations, uses tag for identification inside annotations array
+//returns annot object (in annotations) when visible
+//return null if annot item is (now) hidden
+function setAnnotVisibility(config,annotitem,avisible) {
+    var annot=null
+    if (!(typeof annotitem=='undefined')) {
+        annot = getAnnotByTag(config,annotitem['_tag'])
+        if (avisible) {//show
+            if (!annot) {
+                config.options.annotation.annotations.push(annotitem)
+                annot=annotitem
+            }
+        } else { //hide
+            if (annot) {
+                config.options.annotation.annotations.splice(getAnnotIxByTag(config,annotitem['_tag']),1)
+                annot=null
+            }
+        }
+    } else console.log("setAnnotVisibility: Error, annotitem not found")
+    return annot
+}
 
 //**********************************************************************************************
 
