@@ -33,7 +33,7 @@
 <ul>
 <li>Diese Grafik basiert auf den vom RKI veröffentlichten <a href="https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Impfquotenmonitoring.html">Impfquoten</a>. Konkret werden <a href="https://github.com/ard-data/2020-rki-impf-archive">Dateien</a> verwendet, die die <a href="https://github.com/ard-data/2020-rki-impf-archive">ARD</a> aus den RKI-Daten aufbereitet.</li>
 <li>Für SH und HH werden auch prozentuale Anteile für die Indikation nach Alter und Pflegeheim-Bewohnern angezeigt. Hierzu bitte den jeweiligen Datenpunkt anklicken.</li>
-<li>Momentan wird die Summe aus Erst- und Zweitimpfung ausgewiesen. Daher liegt der Zielwert bei maximal 200%. Es ist aber geplant Erst- und Zweitimpfungen separat aufzulisten.</li>
+<li>In den Grafiken werden Erst- und Zweitimpfungen jeweils separat angezeigt. Um Bereiche ein-/auszublenden klicken Sie auf den entsprechenden Text in der Legende</li>
 <li>Die gestrichelten Abschnitte repräsentieren lediglich eine simple Interpolation der Impfzahlenentwicklung der letzten zwei Tage auf die Folgetage.</li>
 </ul>
 <script>
@@ -64,11 +64,20 @@ var opt = {
         },
         legend: {
             labels: {
-                boxWidth: 25,
+                boxWidth: 15,
                 filter: function (item,data) {
                     if (item.text.indexOf('Prognose') == -1) return item
                     else return false
                 }
+            },
+            onClick: function (e, legendItem) {
+                var index = legendItem.datasetIndex
+                var ci = this.chart
+                let ds = ci.data.datasets[index]
+                ds.hidden=!ds.hidden
+                ci.data.datasets[ds._progDSIx].hidden=ds.hidden
+                ci.update() 
+                //Chart.defaults.global.legend.onClick (e, legendItem)
             }
         },
         scales: {
@@ -115,11 +124,14 @@ var opt = {
                     var llist=[ds.label+": "+v]
                     var stats=cStats[currentCounty]
                     
-                    if (item.datasetIndex==0) {
-                        if (typeof data.data_NEW[item.index]!=='undefined')
+                    if (item.datasetIndex<3) {
+                        let dsR=data.data_RATE
+                        if (item.datasetIndex==1) dsR=data.data_RATE1
+                        if (item.datasetIndex==2) dsR=data.data_RATE2
+                        if ((item.datasetIndex==0) && typeof data.data_NEW[item.index]!=='undefined')
                             llist.push("Diff. zum Vortag: "+data.data_NEW[item.index])
-                        if (typeof data.data_RATE[item.index]!=='undefined')
-                            llist.push("Impf./1000 Einw.: "+data.data_RATE[item.index].toFixed(2))
+                        if (typeof dsR[item.index]!=='undefined')
+                            llist.push("Impf./1000 Einw.: "+dsR[item.index].toFixed(2))
                     } else if (ds.label.indexOf('Prognose')>=0) {
                         //console.log()
                         if (!isNaN(data.datasets[0].data[item.index]))
@@ -157,6 +169,7 @@ for (var key in chdata) {
     
     for (var i=0;i<chdata[key].datasets.length;i++) {
         chdata[key].datasets[i].pointHitRadius=15
+        chdata[key].datasets[i].hidden = (i==0) //hide all vaccinations value by default
         //chdata.datasets[i].pointHoverRadius=5
     }
 }
@@ -184,9 +197,10 @@ function addEstimate() {
             //console.log(i+": "+ofDS.label+"/"+estStartIx)
             
             newDS={
-                    type: 'line',
+                    type: 'line',                    
                     label: ofDS.label + " (Prognose)",
                     fill: false,
+                    hidden: ofDS.hidden,
                     borderColor: ofDS.borderColor,
                     borderDash: [5,10],
                     pointRadius: 0,
@@ -227,6 +241,7 @@ function addEstimate() {
             }
             
             data.datasets.push(newDS)
+            ofDS._progDSIx=data.datasets.length - 1
         }
         //add new date labels
         var lastLblDate=data.labels[data.labels.length-1]
