@@ -160,12 +160,15 @@ function createConfig(details) {
                         var avg = data._avg.data[item.index]
                         //(Math.round(excess.data[lastCasesCWix]*10)/10)+"%
                         if (label.substr(0,4)=='Über') {
-                            return 'Überst.: '+(Math.round(((case2020-avg)/avg)*1000)/10)+"%, "+Math.round(case2020-avg)+
-                                    ', ∑ '+(Math.round(item.value*10)/10)+'%, '+Math.round(data._excsum[item.index]);
+                            return 'Überst.: '+(Math.round(((case2020-avg)/avg)*1000)/10).toLocaleString()+"%, "
+                                        +Math.round(case2020-avg).toLocaleString()
+                                    +', ∑ '+(Math.round(item.value*10)/10).toLocaleString()
+                                    +'%, '+Math.round(data._excsum[item.index]).toLocaleString();
                         } else if (label.substr(0,4)=='Covi') {
-                            return 'COVID-19: '+Math.round(item.value)+', ∑ '+Math.round(data._covidsum[item.index]);
+                            return 'COVID-19: '+Math.round(item.value).toLocaleString()
+                                +', ∑ '+Math.round(data._covidsum[item.index]).toLocaleString();
                         }
-                        else return label+': '+Math.round(item.value);
+                        else return label+': '+Math.round(item.value).toLocaleString();
                         //var v = data.datasets[item.datasetIndex].data[item.index]
                         //return ["Inzidenz: " + Math.round(v.v*10)/10,"Fälle(7Tg): "+v.casesum]
                     }
@@ -316,7 +319,7 @@ function createConfig(details) {
                           //yAdjust: 2,
                           fontColor: "rgb(100,0,0)",
                           fontSize: 10,
-                          content: ""+(Math.round(details.lastperc*10)/10)+"%, "+Math.round(details.sumdiff),
+                          content: ""+(Math.round(details.lastperc*10)/10).toLocaleString()+"%, "+Math.round(details.sumdiff).toLocaleString(),
                           position: "top",
                           enabled: true
                         },
@@ -337,7 +340,7 @@ function createConfig(details) {
                           fontColor: "rgb(0,102,76)",
                           fontSize: 10,
                           xAdjust: 11,
-                          content: details.covid_sum,
+                          content: details.covid_sum.toLocaleString(),
                           position: "bottom",
                           enabled: true
                         },
@@ -499,6 +502,8 @@ function rangeSelected(chartinstance,start,end) {
     var cdata=chartinstance.config.data
     var dInfo = document.getElementById('cinfo'+chartinstance.config.data.cocode);
     var dContent =""
+    var fmtstart ="<strong>"
+    var fmtstop  ="</strong>"
     if (dInfo) {
         let aSel = chartinstance.config.options.annot_selection
         if (start==end) {
@@ -514,13 +519,19 @@ function rangeSelected(chartinstance,start,end) {
             var y2020 = getDataByTag(cdata,'2020')
             var covid = getDataByTag(cdata,'covid')
             var avg = getDataByTag(cdata,'avg')
+            var v2020 = dataSum(y2020.data,start,end)
+            var vAvg = Math.round(dataSum(avg.data,start,end))
+            var vDiff = Math.round(dataDiff(y2020.data,avg.data,start,end))
+            var vCovid = dataSum(covid.data,start,end)
+            var vDiffPerc = (vAvg!=0)?(Math.round(vDiff*1000/vAvg)/10):"--"
             
-            dContent+='Ausgewählter Bereich: '+cdata.labels[start]+' - '+cdata.labels[end]+
-                        ' ('+(end-start+1)+' Wochen)<br />'
-            dContent+='∑ '+y2020.label+': '+dataSum(y2020.data,start,end)+'<br />'
-            dContent+='∑ '+avg.label+': '+dataSum(avg.data,start,end)+'<br />'
-            dContent+='∑ Übersterblichkeit: '+dataDiff(y2020.data,avg.data,start,end)+'<br />'
-            dContent+='∑ '+covid.label+': '+dataSum(covid.data,start,end)+'<br />'
+            dContent+='Ausgewählter Bereich: '+fmtstart+cdata.labels[start]+' - '+cdata.labels[end]+
+                        ' ('+(end-start+1)+' Wochen)'+fmtstop+'<br />'
+            dContent+='∑ '+y2020.label+': '+fmtstart+   v2020.toLocaleString()+fmtstop+'<br />'
+            dContent+='∑ '+avg.label+': '+fmtstart+     vAvg.toLocaleString()+fmtstop+'<br />'
+            dContent+='∑ Übersterblichkeit: '+fmtstart+ vDiff.toLocaleString()
+                        +' ('+vDiffPerc+'%)'+fmtstop+'<br />'
+            dContent+='∑ '+covid.label+': '+fmtstart+   vCovid.toLocaleString()+fmtstop+'<br />'
             dInfo.innerHTML=dContent            
         }
     }
@@ -763,16 +774,16 @@ function calcExcess(config,byYearStart,addProgn,useECDCData) {
             aCovidFirst.value=labels[firstCovidCWix]
         }
         aExcess.value=labels[lastCasesCWix]
-        aExcess.label.content = ""+(Math.round(excess.data[lastCasesCWix]*10)/10)+"%, "+Math.round(sumExcess)
+        aExcess.label.content = ""+(Math.round(excess.data[lastCasesCWix]*10)/10).toLocaleString()+"%, "+Math.round(sumExcess).toLocaleString()
         
         if (useECDCData) {
-            aCovid.label.content = covidsum
+            aCovid.label.content = (covidsum*1.0).toLocaleString()
             aCovid.scaleID = "x-axis-0"
             aCovid.value=labels[lastCovidCWix]
             if (aCovidLastDay)
                 config.options.annotation.annotations.splice(getAnnotIxByTag(config,'covidlastday'),1)            
         } else {
-            aCovid.label.content = config.data.jh_covid_sum
+            aCovid.label.content = (config.data.jh_covid_sum*1.0).toLocaleString()
             aCovid.scaleID = "x-axis-1"
             //config.options.scales.xAxes[1].ticks.max = labels.length
             aCovid.value=lastCovidCWix+(config.data.jh_last_covid_dayoffset/7)
@@ -809,7 +820,8 @@ function calcExcess(config,byYearStart,addProgn,useECDCData) {
         if (addProgn && aProgn) {
             aProgn.value=labels[lastProgn]
             if (!isNaN(prognSumExcess) && !isNaN(prognSumAvg)) {
-                aProgn.label.content = ""+(Math.round((prognSumExcess*100.0/prognSumAvg)*10)/10)+"%, "+Math.round(prognSumExcess)
+                aProgn.label.content = ""+(Math.round((prognSumExcess*100.0/prognSumAvg)*10)/10).toLocaleString()
+                    +"%, "+Math.round(prognSumExcess).toLocaleString()
             } else {
                 aProgn.label.content = ""
             }
