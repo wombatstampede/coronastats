@@ -5,18 +5,21 @@
 <meta property="og:image" content="index.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<meta property="og:updated_time" content="2021-02-05T07:06:10+01:00" />
+<meta property="og:updated_time" content="2021-02-05T08:45:12+01:00" />
 <title>COVID-19-Fälle im Kreis Pinneberg</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
 <script type="text/javascript" src="Chart.min.js"></script>
 <script type="text/javascript" src="chartjs-plugin-annotation.min.js"></script>
+<link rel="stylesheet" media="screen" href="nouislider.min.css"> 
+<script type="text/javascript" src="nouislider.min.js"></script>
 <script type="text/javascript" src="colors.js"></script>
 <script type="text/javascript" src="Kreis_PI.js"></script>
 </head>
 <body>
 <a class="button" href="../">Inhalt</a>
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
+<div id="slider" style="left:10px;width:800px"></div>
 <canvas id="myChart" style="width:990px;height: 700px;"></canvas>
 <br/>
 <h2 id="Anmerkungen">Anmerkungen</h2>
@@ -45,10 +48,22 @@ var opt = {
             text: "COVID-19-Fälle im Kreis Pinneberg (Stand: "+chdata.labels[chdata.labels.length-1]+", Quelle:www.schleswig-holstein.de)",
         },
         legend: {
-                labels: {
-                    boxWidth: 10,
+            labels: {
+                boxWidth: 10,
+            },
+            onClick: function (e, legendItem) {
+                var index = legendItem.datasetIndex
+                var ci = this.chart
+                let ds = ci.data.datasets[index]
+                ds.hidden=!ds.hidden
+                
+                if (ds.label.substr(0,4)=='R(t)') { //show axis for data
+                    ci.options.scales.yAxes[1].display=!ds.hidden
+                    console.log(ds.label)
                 }
-        },  
+                ci.update() 
+            },
+        },
         scales: {
             xAxes: [
             {
@@ -68,10 +83,11 @@ var opt = {
                 }
                 //type: 'logarithmic'
             },
-/*            {
+            {
                 id: 'second-y-axis',
                 type: 'linear',
                 position: 'left',
+                display: false,
                 scaleLabel: {
                     display: true,
                     labelString: 'R(t)',
@@ -84,7 +100,7 @@ var opt = {
                    min:0,
                 }
                 //type: 'logarithmic'
-            },*/
+            },
             ]
         },
         annotation: {
@@ -155,6 +171,36 @@ var myChart=new Chart(ctx,{
         type:'bar',
         data: chdata,
         options: opt
+    })
+
+/*********** Slider *************************/
+var slider = document.getElementById('slider')
+
+noUiSlider.create(slider, {
+    start: [0, chdata.datasets[0].data.length-1],
+    connect: true,
+    range: {
+        'min': 0,
+        'max': chdata.labels.length-1
+    },
+    step: 1
+})
+slider.style.width=(myChart.chartArea.right-myChart.chartArea.left+1)+'px'
+slider.style.left=(myChart.chartArea.left)+'px'
+
+slider.noUiSlider.on('update', function (values,handle) {
+
+        var chtRange = slider.noUiSlider.get()
+        var sMin=Math.round(chtRange[0])
+        var sMax=Math.round(chtRange[1])
+        var xA=myChart.chart.options.scales.xAxes[0]
+        var xlb=myChart.chart.data.labels
+        xA.ticks.min=xlb[sMin]
+        xA.ticks.max=xlb[sMax]
+        //addValueAnnots(myChart.chart.options,sMax)
+        myChart.update()
+        //console.log(+"/"+Math.round(chtRange[1])+" handle: "+handle)
+
     })
 
 
