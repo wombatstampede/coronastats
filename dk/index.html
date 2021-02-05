@@ -12,6 +12,9 @@
 <script type="text/javascript" src="Chart.min.js"></script>
 <script type="text/javascript" src="chartjs-plugin-annotation.min.js"></script>
 <script type="text/javascript" src="colors.js"></script>
+<link rel="stylesheet" media="screen" href="nouislider.min.css"> 
+<script type="text/javascript" src="nouislider.min.js"></script>
+
 <script type="text/javascript" src="regioner.js"></script>
 </head>
 <body>
@@ -19,6 +22,7 @@
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen / Quellen</a>
 <h1>Inzidenzen für Regionen in Dänemark sowie Schleswig-Holstein und Deutschland</h1>
 <p>Stand: <span id="lastupdated"></span>. Letzte verwendete DK Falldaten: <span id="lastdkdata"></span>.</p>
+<div id="slider" style="left:10px;width:800px"></div>
 <canvas id="myChart" style="width:990px;height: 700px;"></canvas>
 <br/>
 <h2 id="Anmerkungen">Anmerkungen</h2>
@@ -312,11 +316,56 @@ for (i=0;i<chdata.data.datasets.length;i++) {
     chdata.data.datasets[i].pointRadius=2
 }
 
-//**********************************************************************************************
+/*********** Chart ************************************************************************/
 
 setSpanContent("lastupdated",chdata.last_update)
 setSpanContent("lastdkdata",chdata.last_dk_data)
 var myChart=new Chart(ctx,chdata)
+
+/*********** Slider *************************/
+var slider = document.getElementById('slider')
+
+noUiSlider.create(slider, {
+    start: [0, chdata.data.datasets[0].data.length-1],
+    connect: true,
+    range: {
+        'min': 0,
+        'max': chdata.data.labels.length-1
+    },
+    step: 1
+})
+slider.style.width=(myChart.chartArea.right-myChart.chartArea.left+1)+'px'
+slider.style.left=(myChart.chartArea.left)+'px'
+
+slider.noUiSlider.on('update', function (values,handle) {
+
+        var chtRange = slider.noUiSlider.get()
+        var sMin=Math.round(chtRange[0])
+        var sMax=Math.round(chtRange[1])
+        var xA=myChart.chart.options.scales.xAxes[0]
+        var yA=myChart.chart.options.scales.yAxes[0]
+        var xlb=myChart.chart.data.labels
+        xA.ticks.min=xlb[sMin]
+        xA.ticks.max=xlb[sMax]
+        yA.ticks.max=Math.round(dsMaxVal(myChart.chart.data.datasets,sMin,sMax)*1.025)
+        myChart.update()
+    })
+
+//**********************************************************************************************
+function dsMaxVal(datasets,from,to) {
+    var maxVal=0
+    for (i=0;i<datasets.length;i++) {
+        ix=from
+        let dt=datasets[i].data
+        while (ix<=to) {
+            if (dt[ix]>maxVal)
+                maxVal=dt[ix]
+            ix++
+        }
+    }
+    return maxVal
+}
+
 
 //**********************************************************************************************
 function setSpanContent(id,str) {
