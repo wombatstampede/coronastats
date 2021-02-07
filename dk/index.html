@@ -326,7 +326,7 @@ var myChart=new Chart(ctx,chdata)
 var slider = document.getElementById('slider')
 
 noUiSlider.create(slider, {
-    start: [0, chdata.data.datasets[0].data.length-1],
+    start: [0, chdata.data.labels.length-1],
     connect: true,
     range: {
         'min': 0,
