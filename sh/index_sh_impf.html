@@ -73,7 +73,7 @@ var opt = {
             onClick: function (e, legendItem) {
                 var index = legendItem.datasetIndex
                 var ci = this.chart
-                let ds = ci.data.datasets[index]
+                var ds = ci.data.datasets[index]
                 ds.hidden=!ds.hidden
                 ci.data.datasets[ds._progDSIx].hidden=ds.hidden
                 ci.update() 
@@ -125,7 +125,8 @@ var opt = {
                     var stats=cStats[currentCounty]
                     
                     if (item.datasetIndex<3) {
-                        let dsR=data.data_RATE
+                        //"let" would be better, but creates parse error in preview render
+                        var dsR=data.data_RATE
                         if (item.datasetIndex==1) dsR=data.data_RATE1
                         if (item.datasetIndex==2) dsR=data.data_RATE2
                         if ((item.datasetIndex==0) && typeof data.data_NEW[item.index]!=='undefined')

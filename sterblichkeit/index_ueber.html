@@ -506,7 +506,8 @@ function rangeSelected(chartinstance,start,end) {
     var fmtstart ="<strong>"
     var fmtstop  ="</strong>"
     if (dInfo) {
-        let aSel = chartinstance.config.options.annot_selection
+        //"let" collides with preview rendering -> use "var"
+        var aSel = chartinstance.config.options.annot_selection
         if (start==end) {
             dInfo.style.display = 'none' //need to change?
             setAnnotVisibility(chartinstance.config,aSel,false)
