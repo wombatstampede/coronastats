@@ -511,7 +511,14 @@ function rangeSelected(chartinstance,start,end) {
         if (start==end) {
             dInfo.style.display = 'none' //need to change?
             setAnnotVisibility(chartinstance.config,aSel,false)
+            if (typeof chartinstance.config._rangestart !== 'undefined') {
+                delete chartinstance.config._rangestart
+                delete chartinstance.config._rangeend
+            }
         } else {
+            chartinstance.config._rangestart=start
+            chartinstance.config._rangeend=end
+        
             dInfo.style.display = 'block'
             
             aSel=setAnnotVisibility(chartinstance.config,aSel,true)
@@ -521,6 +528,13 @@ function rangeSelected(chartinstance,start,end) {
             var y2020 = getDataByTag(cdata,'2020')
             var covid = getDataByTag(cdata,'covid')
             var avg = getDataByTag(cdata,'avg')
+            
+            var showProgn = getBtnState('btnprogn')
+            
+            var progn 
+            if (showProgn) 
+                progn=getDataByTag(cdata,'progn')
+                
             var v2020 = dataSum(y2020.data,start,end)
             var vAvg = Math.round(dataSum(avg.data,start,end))
             var vDiff = Math.round(dataDiff(y2020.data,avg.data,start,end))
@@ -532,8 +546,18 @@ function rangeSelected(chartinstance,start,end) {
             dContent+='∑ '+y2020.label+': '+fmtstart+   v2020.toLocaleString()+fmtstop+'<br />'
             dContent+='∑ '+avg.label+': '+fmtstart+     vAvg.toLocaleString()+fmtstop+'<br />'
             dContent+='∑ Übersterblichkeit: '+fmtstart+ vDiff.toLocaleString()
-                        +' ('+vDiffPerc+'%)'+fmtstop+'<br />'
-            dContent+='∑ '+covid.label+': '+fmtstart+   vCovid.toLocaleString()+fmtstop+'<br />'
+                        +' ('+vDiffPerc+'%)'+fmtstop+' (Nur für Bereiche summiert, in denen Werte für Sterbefälle (2020-) verfügbar sind.)<br />'
+            dContent+='∑ '+covid.label+': '+fmtstart+   vCovid.toLocaleString()+fmtstop
+            if (showProgn) {
+                var pv2020 = Math.round(dataSumProgn(y2020.data,progn.data,start,end))
+                var pvDiff = Math.round(dataDiffProgn(y2020.data,progn.data,avg.data,start,end))
+                var pvDiffPerc = (vAvg!=0)?(Math.round(pvDiff*1000/vAvg)/10):"--"
+                
+                dContent+='<br /><br /><i>Inklusive Prognosewerte:<br />'
+                dContent+='∑ '+y2020.label+': '+fmtstart+   pv2020.toLocaleString()+fmtstop+'<br />'
+                dContent+='∑ Übersterblichkeit: '+fmtstart+ pvDiff.toLocaleString()
+                        +' ('+pvDiffPerc+'%)'+fmtstop+'</i>'
+            }
             dInfo.innerHTML=dContent            
         }
     }
@@ -562,6 +586,34 @@ function dataDiff(data_arr1,data_arr2,start,end) {
     return diff
 }
 
+//same as dataSum, but sum data_progn instead of data_arr for values where it is assigned
+function dataSumProgn(data_arr,data_progn,start,end) {
+    var sum=0
+    for (var i=start;(i<=end) && (i<data_arr.length);i++) {
+        if (typeof data_progn[i]!=='undefined') {
+            sum+=data_progn[i]
+        } else if (typeof data_arr[i]!=='undefined') {
+            sum+=data_arr[i]
+        }
+    }
+    return sum
+}
+
+
+//same as dataDiff, but use data_progn instead of data_arr1 where "progn" data is assigned
+function dataDiffProgn(data_arr1,data_progn,data_arr2,start,end) {
+    var diff=0
+    for (var i=start;(i<=end) && (i<data_arr1.length) && (i<data_arr2.length);i++) {
+        if ((typeof data_progn[i]!=='undefined') && (typeof data_arr2[i]!=='undefined')) {
+            diff+=data_progn[i]-data_arr2[i]
+        } else if ((typeof data_arr1[i]!=='undefined') && (typeof data_arr2[i]!=='undefined')) {
+            diff+=data_arr1[i]-data_arr2[i]
+        }
+    }
+    return diff
+}
+
+
 
 
 //**********************************************************************************************
@@ -577,6 +629,10 @@ function recalcCharts() {
         //console.log("recalc: "+key)
         calcExcess(charts[key].config,byYearStart,addProgn,useECDCData)
         calcSums(charts[key].config)
+        
+        if (typeof charts[key].config._rangestart !== 'undefined')
+             rangeSelected(charts[key],charts[key].config._rangestart,charts[key].config._rangestart)
+             
         charts[key].chart.update()
     }
 }
@@ -805,7 +861,7 @@ function calcExcess(config,byYearStart,addProgn,useECDCData) {
                 
                 //console.log("lastcovidday: "+config.data.cocode+": diff: "+incompleteWeekCovid+", offs: "+config.data.jh_last_covid_dayoffset+", lastcdata: "+lastWeekCovid+", scaledDownCData:"+(lastWeekCovid/scaleUpToWeek))
                 //
-                //v1. scale case sum in new week to number of days in week
+                //v1: scale case sum in new week to number of days in week
                 //aCovidLastDay.yMax=incompleteWeekCovid*scaleUpToWeek
                 //
                 //console.log("lastcovidday: "+config.data.cocode+",v1: "+aCovidLastDay.yMax)
