@@ -5,7 +5,7 @@
 <meta property="og:image" content="index_sh_kreise.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<meta property="og:updated_time" content="2021-02-11T07:05:48+01:00" />
+<meta property="og:updated_time" content="2021-02-11T12:15:16+01:00" />
 <title>COVID-19-Fälle im Kreis Pinneberg (und anderen Kreisen in SH)</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
@@ -186,11 +186,17 @@ function setChtTitle(ccode) {
 
 //**********************************************************************************************
 
+var dsRtIndex=-1
+
 for (var key in chdata) {
     addCountySelect(key,chdata[key]._name,(key==currentCounty))
     
     for (var i=0;i<chdata[key].datasets.length;i++) {
         chdata[key].datasets[i].pointHitRadius=15
+        //find Index for R(t) dataset
+        if ((dsRtIndex<0) && (chdata[key].datasets[i].label.substr(0,4)=='R(t)')) {
+            dsRtIndex=i
+        }
     }
 }
 
@@ -248,12 +254,24 @@ function addCountySelect(ccode,cname,isActive) {
 } 
 
 function selectCounty(ccode) {
+    var dsRtHidden
     if (ccode!=currentCounty) {
         setBtnState('cbtn'+currentCounty,'')
         currentCounty=ccode
         setBtnState('cbtn'+currentCounty,'active')
+
+        dsRtHidden=cht.data.datasets[dsRtIndex].hidden
+        
+        //copy hidden state of datasets
+        for (var i=0;i<cht.data.datasets.length;i++) {
+            chdata[ccode].datasets[i].hidden=cht.data.datasets[i].hidden
+        }
         
         cht.data=chdata[ccode]
+        
+        //cht.data.datasets[dsRtIndex].hidden=dsRtHidden
+        cht.options.scales.yAxes[1].display=!dsRtHidden
+        
         setChtTitle(ccode)
         myChart.update()
     }
