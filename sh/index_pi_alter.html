@@ -5,12 +5,12 @@
 <meta property="og:image" content="index_pi_alter.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<meta property="og:updated_time" content="2021-03-11T07:06:04+01:00" />
+<meta property="og:updated_time" content="2021-03-11T13:05:09+01:00" />
 <title>Altersverteilung der COVID-19-Fälle im Kreis Pinneberg</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
 <script type="text/javascript" src="Chart.min.js"></script>
-<!--<script type="text/javascript" src="chartjs-plugin-annotation.min.js"></script>-->
+<script type="text/javascript" src="chartjs-plugin-annotation.min.js"></script>
 <script type="text/javascript" src="chartjs-chart-matrix.min.js"></script>
 <script type="text/javascript" src="colors.js"></script>
 
@@ -20,8 +20,8 @@
 <a class="button" href="../">Inhalt</a>
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
 <p>Quelle / Stand: <a href="https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0">NPGEO Corona (RKI)</a>: <span id="rki_date"></span></p>
-<canvas id="myChart" style="width:990px;height: 250px;"></canvas>
-<br/><canvas id="legend" style="width:990px;height: 50px;padding-left:35px"></canvas>
+<canvas id="myChart" style="width:1200px;height: 250px;"></canvas>
+<!-- <br/><canvas id="legend" style="width:990px;height: 50px;padding-left:35px"></canvas> -->
 <br/><canvas id="myChart2" style="width:990px;height: 150px;"></canvas>
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
@@ -32,7 +32,7 @@ und der <strong>geschätzten</strong> Zahl der Genesenen. Genauere Angaben dazu 
 <script>
 var ctx = document.getElementById('myChart').getContext('2d');
 var ctx2 = document.getElementById('myChart2').getContext('2d');
-var cleg= document.getElementById('legend').getContext('2d');
+//var cleg= document.getElementById('legend').getContext('2d');
 
 chdata.options.responsive=false
 chdata.options.animation=false
@@ -54,8 +54,64 @@ chdata.options.tooltips = {
         },
 }
 chdata.options.scales.yAxes[0].position='right'
+chdata.options.scales.yAxes[0].id='first-y-axis'
 chdata.options.scales.yAxes[0].offset=true
 chdata.options.scales.xAxes[0].offset=true
+
+chdata.options.annotation = {
+        drawTime: 'afterDatasetsDraw',
+        display:true,
+        annotations:[]
+    }
+
+var xLookup ={}
+for (i=0; i<chdata.options.scales.xAxes[0].labels.length; i++) {
+    xLookup[chdata.options.scales.xAxes[0].labels[i]]=i
+}
+
+//Inzidenzen als Annotations
+var cellXWid=1111 / chdata.options.scales.xAxes[0].labels.length
+for (i=0; i<chdata.data.datasets[0].data.length;i++) {
+    var rec=chdata.data.datasets[0].data[i]
+    var oneAnnot = {
+                    type: "line",
+                    //mode: "vertical",
+                    mode:"horizontal",
+                    scaleID: "first-y-axis",
+                    value: rec.y,
+                    
+                    borderColor: 'rgba(0,0,0,0)',
+                    borderWidth: 0,
+                    label: {
+                      //backgroundColor: "red",
+                      //backgroundColor: 'rgba(220,220,220,0)',
+                      backgroundColor: 'rgba(220,220,220,0)',
+                      enabled: true,
+                      //fontColor: window.chartColors.red,
+                      xPadding: 2,
+                      yPadding: 3,
+                      xAdjust: cellXWid*xLookup[rec.x],
+                      //yAdjust: 2,
+                      fontColor: "#E0E0E0",
+                      fontSize: 8,
+                      content: Math.round(rec.v),
+                      rotation: 90,
+                      position: "left",
+                      fontStyle: "normal",
+                    }
+                }
+    if (rec.v<35) oneAnnot.label.fontColor="black"
+    if (Math.round(rec.v)>=100) {
+        oneAnnot.label.fontFamily = 'Arial Narrow, sans-serif'
+        oneAnnot.label.fontSize = 7.5
+        oneAnnot.label.xPadding = 1
+    }
+    chdata.options.annotation.annotations.push(oneAnnot)
+    //oneAnnot.value=Math.round(offs+(inz/2))
+//            oneAnnot.id="annot_"+i
+}
+
+//aktive Fälle
 
 chdata2.data.datasets[0].backgroundColor = window.chartColors.blue
 chdata2.options.responsive=false
@@ -68,6 +124,8 @@ chdata2.options.title= {
 //Aktive Fälle: Die aktiven Fälle ergeben sich (lt. RKI) aus der Zahl der übermittelten Fälle abzüglich der Todesfälle 
 //und der geschätzten Zahl der Genesenen. Genauere Angaben dazu finden sich in den Situationsberichten des RKI.
 
+//Legende, aktuell deaktiviert (weil Inzidenzenals Annotations angezeigt werden)
+/*
 var legenddata=JSON.parse(JSON.stringify(chdata))
 legenddata.options.title.display=false
 //legenddata.data.datasets[0].label='Legende'
@@ -81,13 +139,13 @@ legenddata.options.scales.yAxes[0].gridlines={display:false}
 legenddata.options.scales.yAxes[0].labels=['Inzidenz']
 for (i=0; i<=500; i+=10) legenddata.data.datasets[0].data.push({x:i, y:'Inzidenz',v:i})
 for (i=0; i<=500; i+=10) legenddata.options.scales.xAxes[0].labels.push(i)
-
+*/
 
 //**********************************************************************************************
 setSpanContent('rki_date',chdata.options.scales.xAxes[0].labels[chdata.options.scales.xAxes[0].labels.length-1])
 
 var myChart=new Chart(ctx,chdata)
-var myLeg=new Chart(cleg,legenddata)
+//var myLeg=new Chart(cleg,legenddata)
 var myChart2=new Chart(ctx2,chdata2)
 
 //**********************************************************************************************
