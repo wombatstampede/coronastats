@@ -5,7 +5,7 @@
 <meta property="og:image" content="index_pi_alter.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<meta property="og:updated_time" content="2021-03-15T07:06:15+01:00" />
+<meta property="og:updated_time" content="2021-03-15T12:09:28+01:00" />
 <title>Altersverteilung der COVID-19-Fälle im Kreis Pinneberg</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
@@ -21,6 +21,7 @@
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
 <p>Quelle / Stand: <a href="https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0">NPGEO Corona (RKI)</a>: <span id="rki_date"></span></p>
 <canvas id="myChart" style="width:1200px;height: 250px;"></canvas>
+<canvas id="myChart3" style="width:1200px;height: 250px;"></canvas>
 <!-- <br/><canvas id="legend" style="width:990px;height: 50px;padding-left:35px"></canvas> -->
 <br/><canvas id="myChart2" style="width:990px;height: 150px;"></canvas>
 <h2 id="Anmerkungen">Anmerkungen</h2>
@@ -32,7 +33,12 @@ und der <strong>geschätzten</strong> Zahl der Genesenen. Genauere Angaben dazu 
 <script>
 var ctx = document.getElementById('myChart').getContext('2d');
 var ctx2 = document.getElementById('myChart2').getContext('2d');
+var ctx3 = document.getElementById('myChart3').getContext('2d');
 //var cleg= document.getElementById('legend').getContext('2d');
+
+var chdata3=JSON.parse(JSON.stringify(chdata));
+
+//**********************************************************************************************
 
 chdata.options.responsive=false
 chdata.options.animation=false
@@ -49,7 +55,7 @@ chdata.options.tooltips = {
             },
             label: function(item, data) {
                 var v = data.datasets[item.datasetIndex].data[item.index]
-                return ["Inzidenz: " + Math.round(v.v*10)/10,"Fälle(7Tg): "+v.casesum]
+                return ["Fälle/Tag: "+v.cases,"Inzidenz: " + Math.round(v.v*10)/10,"Fälle(7Tg): "+v.casesum]
             }
         },
 }
@@ -94,7 +100,7 @@ for (i=0; i<chdata.data.datasets[0].data.length;i++) {
                       //yAdjust: 2,
                       fontColor: "#E0E0E0",
                       fontSize: 8,
-                      content: Math.round(rec.v),
+                      content: Math.round(rec.v)+'',
                       rotation: 90,
                       position: "left",
                       fontStyle: "normal",
@@ -110,6 +116,92 @@ for (i=0; i<chdata.data.datasets[0].data.length;i++) {
     //oneAnnot.value=Math.round(offs+(inz/2))
 //            oneAnnot.id="annot_"+i
 }
+
+//**********************************************************************************************
+
+
+chdata3.options.responsive=false
+chdata3.options.animation=false
+chdata3.options.title= {
+            display: true,
+            text: "LK Pinneberg: Tägliche Fallzahlen je Altersgruppe (Quelle:RKI)"
+        }
+chdata3.options.tooltips = {
+        callbacks: {
+            //title: function() { return '';},
+            title: function(items, data) {
+                var v = data.datasets[items[0].datasetIndex].data[items[0].index]
+                return [v.x+" / "+v.y+"J:"]
+            },
+            label: function(item, data) {
+                var v = data.datasets[item.datasetIndex].data[item.index]
+                return ["Fälle/Tag: "+v.cases,"Inzidenz: " + Math.round(v.v*10)/10,"Fälle(7Tg): "+v.casesum]
+            }
+        },
+}
+chdata3.options.scales.yAxes[0].position='right'
+chdata3.options.scales.yAxes[0].id='first-y-axis'
+chdata3.options.scales.yAxes[0].offset=true
+chdata3.options.scales.xAxes[0].offset=true
+
+chdata3.options.annotation = {
+        drawTime: 'afterDatasetsDraw',
+        display:true,
+        annotations:[]
+    }
+
+chdata3.data.datasets[0].backgroundColor = function(context) {
+                                                return inzColor(context.dataset.data[context.dataIndex].vday)
+                                            },
+
+chdata3.data.datasets[0].width = chdata.data.datasets[0].width
+chdata3.data.datasets[0].height= chdata.data.datasets[0].height
+
+chdata3.data.datasets[0].label = 'Tägliche Fallmeldungen je Altersgruppe'
+
+var xLookup ={}
+for (i=0; i<chdata3.options.scales.xAxes[0].labels.length; i++) {
+    xLookup[chdata3.options.scales.xAxes[0].labels[i]]=i
+}
+
+//Fälle als Annotations
+var cellXWid=1111 / chdata3.options.scales.xAxes[0].labels.length
+for (i=0; i<chdata3.data.datasets[0].data.length;i++) {
+    var rec=chdata3.data.datasets[0].data[i]
+    var oneAnnot = {
+                    type: "line",
+                    //mode: "vertical",
+                    mode:"horizontal",
+                    scaleID: "first-y-axis",
+                    value: rec.y,
+                    
+                    borderColor: 'rgba(0,0,0,0)',
+                    borderWidth: 0,
+                    label: {
+                      backgroundColor: 'rgba(220,220,220,0)',
+                      enabled: true,
+                      xPadding: 2,
+                      yPadding: 3,
+                      xAdjust: cellXWid*xLookup[rec.x],
+                      fontColor: "#E0E0E0",
+                      fontSize: 8,
+                      content: Math.round(rec.cases)+'',
+                      rotation: 90,
+                      position: "left",
+                      fontStyle: "normal",
+                    }
+                }
+    if (rec.vday<35) oneAnnot.label.fontColor="black"
+    if (Math.round(rec.vday)>=100) {
+        oneAnnot.label.fontFamily = 'Arial Narrow, sans-serif'
+        oneAnnot.label.fontSize = 7.5
+        oneAnnot.label.xPadding = 1
+    }
+    chdata3.options.annotation.annotations.push(oneAnnot)
+}
+
+
+//**********************************************************************************************
 
 //aktive Fälle
 
@@ -146,6 +238,7 @@ setSpanContent('rki_date',chdata.options.scales.xAxes[0].labels[chdata.options.s
 
 var myChart=new Chart(ctx,chdata)
 //var myLeg=new Chart(cleg,legenddata)
+var myChart3=new Chart(ctx3,chdata3)
 var myChart2=new Chart(ctx2,chdata2)
 
 //**********************************************************************************************
