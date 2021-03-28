@@ -1,7 +1,7 @@
 var ch_stats={
 ecdc_date: '2021-03-15',
 jh_date: '2021-03-26',
-eurostat_date: '2021-03-27',
+eurostat_date: '2021-03-28',
 destatis_date: '22.03.2021                                                       ',
 }
 var chdata=[
