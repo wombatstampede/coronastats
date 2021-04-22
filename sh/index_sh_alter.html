@@ -5,7 +5,7 @@
 <meta property="og:image" content="index_sh_alter.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<meta property="og:updated_time" content="2021-04-22T07:07:08+01:00" />
+<meta property="og:updated_time" content="2021-04-22T14:23:51+01:00" />
 <title>Altersverteilung der COVID-19-Fälle in Schleswig-Holstein</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
@@ -14,11 +14,15 @@
 <script type="text/javascript" src="chartjs-chart-matrix.min.js"></script>
 <script type="text/javascript" src="colors.js"></script>
 
+<link rel="stylesheet" media="screen" href="nouislider.min.css"> 
+<script type="text/javascript" src="nouislider.min.js"></script>
+
 <script type="text/javascript" src="Data_SH_Alter.js"></script>
 </head>
 <body>
 <a class="button" href="../">Inhalt</a>
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
+<!-- <div id="slider" style="left:10px;width:1000px"></div> -->
 <canvas id="myChart" style="width:1200px;height: 450px;"></canvas>
 <!-- <br/><canvas id="legend" style="width:990px;height: 50px;padding-left:35px"></canvas> -->
 <h2 id="Anmerkungen">Anmerkungen</h2>
@@ -162,6 +166,35 @@ var chdata=2
 var myChart=new Chart(ctx,chdata)
 //var myLeg=new Chart(cleg,legenddata)
 
+/*********** Slider *************************/
+/*
+var slider = document.getElementById('slider')
+
+noUiSlider.create(slider, {
+    start: [0, chdata.data.datasets[0].data.length-1],
+    connect: true,
+    range: {
+        'min': 0,
+        'max': chdata.data.labels.length-1
+    },
+    step: 1
+})
+slider.style.width=(myChart.chartArea.right-myChart.chartArea.left+1)+'px'
+slider.style.left=(myChart.chartArea.left)+'px'
+
+slider.noUiSlider.on('update', function (values,handle) {
+
+        var chtRange = slider.noUiSlider.get()
+        var sMin=Math.round(chtRange[0])
+        var sMax=Math.round(chtRange[1])
+        var xA=myChart.chart.options.scales.xAxes[0]
+        var xlb=myChart.chart.data.labels
+        xA.ticks.min=xlb[sMin]
+        xA.ticks.max=xlb[sMax]
+        myChart.update()
+
+    })
+*/
 
 function inzColor(v) {
     if (v<=50) return 'hsl('+Math.round(120.0-(v*120/50))+',75%,50%)'
