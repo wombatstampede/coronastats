@@ -27,16 +27,16 @@
 <br/>
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
-<li>Diese Chart zeigt Werte, welche für die Entscheidungen bezüglich Risikogebieten / Quarantäneland seitens Deutschland und Dänemark herangezogen werden. Dies sind zum einen die 7-Tage Inzidenzen der Regionen in Dänemark. Aber auch die halbierten 14-Tage Inzidenzen für Schleswig-Holstein und Deutschland (durch die Halbierung entsteht eine gewisse Vergleichbarkeit mit den 7-Tage Inzidenzen).</li>
-<li>Die dänischen Daten vom SSI enthalten für die letzten 1-2 Tage meist noch sehr unvollständige Werte. Daher wird hier die Inzidenz stets bis "vorgestern" berechnet. Dies ergibt abweichende Zahlen zum SSI Dashboard, dort werden für die 7-Tage Inzidenz die letzten 9 Tage zusammengezählt (und durch 7 geteilt), um die unvollständigen Daten auszugleichen.</li>
+<li>Diese Chart zeigt Werte, welche für die Entscheidungen bezüglich Risikogebieten / Quarantäneland seitens Deutschland und Dänemark herangezogen werden. Dies sind zum einen die 7-Tage Inzidenzen der Regionen in Dänemark. Aber auch die (RKI) 7-Tage Inzidenzen für Schleswig-Holstein und Deutschland. (Das SSI ist in der Wahl seiner Quellen natürlich frei und verwendet ggf. alternativ die Werte des ECDC, welche eine zeitliche Verzögerung aufweisen können).</li>
+<li>Die dänischen Daten vom SSI enthalten für die letzten 1-2 Tage meist noch sehr unvollständige Werte. Daher wird hier die Inzidenz bis zum letzten Tag mit "leidlich" vollständigen Daten (meist "vorgestern") berechnet. Dies ergibt abweichende Zahlen zum SSI Dashboard, dort werden für die 7-Tage Inzidenz die letzten 9 Tage zusammengezählt (und durch 7 geteilt), um die unvollständigen Daten auszugleichen.</li>
 <li>Details zu den Entscheidungskriterien finden sich für Dänemark auf <a href="https://coronasmitte.dk/en/entry-into-denmark">coronasmitte.dk</a> und für Deutschland auf der Seite des <a href="https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Risikogebiete_neu.html">RKI</a></li>
 <!-- <li>Im unteren Teil werden Zeiträume für verschiedene Sperrungen/Maßnahmen markiert. Da diese Daten manuell gepflegt werden, kann es hier zu verzögerten Updates kommen.</li> -->
 </ul>
 <h2 id="Quellen">Quellen</h2>
 <ul>
 <li>Dänische Fallzahlen: <a href="https://covid19.ssi.dk/overvagningsdata/download-fil-med-overvaagningdata">covid19.ssi.dk</a></li>
-<li>SH Fallzahlen/Inzidenz: <a href="https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0">NPGEO Corona (RKI)</a></li>
-<li>Deutsche Inzidenzen: <a href="https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide">ECDC cases of COVID-19 by country worldwide</a></li>
+<li>SH & DE Fallzahlen/Inzidenz: <a href="https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0">NPGEO Corona (RKI)</a></li>
+<!-- <li>Deutsche Inzidenzen: <a href="https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide">ECDC cases of COVID-19 by country worldwide</a></li> -->
 </ul>
 
 <script>
@@ -48,13 +48,16 @@ var opt = {
         responsive:false,
         title: {
             display: true,
-            text: "Verlauf der 7-Tage Inzidenz für Regionen in Dänemark (SSI), Deutschland (ECDC 14Tg. / 2) und Schleswig-Holstein (RKI 14Tg. / 2)"
+            text: "Verlauf der 7-Tage Inzidenz für Regionen in Dänemark (SSI), Deutschland und Schleswig-Holstein"
         },
         scales: {
             yAxes: [{
                 id: 'first-y-axis',
                 type: 'linear',
                 position: 'right',
+                ticks: {
+                    min:0
+                }
                 //type: 'logarithmic'
             }]
         },
@@ -235,12 +238,35 @@ var opt = {
                 borderDash: [2, 2],
                 label: {
                   //backgroundColor: "red",
-                  backgroundColor: 'rgba(220,220,220,0)',
+/*                  backgroundColor: 'rgba(220,220,220,0.5)',*/
+                  backgroundColor: 'rgba(255,255,255,0.75)',
                   //fontColor: window.chartColors.red,
                   fontColor: "black",
                   fontSize: 10,
                   yAdjust: -8,
-                  content: "RKI > Risikogebiet",
+                  content: "DE:DK-Regionen > 50 -> Risikogebiet, DK:Phase 3+4,Länder <50 -> wechseln auf Gelb",
+                  position: "left",
+                  enabled: true
+                },
+            },
+            {
+                type: "line",
+                drawTime: 'afterDatasetsDraw',
+//                drawTime: 'beforeDatasetsDraw',
+                mode: "horizontal",
+                scaleID: "first-y-axis",
+                value: "60",
+                borderColor: 'rgba(255,140,0,0.75)',
+                borderWidth: 2,
+                borderDash: [2, 2],
+                label: {
+                  //backgroundColor: "red",
+                  backgroundColor: 'rgba(255,255,255,0.75)',
+                  //fontColor: window.chartColors.red,
+                  fontColor: "black",
+                  fontSize: 10,
+                  yAdjust: -8,
+                  content: "DK:Phase 3+4,Länder >60 -> wechseln auf Orange",
                   position: "left",
                   enabled: true
                 },
@@ -258,18 +284,37 @@ var opt = {
                 borderDash: [2, 2],
                 label: {
                   //backgroundColor: "red",
-                  backgroundColor: 'rgba(220,220,220,0)',
+                  backgroundColor: 'rgba(255,255,255,0.75)',
                   //fontColor: window.chartColors.red,
                   fontColor: "black",
                   fontSize: 10,
                   yAdjust: -8,
-                  content: "SSI > Quarantäneland",
+                  content: "DK:Phase 2,Länder >30 -> wechseln auf Orange",
+                  position: "left",
+                  enabled: true
+                },
+            },
+            {
+                type: "line",
+                drawTime: 'afterDatasetsDraw',
+                mode: "horizontal",
+                scaleID: "first-y-axis",
+                value: "20",
+                borderColor: 'rgba(205,92,92,0.75)',
+                borderWidth: 2,
+                borderDash: [2, 2],
+                label: {
+                  //backgroundColor: "red",
+                  backgroundColor: 'rgba(255,255,255,0.75)',
+                  //fontColor: window.chartColors.red,
+                  fontColor: "black",
+                  fontSize: 10,
+                  yAdjust: -8,
+                  content: "DK:Phase 2,Länder <20 -> wechseln auf Gelb",
                   position: "left",
                   enabled: true
                 },
             }
-            
-
             ]
         }
         
