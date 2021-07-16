@@ -76,7 +76,8 @@ var opt = {
                 var ci = this.chart
                 var ds = ci.data.datasets[index]
                 ds.hidden=!ds.hidden
-                ci.data.datasets[ds._progDSIx].hidden=ds.hidden
+                //Estimate
+                //ci.data.datasets[ds._progDSIx].hidden=ds.hidden
                 ci.update() 
                 //Chart.defaults.global.legend.onClick (e, legendItem)
             }
@@ -307,7 +308,7 @@ function selectCounty(ccode) {
         cht.data=chdata[ccode]
         setChtTitle(ccode)
         updateRate()
-        addEstimate()
+        //addEstimate()
         myChart.update()
     }
 }
