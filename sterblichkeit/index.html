@@ -30,7 +30,7 @@
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
 <h1>COVID-19 7-Tage Inzidenzverlauf für ausgewählte Staaten in Europa</h1>
 <p>Quelle / Stand: Johns Hopkins University <a href="https://github.com/CSSEGISandData/COVID-19">https://github.com/CSSEGISandData/COVID-19</a>: <span id="jh_date"></span></p>
-<div id="countrySelect"><a class="button button-outline button-small" href="javascript:toggleCountry('All')">Alle</a><a class="button button-outline button-small" href="javascript:toggleCountry('One')">Nur DE</a></div>
+<div id="countrySelect"><a class="button button-outline button-small" href="javascript:toggleCountry('All')">Alle</a><a class="button button-outline button-small" href="javascript:toggleCountry('TOP5')">Top 5</a><a class="button button-outline button-small" href="javascript:toggleCountry('TOP10')">Top 10</a><a class="button button-outline button-small" href="javascript:toggleCountry('One')">Nur DE</a></div>
 <!-- <p>Quelle / Stand: <a href="https://www.ecdc.europa.eu/en/coronavirus">https://www.ecdc.europa.eu/en/coronavirus</a>: <span id="jh_date"></span></p> -->
 <div id="slider" style="left:10px;width:1200px"></div>
 <canvas id="myChart" style="width:1300px;height: 700px;"></canvas>
@@ -276,6 +276,20 @@ function toggleCountry(ccode) {
         for (var i=1; i<chdata.datasets.length; i++) {
             chdata.datasets[i].hidden=!(chdata.datasets[i].ccode==ccodeOnly)
             setBtnState('cbtn'+chdata.datasets[i].ccode,(chdata.datasets[i].ccode==ccodeOnly)?'active':'')
+        }
+    } else if ((ccode=='TOP5') || (ccode=='TOP10')) {
+        var dsSort = [];
+        var topx=5
+        if (ccode == 'TOP10') topx=10
+        for (var i=1; i<chdata.datasets.length; i++) {
+            var dt = chdata.datasets[i].data
+            dsSort.push({ix:i,
+                         inz:dt[dt.length-1]})
+        }
+        dsSort.sort(function(a, b){return b.inz-a.inz})
+        for (var i=1; i<dsSort.length; i++) {
+            chdata.datasets[dsSort[i].ix].hidden = (i>=topx)
+            setBtnState('cbtn'+chdata.datasets[dsSort[i].ix].ccode,((i<topx))?'active':'')
         }
     } else {
         var dsix=dsIxForCcode[ccode]
