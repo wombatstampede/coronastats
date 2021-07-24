@@ -288,7 +288,7 @@ function toggleCountry(ccode) {
         }
         dsSort.sort(function(a, b){return b.inz-a.inz})
         for (var i=1; i<dsSort.length; i++) {
-            chdata.datasets[dsSort[i].ix].hidden = (i>=topx)
+            chdata.datasets[dsSort[i].ix].hidden = !(i<topx)
             setBtnState('cbtn'+chdata.datasets[dsSort[i].ix].ccode,((i<topx))?'active':'')
         }
     } else {
