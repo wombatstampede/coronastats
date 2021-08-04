@@ -5,7 +5,7 @@
 <meta property="og:image" content="index_pi_alter.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<meta property="og:updated_time" content="2021-08-04T07:10:48+01:00" />
+<meta property="og:updated_time" content="2021-08-04T09:19:59+01:00" />
 <title>Altersverteilung der COVID-19-Fälle im Kreis Pinneberg</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
@@ -20,8 +20,10 @@
 <a class="button" href="../">Inhalt</a>
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
 <p>Quelle / Stand: <a href="https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0">NPGEO Corona (RKI)</a>: <span id="rki_date"></span></p>
-<canvas id="myChart" style="width:1200px;height: 250px;"></canvas>
-<canvas id="myChart3" style="width:1200px;height: 250px;"></canvas>
+<!--<canvas id="myChart" style="width:1200px;height: 250px;"></canvas>
+<canvas id="myChart3" style="width:1200px;height: 250px;"></canvas> -->
+<canvas id="myChart" style="width:650px;height: 250px;"></canvas>
+<canvas id="myChart3" style="width:650px;height: 250px;"></canvas>
 <!-- <br/><canvas id="legend" style="width:990px;height: 50px;padding-left:35px"></canvas> -->
 <br/><canvas id="myChart2" style="width:990px;height: 150px;"></canvas>
 <h2 id="Anmerkungen">Anmerkungen</h2>
@@ -39,6 +41,19 @@ var ctx3 = document.getElementById('myChart3').getContext('2d');
 var chdata3=JSON.parse(JSON.stringify(chdata));
 
 //**********************************************************************************************
+
+//dataMin = (chdata.data.datasets[0].data.length>=28)?(chdata.data.datasets[0].data.length-28):0
+dataLen = chdata.data.datasets[0].data.length
+lblLen= chdata.options.scales.xAxes[0].labels.length
+/*
+for (i=0;i<dataMin; i++) {
+    chdata.data.datasets[0].data.shift()
+    chdata.options.scales.xAxes[0].labels.shift()
+}*/
+
+
+//chdata.options.scales.xAxes[0].ticks.min=dataMin
+
 
 chdata.options.responsive=false
 chdata.options.animation=false
@@ -63,6 +78,7 @@ chdata.options.scales.yAxes[0].position='right'
 chdata.options.scales.yAxes[0].id='first-y-axis'
 chdata.options.scales.yAxes[0].offset=true
 chdata.options.scales.xAxes[0].offset=true
+//chdata.options.scales.xAxes[0].ticks.min=dataMin
 
 chdata.options.annotation = {
         drawTime: 'afterDatasetsDraw',
@@ -76,7 +92,21 @@ for (i=0; i<chdata.options.scales.xAxes[0].labels.length; i++) {
 }
 
 //Inzidenzen als Annotations
-var cellXWid=1111 / chdata.options.scales.xAxes[0].labels.length
+//var cellXWid=1111 / lblLen //1200px
+var cellXWid=561 / lblLen //650px
+
+console.log(dataLen+"_"+chdata.data.datasets[0].data.length+"_"+lblLen+"_"+cellXWid)
+
+/*chdata.data.datasets[0].width = 
+            function(context) {
+				const a = context.chart.chartArea
+				if (!a) return 0
+                //console.log((a.right - a.left) / (dataLen+0.5))
+				return (a.right - a.left) / (dataLen+0.5)
+			}*/
+
+
+//chdata.options.scales.xAxes[0].labels.length
 for (i=0; i<chdata.data.datasets[0].data.length;i++) {
     var rec=chdata.data.datasets[0].data[i]
     var oneAnnot = {
@@ -96,10 +126,11 @@ for (i=0; i<chdata.data.datasets[0].data.length;i++) {
                       //fontColor: window.chartColors.red,
                       xPadding: 2,
                       yPadding: 3,
-                      xAdjust: cellXWid*xLookup[rec.x],
+                      xAdjust: cellXWid*xLookup[rec.x]+2,
                       //yAdjust: 2,
                       fontColor: "#E0E0E0",
-                      fontSize: 8,
+                      //fontSize: 8,
+                      fontSize: 11,
                       content: Math.round(rec.v)+'',
                       rotation: 90,
                       position: "left",
@@ -109,7 +140,8 @@ for (i=0; i<chdata.data.datasets[0].data.length;i++) {
     if (rec.v<35) oneAnnot.label.fontColor="black"
     if (Math.round(rec.v)>=100) {
         oneAnnot.label.fontFamily = 'Arial Narrow, sans-serif'
-        oneAnnot.label.fontSize = 7.5
+        //oneAnnot.label.fontSize = 7.5
+        oneAnnot.label.fontSize = 10
         oneAnnot.label.xPadding = 1
     }
     chdata.options.annotation.annotations.push(oneAnnot)
@@ -165,7 +197,8 @@ for (i=0; i<chdata3.options.scales.xAxes[0].labels.length; i++) {
 }
 
 //Fälle als Annotations
-var cellXWid=1111 / chdata3.options.scales.xAxes[0].labels.length
+//var cellXWid=1111 / chdata3.options.scales.xAxes[0].labels.length //1200px
+var cellXWid=561/ chdata3.options.scales.xAxes[0].labels.length
 for (i=0; i<chdata3.data.datasets[0].data.length;i++) {
     var rec=chdata3.data.datasets[0].data[i]
     var oneAnnot = {
@@ -182,9 +215,9 @@ for (i=0; i<chdata3.data.datasets[0].data.length;i++) {
                       enabled: true,
                       xPadding: 2,
                       yPadding: 3,
-                      xAdjust: cellXWid*xLookup[rec.x],
+                      xAdjust: cellXWid*xLookup[rec.x]+2,
                       fontColor: "#E0E0E0",
-                      fontSize: 8,
+                      fontSize: 11,
                       content: Math.round(rec.cases)+'',
                       rotation: 90,
                       position: "left",
@@ -194,7 +227,7 @@ for (i=0; i<chdata3.data.datasets[0].data.length;i++) {
     if (rec.vday<35) oneAnnot.label.fontColor="black"
     if (Math.round(rec.vday)>=100) {
         oneAnnot.label.fontFamily = 'Arial Narrow, sans-serif'
-        oneAnnot.label.fontSize = 7.5
+        oneAnnot.label.fontSize = 10
         oneAnnot.label.xPadding = 1
     }
     chdata3.options.annotation.annotations.push(oneAnnot)
