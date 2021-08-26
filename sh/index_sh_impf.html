@@ -60,7 +60,7 @@ var opt = {
         responsive: false,
         title: {
             display: true,
-            text: "COVID-19-Impquoten(Quelle: RKI/ARD)"
+            text: ("COVID-19-Impquoten(Quelle: RKI/ARD), Stand: "+maxdate)
         },
         legend: {
             labels: {
@@ -163,7 +163,7 @@ var cht={
 setChtTitle(currentCounty)
 
 function setChtTitle(ccode) {
-    cht.options.title.text="COVID-19 Impfquoten in "+chdata[ccode]._name
+    cht.options.title.text="COVID-19 Impfquoten in "+chdata[ccode]._name+", Stand: "+maxdate
 }
 
 //**********************************************************************************************
