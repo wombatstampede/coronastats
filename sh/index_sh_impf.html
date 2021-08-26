@@ -32,10 +32,8 @@
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
 <li>Diese Grafik basiert auf den vom RKI veröffentlichten <a href="https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Impfquotenmonitoring.html">Impfquoten</a>. Konkret werden <a href="https://github.com/ard-data/2020-rki-impf-archive">Dateien</a> verwendet, die die <a href="https://github.com/ard-data/2020-rki-impf-archive">ARD</a> aus den RKI-Daten aufbereitet.</li>
-<li>Für SH und HH werden auch prozentuale Anteile für die Indikation nach Alter und Pflegeheim-Bewohnern angezeigt. Hierzu bitte den jeweiligen Datenpunkt anklicken. Allerdings basieren bei Pflegeheimen die Angaben über gesamt Bewohnerzahlen und die Impfkategorie offensichtlich auf unterschiedlichen Klassifizierungen was zu Werten über 100% führen kann.</li>
-<li>In den Grafiken werden Erst- und Zweitimpfungen jeweils separat angezeigt. Um Bereiche ein-/auszublenden klicken Sie auf den entsprechenden Text in der Legende</li>
-<li>Der Wert "1. Impfungen/7-Tg" repräsentiert im Gegensatz zu den anderen Werten keinen kumulativen Wert sondern die Summe der Erstimpfungen über die vergangenen 7 Tage.</li>
-<li>Die gestrichelten Abschnitte repräsentieren lediglich eine simple Interpolation der Impfzahlenentwicklung der letzten zwei Tage auf die Folgetage.</li>
+<li>Viele Datenreihen beginnen erst später da nicht alle Werte seit Anfang an in den Veröffentlichungen genannt wurden.</li>
+<li>Die Gesamtzahl mindestens einmal Geimpfter umfasst alle Personen, die Erstimpfungen mit den Impfstoffen von BioNTech, Moderna oder AstraZeneca oder eine Impfung mit dem Impfstoff Janssen erhalten haben. Als vollständig geimpft gelten alle Personen, die Zweitimpfungen mit BioNTech, Moderna oder AstraZeneca oder eine Impfung mit Janssen erhalten haben. Die Impfungen mit Janssen sind daher sowohl in der Gruppe "mindestens einmal geimpft" als auch in der Gruppe "vollständig geimpft" enthalten. Sie werden für die Gesamtzahl der verabreichten Impfungen jedoch nur einmal gezählt.</li>
 </ul>
 <script>
 var ctx = document.getElementById('myChart').getContext('2d');
@@ -58,10 +56,11 @@ var currentCounty="SH"
 
 
 var opt = {
+        animation: false,
         responsive: false,
         title: {
             display: true,
-            text: "COVID-19-Impfungen (Quelle: RKI/ARD)"
+            text: "COVID-19-Impquoten(Quelle: RKI/ARD)"
         },
         legend: {
             labels: {
@@ -90,21 +89,22 @@ var opt = {
                 ticks: {
                     maxTicksLimit: 16,
                     min:0,
+                    max:100,
                     callback: function(value, index, values) {
-                        if (!cht._show_rate) {
-                            return value
+                        return value + "%"
+                        /*if (!cht._show_rate) {
                         } else {
                             return value + " (" + (cht._ratefactor*value).toFixed(2)+")"
-                        }
+                        }*/
                     }
                 },
-                scaleLabel: {
+/*                scaleLabel: {
                         display: true,
-                        labelString: 'Impfungen (Impfungen / 1000 Einw.)',
+                        labelString: 'Impfquote',
                         lineHeight: 1,
                         fontSize:10,
                         padding:0,
-                }
+                }*/
             },
             ]
         },
@@ -125,7 +125,7 @@ var opt = {
                     var v = ds.data[item.index]
                     var llist=[ds.label+": "+v]
                     var stats=cStats[currentCounty]
-                    
+/*                    
                     if (item.datasetIndex<3) {
                         //"let" would be better, but creates parse error in preview render
                         var dsR=data.data_RATE
@@ -149,6 +149,7 @@ var opt = {
                             llist[0]+=' ('+((v/stats.insgesamt)*100).toFixed(2)+'%)'
                         }
                     }
+*/                    
                     return llist
                 }
             },        
@@ -162,7 +163,7 @@ var cht={
 setChtTitle(currentCounty)
 
 function setChtTitle(ccode) {
-    cht.options.title.text="COVID-19 Impfungen in "+chdata[ccode]._name
+    cht.options.title.text="COVID-19 Impfquoten in "+chdata[ccode]._name
 }
 
 //**********************************************************************************************
@@ -172,12 +173,12 @@ for (var key in chdata) {
     
     for (var i=0;i<chdata[key].datasets.length;i++) {
         chdata[key].datasets[i].pointHitRadius=15
-        chdata[key].datasets[i].hidden = (i==0) //hide all vaccinations value by default
+        //chdata[key].datasets[i].hidden = (i==0) //hide all vaccinations value by default
         //chdata.datasets[i].pointHoverRadius=5
     }
 }
 
-updateRate()
+//updateRate()
 //addEstimate()
 
 var myChart=new Chart(ctx,cht)
@@ -307,7 +308,7 @@ function selectCounty(ccode) {
         
         cht.data=chdata[ccode]
         setChtTitle(ccode)
-        updateRate()
+        //updateRate()
         //addEstimate()
         myChart.update()
     }
