@@ -5,7 +5,7 @@
 <meta property="og:image" content="index_sh_kreise.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<meta property="og:updated_time" content="2021-08-31T17:02:40+01:00" />
+<meta property="og:updated_time" content="2021-08-31T19:29:22+01:00" />
 <title>COVID-19-Fälle im Kreis Pinneberg (und anderen Kreisen in SH)</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
@@ -38,13 +38,18 @@
 <li><strong>7-Tg. Inz.</strong><br />
 Zeigt für den neuesten Tag die auf schleswig-holstein.de gezeigte regionale Inzidenz. Für zurückliegende Tage wird die Inzidenz anhand der Nachmeldungen täglich aktualisiert.
 </li>
-<li><strong>7-Tg. Inz. veröff.</strong><br />
+<li><strong>Achsen und Werte</strong><br />
+Bitte beachtet, dass die Hospitalisierungsrate mit einem anderen Wertebereich (linke Achse) als alle anderen Werte (rechte Achse) dargestellt wird.</li>
+<!--<li><strong>7-Tg. Inz. veröff.</strong><br />
 Zeigt rückwirkend alle gemeldeten 7-Tage Inzidenzen ohne Korrekturen durch Nachmeldungen an Folgetagen. Größere Abweichungen sind meist einem kompletten Meldeausfall an den jeweiligen Tagen geschuldet.
 <br/>(Jede Datenreihe kann durch Klick auf die Legende ein-/ausgeblendet werden.)
-</li>
-<li><strong>Hospitalisierung (∑ 10-Tg.)</strong><br />Diese Linie zeigt die Summe der Hospitalisierungen in den jeweils 10 zurückliegenden Tagen. 
+</li>-->
+<!-- <li><strong>Hospitalisierung (∑ 10-Tg.)</strong><br />Diese Linie zeigt die Summe der Hospitalisierungen in den jeweils 10 zurückliegenden Tagen. 
 Die urspränglich verwendeten 14 Tage wurden nicht willkürlich gewählt, sondern basierten auf einer 
-<a href="https://www.ruhrbarone.de/mit-covid-19-ins-krankenhaus-1-von-5-patienten-stirbt-stationaer/192045">hier veröffentlichten Untersuchung</a> aus der sich ein durchschnittlicher Krankenhausaufenthalt (bzgl. COVID-19) von 13.7 Tagen ableiten lassen konnte. Neuere Daten deuten auf eine derweil reduzierte durchschnittliche Verweildauer hin (siehe z.B. Tabelle 3 in <a href="https://www.sozialministerium.at/dam/jcr:f472e977-e1bf-415f-95e1-35a1b53e608d/Factsheet_Coronavirus_Hospitalisierungen.pdf">Factsheet Corona Hospitalisierungen(AT)</a>). Daher die Verringerung der Annahme auf 10 Tage. Generell ist bei Hospitalisierungen zu beachten, daß diese auf den Wohnort/Kreis des Patienten und nicht auf den Landkreis des in Folge belegten Krankenhauses beziehen. Daher lassen sich Hospitalisierungen nur sehr bedingt mit Belegungszahlen im Kreis/Land vergleichen.</li>
+<a href="https://www.ruhrbarone.de/mit-covid-19-ins-krankenhaus-1-von-5-patienten-stirbt-stationaer/192045">hier veröffentlichten Untersuchung</a> aus der sich ein durchschnittlicher Krankenhausaufenthalt (bzgl. COVID-19) von 13.7 Tagen ableiten lassen konnte. Neuere Daten deuten auf eine derweil reduzierte durchschnittliche Verweildauer hin (siehe z.B. Tabelle 3 in <a href="https://www.sozialministerium.at/dam/jcr:f472e977-e1bf-415f-95e1-35a1b53e608d/Factsheet_Coronavirus_Hospitalisierungen.pdf">Factsheet Corona Hospitalisierungen(AT)</a>). Daher die Verringerung der Annahme auf 10 Tage. Generell ist bei Hospitalisierungen zu beachten, daß diese auf den Wohnort/Kreis des Patienten und nicht auf den Landkreis des in Folge belegten Krankenhauses beziehen. Daher lassen sich Hospitalisierungen nur sehr bedingt mit Belegungszahlen im Kreis/Land vergleichen.</li> -->
+<li><strong>Hospitalisierungsrate</strong><br />
+COVID-19 bedingte Hospitalisierungen je 100.000 Einwohnern innerhalb von sieben Tagen.<br />Mitte Mai 2021 gab es eine Korrektur, in der zuvor fehlende Meldungen bzgl. Hospitalisierungen und Todesfällen nachgetragen wurden.
+</li>
 <li><strong>Daten</strong><br />Diese Grafik basiert auf der unter <a href="https://www.schleswig-holstein.de/DE/Schwerpunkte/Coronavirus/Zahlen/zahlen_node.html">www.schleswig-holstein.de</a>
 veröffentlichten <strong>&quot;CSV-Datei der Kreisdaten&quot;</strong> sowie der dort gezeigten Tabellen mit Daten je Kreis. Aufgrund verschiedener Veröffentlichungszeitpunkte kann es zu Abweichungen zu Daten des RKI kommen.</li>
 </ul>
@@ -70,7 +75,8 @@ var opt = {
                 var ds = ci.data.datasets[index]
                 ds.hidden=!ds.hidden
                 
-                if (ds.label.substr(0,4)=='R(t)') { //show axis for data
+                if (ds.label.indexOf("Rate")>0) { //show axis for data
+//                if (ds.label.substr(0,4)=='R(t)') { //show axis for data
                     ci.options.scales.yAxes[1].display=!ds.hidden
                     console.log(ds.label)
                 }
@@ -93,20 +99,27 @@ var opt = {
                 ticks: {
                     min:0,
                    //min:-2
-                }
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Inzidenz / Fallzahlen / Summen',
+                },
                 //type: 'logarithmic'
             },
             {
                 id: 'second-y-axis',
                 type: 'linear',
                 position: 'left',
-                display: false,
+                //display: false,
                 scaleLabel: {
                     display: true,
-                    labelString: 'R(t)',
+                    labelString: 'Hospitalisierungsrate',
+                    fontColor: 'rgba(0, 128, 0, 1)',
+//                    labelString: 'R(t)',
                 },
                 gridLines: {
-                    color: 'rgba(255, 0, 0, 0.15)',
+                    color: 'rgba(0, 128, 0, 0.5)',
+//                    color: 'rgba(255, 0, 0, 0.15)',
                     borderDash: [10,10],
                 },
                 ticks: {
@@ -126,7 +139,7 @@ var opt = {
 
 var Mo=montag(new Date())
 var dayTicks=86400000
-for(w = Mo.getTime() ; w >= Mo.getTime()-(30*7*dayTicks) ; w -= (7*dayTicks)) {
+for(w = Mo.getTime() ; w >= Mo.getTime()-(60*7*dayTicks) ; w -= (7*dayTicks)) {
 
     var kwMo = new Date(w)
     var kwVal = kalenderwoche(kwMo)
@@ -194,7 +207,8 @@ for (var key in chdata) {
     for (var i=0;i<chdata[key].datasets.length;i++) {
         chdata[key].datasets[i].pointHitRadius=15
         //find Index for R(t) dataset
-        if ((dsRtIndex<0) && (chdata[key].datasets[i].label.substr(0,4)=='R(t)')) {
+        if ((dsRtIndex<0) && (chdata[key].datasets[i].label.indexOf("Rate")>0)) {
+//        if ((dsRtIndex<0) && (chdata[key].datasets[i].label.substr(0,4)=='R(t)')) {
             dsRtIndex=i
         }
     }
