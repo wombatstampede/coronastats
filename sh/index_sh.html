@@ -27,6 +27,10 @@
 veröffentlichten <strong>&quot;CSV-Datei der Kreisdaten&quot;</strong>
 sowie der dort nachzulesenden Anzahl der Personen im Krankenhaus.
 Angezeigt werden die Unterschiede der Fallzahlen (Δ zum Vortag). Diese weichen zeitlich leicht ab von den dort gelisteten Fällen je Meldedatum. Siehe auch die Hinweise auf www.schleswig-holstein.de.</li>
+<li><strong>Achsen und Werte</strong><br />
+Bitte beachtet, dass die Hospitalisierungsrate mit einem anderen Wertebereich (linke Achse) als alle anderen Werte (rechte Achse) dargestellt wird.</li>
+<li><strong>Nachtrag</strong><br />
+Mitte Mai 2021 wurden Fallzahlen für Hospitalisierung und Sterbefälle nachgetragen. Hier stimmt der zeitliche Bezug nicht.</li>
 </ul>
 <script>
 var ctx = document.getElementById('myChart').getContext('2d');
@@ -54,16 +58,63 @@ var opt = {
                 id: 'first-y-axis',
                 position: 'right',
                 type: 'linear',
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Inzidenz / Fallzahlen / Aktuell im Krankenhaus',
+                    fontColor: 'orange',
+                },
                 ticks: {
                     maxTicksLimit: 50,
                     min:0,
                     //min:-2
                 }
                 //type: 'logarithmic'
-            }]
+            },
+            {
+                id: 'second-y-axis',
+                type: 'linear',
+                position: 'left',
+                //display: false,
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Hospitalisierungsrate',
+                    fontColor: 'rgba(0, 128, 0, 1)',
+                },
+                gridLines: {
+                    color: 'rgba(0, 128, 0, 0.5)',
+                    borderDash: [10,10],
+                },
+                ticks: {
+                   min:0,
+                }
+                //type: 'logarithmic'
+            }
+            ]
         },
         annotation: {
             annotations: [
+                { //"Nachtrag"
+                type: "line",
+                //drawTime: "beforeDatasetsDraw",
+                mode: "vertical",
+                scaleID: "x-axis-0",
+                value: '2021-05-15',
+                borderColor: 'rgba(0,0,0,0)',
+                borderWidth: 0,
+                label: {
+                  //backgroundColor: "red",
+                  backgroundColor: 'rgba(220,220,220,0.8)',
+                  //fontColor: window.chartColors.red,
+                  xPadding: 3,
+                  yPadding: 3,
+                  //yAdjust: 2,
+                  fontColor: "red",
+                  fontSize: 9,
+                  content: "Nachtrag",
+                  position: "middle",
+                  enabled: true
+                }
+                }
             ]
         },
     };

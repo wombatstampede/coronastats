@@ -5,7 +5,7 @@
 <meta property="og:image" content="index_sh_kreise.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<meta property="og:updated_time" content="2021-09-03T07:10:01+01:00" />
+<meta property="og:updated_time" content="2021-09-03T12:17:07+01:00" />
 <title>COVID-19-Fälle im Kreis Pinneberg (und anderen Kreisen in SH)</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
@@ -48,10 +48,11 @@ Zeigt rückwirkend alle gemeldeten 7-Tage Inzidenzen ohne Korrekturen durch Nach
 Die urspränglich verwendeten 14 Tage wurden nicht willkürlich gewählt, sondern basierten auf einer 
 <a href="https://www.ruhrbarone.de/mit-covid-19-ins-krankenhaus-1-von-5-patienten-stirbt-stationaer/192045">hier veröffentlichten Untersuchung</a> aus der sich ein durchschnittlicher Krankenhausaufenthalt (bzgl. COVID-19) von 13.7 Tagen ableiten lassen konnte. Neuere Daten deuten auf eine derweil reduzierte durchschnittliche Verweildauer hin (siehe z.B. Tabelle 3 in <a href="https://www.sozialministerium.at/dam/jcr:f472e977-e1bf-415f-95e1-35a1b53e608d/Factsheet_Coronavirus_Hospitalisierungen.pdf">Factsheet Corona Hospitalisierungen(AT)</a>). Daher die Verringerung der Annahme auf 10 Tage. Generell ist bei Hospitalisierungen zu beachten, daß diese auf den Wohnort/Kreis des Patienten und nicht auf den Landkreis des in Folge belegten Krankenhauses beziehen. Daher lassen sich Hospitalisierungen nur sehr bedingt mit Belegungszahlen im Kreis/Land vergleichen.</li> -->
 <li><strong>Hospitalisierungsrate</strong><br />
-COVID-19 bedingte Hospitalisierungen je 100.000 Einwohnern innerhalb von sieben Tagen.<br />Mitte Mai 2021 gab es eine Korrektur, in der zuvor fehlende Meldungen bzgl. Hospitalisierungen und Todesfällen nachgetragen wurden.
-</li>
+COVID-19 bedingte Hospitalisierungen je 100.000 Einwohner innerhalb der letzten sieben Tage.</li>
 <li><strong>Daten</strong><br />Diese Grafik basiert auf der unter <a href="https://www.schleswig-holstein.de/DE/Schwerpunkte/Coronavirus/Zahlen/zahlen_node.html">www.schleswig-holstein.de</a>
 veröffentlichten <strong>&quot;CSV-Datei der Kreisdaten&quot;</strong> sowie der dort gezeigten Tabellen mit Daten je Kreis. Aufgrund verschiedener Veröffentlichungszeitpunkte kann es zu Abweichungen zu Daten des RKI kommen.</li>
+<li><strong>Nachtrag</strong><br />
+Mitte Mai 2021 wurden Fallzahlen für Hospitalisierung und Sterbefälle nachgetragen. Hier stimmt der zeitliche Bezug nicht.</li>
 </ul>
 <script>
 var currentCounty="PI"
@@ -131,6 +132,28 @@ var opt = {
         },
         annotation: {
             annotations: [
+                { //"Nachtrag"
+                type: "line",
+                //drawTime: "beforeDatasetsDraw",
+                mode: "vertical",
+                scaleID: "x-axis-0",
+                value: '2021-05-15',
+                borderColor: 'rgba(0,0,0,0)',
+                borderWidth: 0,
+                label: {
+                  //backgroundColor: "red",
+                  backgroundColor: 'rgba(220,220,220,0.8)',
+                  //fontColor: window.chartColors.red,
+                  xPadding: 3,
+                  yPadding: 3,
+                  //yAdjust: 2,
+                  fontColor: "red",
+                  fontSize: 9,
+                  content: "Nachtrag",
+                  position: "middle",
+                  enabled: true
+                }
+                }
             ]
         },
     }
