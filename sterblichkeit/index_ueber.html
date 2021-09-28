@@ -60,7 +60,8 @@
 <h1>Übersterblichkeit und COVID-19 Sterbefälle im Vergleich</h1>
 <p>Stand: EUROSTAT: <span id="eurostat_date"></span>, DESTATIS: <span id="destatis_date"></span>, ECDC: <span id="ecdc_date"></span>, Johns Hopkins University: <span id="jh_date"></span>, CDC: <span id="cdc_date"></span></p>
 <a class="button button-outline" id="btnbigcharts" data-state="notactive" href="javascript:bigCharts()">Große Charts</a><a class="button button-outline" id="btnsmallcharts" data-state="active" href="javascript:smallCharts()">Kleine Charts</a>
-<a class="button button-outline" id="btnfirstjan" data-state="notactive" href="javascript:byYearStart(true)">Ab dem 01.01.</a><a class="button button-outline" id="btnfirstcovid" data-state="active" href="javascript:byYearStart(false)">Ab dem 1. COVID-19 Todesfall</a> <a class="button button-outline" id="btnecdcdata" data-state="notactive" href="javascript:dataSourceECDC(true)">ECDC</a><a class="button button-outline" id="btnjhdata" data-state="active" href="javascript:dataSourceECDC(false)">JHU</a>
+<a class="button button-outline" id="btnfirstjan" data-state="notactive" href="javascript:byYearStart(true)">Ab dem 01.01.</a><a class="button button-outline" id="btnfirstcovid" data-state="active" href="javascript:byYearStart(false)">Ab dem 1. COVID-19 Todesfall</a>
+<!-- <a class="button button-outline" id="btnecdcdata" data-state="notactive" href="javascript:dataSourceECDC(true)">ECDC</a><a class="button button-outline" id="btnjhdata" data-state="active" href="javascript:dataSourceECDC(false)">JHU</a> -->
 <a class="button button-outline" id="btnprogn" data-state="notactive" href="javascript:prognose()">Prognose</a>
 <div id="countrySelect"><a class="button button-outline button-small" href="javascript:toggleCountry('None')">Keins</a></div>
 <div class="container-all">
@@ -77,10 +78,14 @@ Beschreibt hier die Abweichung vom Vorjahresdurchschnitt ab dem ersten COVID-19 
 Wird diese Funktion aktiviert, so wird versucht eine grobe Prognose der Übersterblichkeit anhand der Entwicklung der gemeldeten COVID-19 Sterbezahlen zu "erraten". Es handelt es sich hier um eine experimentelle Funktion, daher ist sie normalerweise auch abgeschaltet. Die Prognose startet bei der vorletzten ermittelten Übersterblichkeit und schreibt diese orientiert an den wöchentlich gemeldeten COVID-19 Sterbezahlen fort. Das Ergebnis wird in <span style="background-color: rgba(0,0,255,0.15);">Blau</span> angezeigt.</li>
 <li><strong>Werte:</strong><br/>
 In dieser Statistik werden auch als 'provisional' oder 'estimated' gekennzeichnete Werte verwendet. Insbesondere die Angaben bzgl. Sterbefällen in den letzten Wochen können - je nach Land unterschiedlich - noch besonders unvollständig sein. Für die Ermittlung der durchschnittliche Sterblichkeit in KW53 wird in Jahren ohne KW53 der Mittelwert zwischen den Werten für KW52 und KW01 des Folgejahres verwendet.</li>
+<!--<li><strong>COVID-19:</strong><br/>
+Dies sind die von der Johns Hopkins University zusammengetragenen bzw. (alternativ) an das ECDC gemeldeten COVID-19 Todesfälle je KW (in grün). Der abschließende Wert in <strong><span style="color:rgb(0,102,76);">Grün</span></strong> (unten) nennt die aktuell insgesamt gemeldeten COVID-19 Todesfälle gemäß Johns Hopkins University bzw. bei ECDC-Daten die kumulierten Todesfälle bis zur letzten gezeigten Woche (Aktualität, siehe Titelzeile). <strong>Die Datenquelle JHU/ECDC kann über die Buttons oben umgestellt werden.</strong> Die kleine graue vertikale Linie rechts daneben (nur JHU) zeigt die kumulierten Todesfälle der angebrochenen aktuellen Woche (daher ungenau) skaliert auf eine Woche.</li> -->
 <li><strong>COVID-19:</strong><br/>
-Dies sind die von der Johns Hopkins University zusammengetragenen bzw. (alternativ) an das ECDC gemeldeten COVID-19 Todesfälle je KW (in grün). Der abschließende Wert in <strong><span style="color:rgb(0,102,76);">Grün</span></strong> (unten) nennt die aktuell insgesamt gemeldeten COVID-19 Todesfälle gemäß Johns Hopkins University bzw. bei ECDC-Daten die kumulierten Todesfälle bis zur letzten gezeigten Woche (Aktualität, siehe Titelzeile). <strong>Die Datenquelle JHU/ECDC kann über die Buttons oben umgestellt werden.</strong> Die kleine graue vertikale Linie rechts daneben (nur JHU) zeigt die kumulierten Todesfälle der angebrochenen aktuellen Woche (daher ungenau) skaliert auf eine Woche.</li>
+Dies sind die von der Johns Hopkins University zusammengetragenen COVID-19 Todesfälle je KW (in grün). Der abschließende Wert in <strong><span style="color:rgb(0,102,76);">Grün</span></strong> (unten) nennt die aktuell insgesamt gemeldeten COVID-19 Todesfälle gemäß Johns Hopkins University (Aktualität, siehe Titelzeile). Die kleine graue vertikale Linie rechts daneben zeigt die kumulierten Todesfälle der angebrochenen aktuellen Woche (daher ungenau) skaliert auf eine Woche.</li>
 <li><strong>Deutschland:</strong><br/>
 Die Sterbefalldaten für Deutschland werden den entsprechende Veröffentlichungen von DESTATIS entnommen.(Siehe Quellen)</li>
+<li><strong>Russland:</strong><br/>
+<strong>Wichtig, Experiment!:</strong> Es handelt sich im Quellsatz um monatliche Daten, die zwecks Vergleichbarkeit auf Wochen heruntergebrochen werden (der zeitliche Bezug ist daher ungenau). Die Datenaufbereitung für diese Statistik ist auch nur wenig getestet und kann noch Fehler enthalten.<br/>Die Sterbefalldaten für Russland werden aus dem <a href="https://github.com/akarlinsky/world_mortality">World Mortality Dataset</a> entnommen. Siehe Quellen "UK/RU".</li>
 <li><strong>Großbritannien:</strong><br/>
 Seit dem Brexit pausiert aktuell wohl die Datenlieferung von Großbritannien an EUROSTAT. Daher werden die Sterbefalldaten für 2020 und 2021 nun aus dem <a href="https://github.com/akarlinsky/world_mortality">World Mortality Dataset</a> entnommen. Siehe Quellen "UK".</li>
 <li><strong>USA:</strong><br/>
@@ -93,7 +98,7 @@ Die Sterbefälle/Übersterblichkeit stammen vom CDC. Die Sterbefälle entspreche
 <li>ECDC: <a href="https://www.ecdc.europa.eu/en/coronavirus">https://www.ecdc.europa.eu/en/coronavirus</a> (Sterbefalldaten COVID-19)</li>
 <li>JHU: <a href="https://github.com/CSSEGISandData/COVID-19">https://github.com/CSSEGISandData/COVID-19</a> (Sterbefalldaten Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE))</li>
 <li>CDC: <a href="https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm">https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm</a> (Sterbefalldaten USA)</li>
-<li>World Mortality Dataset (UK): <a href="https://github.com/akarlinsky/world_mortality">https://github.com/akarlinsky/world_mortality</a></li>
+<li>World Mortality Dataset (UK/RU): <a href="https://github.com/akarlinsky/world_mortality">https://github.com/akarlinsky/world_mortality</a></li>
 <!--
 <li>ONS: <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/datasets/weeklyprovisionalfiguresondeathsregisteredinenglandandwales">https://www.ons.gov.uk/</a> (UK: Sterbefalldaten England &amp; Wales)</li>
 <li>National Records of Scotland: <a href="https://www.nrscotland.gov.uk/statistics-and-data/statistics/statistics-by-theme/vital-events/general-publications/weekly-and-monthly-data-on-births-and-deaths/weekly-data-on-births-and-deaths">https://www.nrscotland.gov.uk/</a> (UK: Sterbefalldaten Schottland)</li>
@@ -389,7 +394,9 @@ var isBigCharts=false
 window.onload = function() {
     var byYearStart=getBtnState("btnfirstjan")
     var addProgn=getBtnState("btnprogn")
-    var useECDCData=getBtnState("btnecdcdata")
+    
+    var useECDCData=false;
+    //var useECDCData=getBtnState("btnecdcdata")
 
 	var container = document.querySelector('.container-all');
     setSpanContent("ecdc_date",ch_stats.ecdc_date)
