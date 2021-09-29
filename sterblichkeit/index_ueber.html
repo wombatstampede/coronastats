@@ -166,10 +166,12 @@ function createConfig(details) {
                 mode: 'x',
                 callbacks: {
                     //title: function() { return '';},
-                    /*title: function(items, data) {
-                        var v = data.datasets[items[0].datasetIndex].data[items[0].index]
-                        return [v.x+" / "+v.y+"J:"]
-                    },*/
+                    title: function(items, data) {
+                        //var v = data.datasets[items[0].datasetIndex].data[items[0].index]
+                        //return [v.x+" / "+v.y+"J:"]
+                        kw=data.labels[items[0].index]
+                        return kw+"  "+getDateFmtOfWeek(kw)
+                    },
                     label: function(item, data) {
                         var label = data.datasets[item.datasetIndex].label
                         var case2020 = data._cases.data[item.index]
@@ -630,7 +632,27 @@ function dataDiffProgn(data_arr1,data_progn,data_arr2,start,end) {
     return diff
 }
 
+function getDateFmtOfWeek(yweek) { //ISO8601 Date  yyyy/mm -> formatted date of mo
+    if ((""+yweek).indexOf("/")>0) {
+        w=yweek.substr(5,2)
+        y=yweek.substr(0,4)
+    } else return ""
 
+    var simple = new Date(y, 0, 1 + (w - 1) * 7);
+    var dow = simple.getDay();
+    var ISOweekStart = simple;
+    if (dow <= 4)
+        ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+    else
+        ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+        
+    opts={"year":"numeric","month":"2-digit","day":"2-digit"}
+    //ISOweekEnd=ISOweekStart
+    ISOweekEnd=new Date()
+    ISOweekEnd.setTime(ISOweekStart.getTime()+(6*24*60*60*1000))
+    
+    return ISOweekStart.toLocaleDateString("de-DE",opts)+"-"+ISOweekEnd.toLocaleDateString("de-DE",opts);
+}
 
 
 //**********************************************************************************************
