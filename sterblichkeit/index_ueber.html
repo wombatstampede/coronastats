@@ -660,7 +660,7 @@ function getDateFmtOfWeek(yweek) { //ISO8601 Date  yyyy/mm -> formatted date of 
 function recalcCharts() {
     var byYearStart=getBtnState("btnfirstjan")
     var addProgn=getBtnState("btnprogn")
-    var useECDCData=getBtnState("btnecdcdata")
+    var useECDCData=false;//getBtnState("btnecdcdata")
     
     setBtnState("btnfirstjan",byYearStart?'active':'false')
     setBtnState("btnfirstcovid",(!byYearStart)?'active':'false')
