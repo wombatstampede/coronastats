@@ -1,0 +1,1128 @@
+<head>
+<meta charset="utf-8">
+<meta property="og:title" content="Übersterblichkeit und COVID-19 Sterbefälle im Vergleich" />
+<meta property="og:description" content="Für EU-Länder und die USA" />
+<meta property="og:image" content="index_ueber.jpg" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="de_DE" />
+<meta property="og:updated_time" content="#CURRTS#" />
+<title>Übersterblichkeit und COVID-19 Sterbefälle im Vergleich</title>
+<link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
+<link rel="stylesheet" media="screen" href="Chart.min.css"> 
+<script type="text/javascript" src="Chart.min.js"></script>
+<script type="text/javascript" src="chartjs-plugin-annotation.min.js"></script>
+<script type="text/javascript" src="chartjs-plugin-crosshair_modif.js"></script>
+<script type="text/javascript" src="sterbefaelle7_ueber_2.js"></script>
+<script type="text/javascript" src="sterbefaelle7_ueber_us.js"></script>
+<style>
+	canvas {
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+        page-break-inside: avoid;
+	}
+	.chart-container {
+		width: 600px;
+		margin-left: 5px;
+		margin-right: 5px;
+		margin-bottom: 20px;
+        page-break-inside: avoid;
+	}
+   	.big-chart {
+		width: 1000px;
+    }
+    .chart-info {
+		font-size: 0.6em;
+        display: none;
+    }
+    div.big-chart .chart-info {
+		font-size: 1em;
+    }
+	.container-all {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+    a.button[data-state='active'],
+    a.button[data-state='active']:focus {
+        background-color: #A9BCF5;
+    }
+    
+    a.button.button-outline.button-small {
+        padding: 0 1rem;
+    }
+</style>
+</head>
+<body>
+<a class="button" href="../">Inhalt</a>
+<a class="button button-outline" href="#Anmerkungen">Anmerkungen / Quellen</a>
+<h1>Übersterblichkeit und COVID-19 Sterbefälle im Vergleich</h1>
+<p>Stand: EUROSTAT: <span id="eurostat_date"></span>, DESTATIS: <span id="destatis_date"></span>, ECDC: <span id="ecdc_date"></span>, Johns Hopkins University: <span id="jh_date"></span>, CDC: <span id="cdc_date"></span></p>
+<a class="button button-outline" id="btnbigcharts" data-state="notactive" href="javascript:bigCharts()">Große Charts</a><a class="button button-outline" id="btnsmallcharts" data-state="active" href="javascript:smallCharts()">Kleine Charts</a>
+<a class="button button-outline" id="btnfirstjan" data-state="notactive" href="javascript:byYearStart(true)">Ab dem 01.01.</a><a class="button button-outline" id="btnfirstcovid" data-state="active" href="javascript:byYearStart(false)">Ab dem 1. COVID-19 Todesfall</a>
+<!-- <a class="button button-outline" id="btnecdcdata" data-state="notactive" href="javascript:dataSourceECDC(true)">ECDC</a><a class="button button-outline" id="btnjhdata" data-state="active" href="javascript:dataSourceECDC(false)">JHU</a> -->
+<a class="button button-outline" id="btnprogn" data-state="notactive" href="javascript:prognose()">Prognose</a>
+<div id="countrySelect"><a class="button button-outline button-small" href="javascript:toggleCountry('None')">Keins</a></div>
+<div class="container-all">
+</div>
+<h2 id="Anmerkungen">Anmerkungen</h2>
+<ul>
+<li><strong>Erläuterung:</strong><br/>
+Diese Grafiken stellen je Land die allgemeine Sterblichkeit (<strong><span style="color:blue;">blaue</span></strong> Linie für 2020+) bzw. Übersterblichkeit (Fläche in <span style="background-color: rgba(255,0,0,0.25);">Hellrot</span>) je Kalenderwoche den gemeldeten COVID-19 Sterbefällen (in <span style="background-color: rgba(0,193,143,0.25);">Grün</span>) gegenüber. Die Sterbefälle der Vorjahre werden ebenfalls als Linien in anderen Farben gezeigt.</li>
+<li><strong>Abweichungen/Zeitraum:</strong><br/>Die Übersterblichkeit wird hier ab dem ersten dokumentierten COVID-19 Todesfall summiert (siehe schwarze vertikale Linie). Alternativ kann die Übersterblichkeit ab Jahresbeginn summiert werden. Dies führt jeweils zu unterschiedlichen Ergebnissen was bei der Interpretation berücksichtigt werden sollte.<br />
+<i>Zusätzlich</i> kann ein abweichender Zeitraum in der Grafik markiert werden. Die Summen werden dann unter der Grafik angezeigt.</li>
+<li><strong>Übersterblichkeit:</strong><br/>
+Beschreibt hier die Abweichung vom Vorjahresdurchschnitt ab dem ersten COVID-19 Todesfall (alternativ: 01.01.2020). Das Intervall für die Bildung des Durchschnittes ist je Land in der Legende angegeben. Es kann nach Datenverfügbarkeit variieren. Im Falle der USA wird als Durchschnitt der vom CDC gelieferte Wert "Average expected number of deaths" verwendet. Der prozentuale Wert (<strong><span style="color:red;">rote</span></strong> Linie) entspricht dem Anteil der kumulierten Abweichung an den gesamten durchschnittlichen Sterbefällen im jeweils gleichen Zeitraum. Der abschließende Wert (oben in <strong><span style="color:rgb(100,0,0);">Rot</span></strong>) zeigt also die Gesamtabweichung zum Durchschnitt im bekannten Zeitraum in % sowie in Sterbefällen. Je nach Land, kann dieser Zeitraum (siehe vertikale rote Linie) weit vor der aktuellen KW (siehe vertikale grüne Linie) enden. Negative Werte zeigen entsprechend eine unterdurchschnittliche Sterblichkeit.</li>
+<li><strong>Prognose: (Experiment!)</strong><br/>
+Wird diese Funktion aktiviert, so wird versucht eine grobe Prognose der Übersterblichkeit anhand der Entwicklung der gemeldeten COVID-19 Sterbezahlen zu "erraten". Es handelt es sich hier um eine experimentelle Funktion, daher ist sie normalerweise auch abgeschaltet. Die Prognose startet bei der vorletzten ermittelten Übersterblichkeit und schreibt diese orientiert an den wöchentlich gemeldeten COVID-19 Sterbezahlen fort. Das Ergebnis wird in <span style="background-color: rgba(0,0,255,0.15);">Blau</span> angezeigt.</li>
+<li><strong>Werte:</strong><br/>
+In dieser Statistik werden auch als 'provisional' oder 'estimated' gekennzeichnete Werte verwendet. Insbesondere die Angaben bzgl. Sterbefällen in den letzten Wochen können - je nach Land unterschiedlich - noch besonders unvollständig sein. Für die Ermittlung der durchschnittliche Sterblichkeit in KW53 wird in Jahren ohne KW53 der Mittelwert zwischen den Werten für KW52 und KW01 des Folgejahres verwendet.</li>
+<!--<li><strong>COVID-19:</strong><br/>
+Dies sind die von der Johns Hopkins University zusammengetragenen bzw. (alternativ) an das ECDC gemeldeten COVID-19 Todesfälle je KW (in grün). Der abschließende Wert in <strong><span style="color:rgb(0,102,76);">Grün</span></strong> (unten) nennt die aktuell insgesamt gemeldeten COVID-19 Todesfälle gemäß Johns Hopkins University bzw. bei ECDC-Daten die kumulierten Todesfälle bis zur letzten gezeigten Woche (Aktualität, siehe Titelzeile). <strong>Die Datenquelle JHU/ECDC kann über die Buttons oben umgestellt werden.</strong> Die kleine graue vertikale Linie rechts daneben (nur JHU) zeigt die kumulierten Todesfälle der angebrochenen aktuellen Woche (daher ungenau) skaliert auf eine Woche.</li> -->
+<li><strong>COVID-19:</strong><br/>
+Dies sind die von der Johns Hopkins University zusammengetragenen COVID-19 Todesfälle je KW (in grün). Der abschließende Wert in <strong><span style="color:rgb(0,102,76);">Grün</span></strong> (unten) nennt die aktuell insgesamt gemeldeten COVID-19 Todesfälle gemäß Johns Hopkins University (Aktualität, siehe Titelzeile). Die kleine graue vertikale Linie rechts daneben zeigt die kumulierten Todesfälle der angebrochenen aktuellen Woche (daher ungenau) skaliert auf eine Woche.</li>
+<li><strong>Deutschland:</strong><br/>
+Die Sterbefalldaten für Deutschland werden den entsprechende Veröffentlichungen von DESTATIS entnommen.(Siehe Quellen)</li>
+<li><strong>Russland:</strong><br/>
+<strong>Wichtig, Experiment!:</strong> Mangels Verfügbarkeit wöchentlicher Werte handelt es sich hier um monatliche Daten. Die Datenaufbereitung für dieses Land ist nur wenig getestet und kann noch Fehler enthalten.<br/>Die Sterbefalldaten für Russland werden aus dem <a href="https://github.com/akarlinsky/world_mortality">World Mortality Dataset</a> entnommen. Siehe Quellen "UK/RU".</li>
+<li><strong>Großbritannien:</strong><br/>
+Seit dem Brexit pausiert aktuell wohl die Datenlieferung von Großbritannien an EUROSTAT. Daher werden die Sterbefalldaten für 2020 und 2021 nun aus dem <a href="https://github.com/akarlinsky/world_mortality">World Mortality Dataset</a> entnommen. Siehe Quellen "UK".</li>
+<li><strong>USA:</strong><br/>
+Die Sterbefälle/Übersterblichkeit stammen vom CDC. Die Sterbefälle entsprechen dem Wert "Predicted number of deaths from all causes". Details dazu finden sich beim <a href="https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm">CDC</a>. Aufgrund der Vergleichbarkeit wurden die US-Kalenderwochen (beginnen Sonntags) auf europäische Kalenderwochen (beginnen Montags) abgebildet. So kann es im Zeitbezug zu minimalen Abweichungen kommen.</li>
+</ul>
+<h2 id="Quellen">Quellen</h2>
+<ul>
+<li>EUROSTAT: <a href="https://ec.europa.eu/eurostat">https://ec.europa.eu/eurostat</a> (Sterbefalldaten Europa)</li>
+<li>DESTATIS: <a href="https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Bevoelkerung/Sterbefaelle-Lebenserwartung/Tabellen/sonderauswertung-sterbefaelle.html">https://www.destatis.de</a> (Sonderauswertung Sterbefalldaten Deutschland)<br>Siehe hierzu auch den Artikel: <a href="https://www.destatis.de/DE/Methoden/WISTA-Wirtschaft-und-Statistik/2020/04/sonderauswertung-sterbefallzahlen-042020.pdf?__blob=publicationFile">Sonderauswertung der Sterbefallzahlen 2020 - Daten zur Einordnung einer zeitweisen Übersterblichkeit im Zusammenhang mit der Corona-Pandemie</a></li>
+<li>ECDC: <a href="https://www.ecdc.europa.eu/en/coronavirus">https://www.ecdc.europa.eu/en/coronavirus</a> (Sterbefalldaten COVID-19)</li>
+<li>JHU: <a href="https://github.com/CSSEGISandData/COVID-19">https://github.com/CSSEGISandData/COVID-19</a> (Sterbefalldaten Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE))</li>
+<li>CDC: <a href="https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm">https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm</a> (Sterbefalldaten USA)</li>
+<li>World Mortality Dataset (UK/RU): <a href="https://github.com/akarlinsky/world_mortality">https://github.com/akarlinsky/world_mortality</a></li>
+<!--
+<li>ONS: <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/datasets/weeklyprovisionalfiguresondeathsregisteredinenglandandwales">https://www.ons.gov.uk/</a> (UK: Sterbefalldaten England &amp; Wales)</li>
+<li>National Records of Scotland: <a href="https://www.nrscotland.gov.uk/statistics-and-data/statistics/statistics-by-theme/vital-events/general-publications/weekly-and-monthly-data-on-births-and-deaths/weekly-data-on-births-and-deaths">https://www.nrscotland.gov.uk/</a> (UK: Sterbefalldaten Schottland)</li>
+<li>NISRA: <a href="https://www.nisra.gov.uk/statistics/deaths/death-statistics">https://www.nisra.gov.uk/statistics/deaths/death-statistics</a>https://www.nisra.gov.uk/ (UK: Sterbefalldaten Nordirland)</li>
+-->
+</ul>
+<script>
+
+/****************************/
+    var coInclude="DE CH AT DK BE NL FR SE CZ EL ES IT PL NO PT UK BG FI HR HU RO RS SI SK US"
+//    var coInclude="*"
+/****************************/
+
+//fix/workaround for wkhtmltoimage
+Function.prototype.bind = Function.prototype.bind || function (thisp) {
+  var fn = this;
+  return function () {
+    return fn.apply(thisp, arguments);
+  };
+};
+
+
+//var ctx = document.getElementById('myChart').getContext('2d');
+function createConfig(details) {
+    return {
+        type:'line',
+        data: details,
+        options: {
+            //animation: true,
+            responsive: true,
+            //maintainAspectRatio: false,
+            title: {
+                display: true,
+                text: details.coname,
+            },
+            legend: {
+                labels: {
+                    boxWidth: 6,
+                    fontSize: 10,
+                    padding: 6,
+                }
+            }, 
+            hover: {
+                intersect: false
+            },
+            plugins: {
+                crosshair: {
+                    sync: {
+                        enabled: false
+                    },
+                    snapping: {
+                        enabled: false
+                    },
+                    callbacks: {
+                        beforeZoom: function(chartinst, start, end) {// called before zoom, return false to prevent zoom
+                            rangeSelected(chartinst,start,end)
+                            return false;
+                        },
+                        afterZoom: function(chartinst,start, end) {// called after zoom
+                        }
+                    }
+                }
+            },
+            tooltips: {
+                mode: 'x',
+                callbacks: {
+                    //title: function() { return '';},
+                    title: function(items, data) {
+                        //var v = data.datasets[items[0].datasetIndex].data[items[0].index]
+                        //return [v.x+" / "+v.y+"J:"]
+                        kw=data.labels[items[0].index]
+                        if (data.interval=='week')
+                            return kw+"  "+getDateFmtOfWeek(kw)
+                        else
+                            return kw+"  "+getDateFmtOfMonth(kw)
+                    },
+                    label: function(item, data) {
+                        var label = data.datasets[item.datasetIndex].label
+                        var case2020 = data._cases.data[item.index]
+                        var avg = data._avg.data[item.index]
+                        //(Math.round(excess.data[lastCasesCWix]*10)/10)+"%
+                        if (label.substr(0,4)=='Über') {
+                            return 'Überst.: '+(Math.round(((case2020-avg)/avg)*1000)/10).toLocaleString()+"%, "
+                                        +Math.round(case2020-avg).toLocaleString()
+                                    +', ∑ '+(Math.round(item.value*10)/10).toLocaleString()
+                                    +'%, '+Math.round(data._excsum[item.index]).toLocaleString();
+                        } else if (label.substr(0,4)=='Covi') {
+                            return 'COVID-19: '+Math.round(item.value).toLocaleString()
+                                +', ∑ '+Math.round(data._covidsum[item.index]).toLocaleString();
+                        }
+                        else return label+': '+Math.round(item.value).toLocaleString();
+                        //var v = data.datasets[item.datasetIndex].data[item.index]
+                        //return ["Inzidenz: " + Math.round(v.v*10)/10,"Fälle(7Tg): "+v.casesum]
+                    }
+                },
+            },
+            scales: {
+                xAxes: [
+                {
+                    id: 'x-axis-0',
+                    ticks: {
+                        fontSize:10,
+                        //minor: {enabled:true},
+                        //major: {enabled:true},
+                        callback: function(value, index, values) {
+                            if ((""+value).indexOf("/")>0) {
+                                
+                                if (value.substr(5,2)!='01') {                                    
+                                    return value.substr(5,2)
+                                }
+                                else {
+                                    return value.substr(0,4) + " KW " + value.substr(5,2)
+                                }
+                            }
+                            else return value
+                        }
+                    }
+                },
+                { 
+                    id: 'x-axis-1',
+                    //id: 'second-x-axis',
+                    display: false,
+                    ticks: {
+                        //min:0,
+                        //max:1
+                    }
+                }
+                ],
+                yAxes: [
+                {
+                    id: 'first-y-axis',
+                    type: 'linear',
+                    position: 'right',
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Sterbefälle je KW',
+                        lineHeight: 1,
+                        fontSize:10,
+                        padding:0,
+                    },
+                    ticks: {
+                        min:0,
+                        fontSize: 10,
+                    }
+                },
+                {
+                    id: 'second-y-axis',
+                    type: 'linear',
+                    position: 'left',
+                    scaleLabel: {
+                        display: true,
+                        labelString: '%',
+                        lineHeight: 1,
+                        padding:0,
+                    },
+                    gridLines: {
+                        color: 'rgba(255, 0, 0, 0.15)',
+                        borderDash: [10,10],
+                    },
+                    ticks: {
+                        min: -5,
+                        max: (details.maxperc>20?details.maxperc:20),
+                        fontSize: 8,
+                    }
+                },
+                ]
+            },
+            annot_covidfirst: {
+                        _tag: 'covidfirst',
+                        type: "line",
+                        mode: "vertical",
+                        scaleID: "x-axis-0",
+                        value: 0,
+                        borderColor: 'rgba(0,0,0,0.5)',
+                        borderWidth: 1,
+            },
+            annot_progn: {
+                        _tag: 'progn',
+                        type: "line",
+                        mode: "vertical",
+                        scaleID: "x-axis-0",
+                        value: 0,
+                        borderColor: 'rgba(0,0,255,0.25)',
+                        borderWidth: 1,
+                        label: {
+                          backgroundColor: 'rgba(100,220,220,0)',
+                          yAdjust: 20,
+                          xAdjust: 25,
+                          fontColor: "rgb(0,0,255)",
+                          fontSize: 10,
+                          content: "",
+                          position: "top",
+                          enabled: true
+                        },
+            },
+            annot_covidlastday: {
+                _tag: 'covidlastday',
+                type: "box",
+                xScaleID: "x-axis-1",
+                yScaleID: "first-y-axis",
+                ymin: 0,
+                ymax: 1,
+                xmin: 0,
+                xmin: 1,
+                borderColor: 'rgba(0,0,0,0.0)',
+                //borderDash: [8,8],
+                backgroundColor: 'rgba(0,0,0,0.25)',
+                borderWidth: 1,
+            },
+            annot_selection: {
+                _tag: 'selection',
+                type: "box",
+                drawTime: 'beforeDatasetsDraw',
+                xScaleID: "x-axis-0",
+                yScaleID: "y-axis-0",
+                xMin: 10,
+                xMax: 20,
+                //yMin: 0,
+                //yMax: 2000,
+                //borderColor: 'BurlyWood',
+                borderColor: 'rgba(100,149,237,0.4)',//CornflowerBlue
+                backgroundColor: 'rgba(100,149,237,0.25)'
+            },
+            annotation: {
+                annotations: [
+                    {
+                        _tag: 'excess',
+                        type: "line",
+                        mode: "vertical",
+                        scaleID: "x-axis-0",
+                        value: (typeof(details.lastcw)=='string')?details.lastcw:details.lastcw-0.99, /*lastcw is correct, why then?*/
+                        borderColor: 'rgba(255,0,0,0.25)',
+                        borderWidth: 1,
+                        label: {
+                          //backgroundColor: "red",
+                          backgroundColor: 'rgba(100,220,220,0)',
+                          xAdjust: 30,
+                          //fontColor: window.chartColors.red,
+                          //yAdjust: 2,
+                          fontColor: "rgb(100,0,0)",
+                          fontSize: 10,
+                          content: ""+(Math.round(details.lastperc*10)/10).toLocaleString()+"%, "+Math.round(details.sumdiff).toLocaleString(),
+                          position: "top",
+                          enabled: true
+                        },
+                    },
+                    {
+                        _tag: 'covid',
+                        type: "line",
+                        mode: "vertical",
+                        scaleID: "x-axis-0",
+                        value: (typeof(details.lastcw_covid)=='string')?details.lastcw_covid:details.lastcw_covid-0.9, /*lastcw is correct, why then?*/
+                        borderColor: 'rgba(255,0,0,0)',
+                        borderWidth: 1,
+                        label: {
+                          //backgroundColor: "red",
+                          backgroundColor: 'rgba(100,220,220,0)',
+                          //fontColor: window.chartColors.red,
+                          //yAdjust: 2,
+                          fontColor: "rgb(0,102,76)",
+                          fontSize: 10,
+                          xAdjust: 11,
+                          content: details.covid_sum.toLocaleString(),
+                          position: "bottom",
+                          enabled: true
+                        },
+                    },
+                    {
+                        type: "line",
+                        _tag: 'nowcw',
+                        mode: "vertical",
+                        scaleID: "x-axis-0",
+                        value: (details.interval=='week')?kalenderwoche(new Date()):kalendermonat(new Date()),
+                        borderColor: 'rgba(0,255,0,0.5)',
+                        borderWidth: 1,
+                        /*label: {
+                          //backgroundColor: "red",
+                          backgroundColor: 'rgba(100,220,220,0)',
+                          //fontColor: window.chartColors.red,
+                          //yAdjust: 2,
+                          fontColor: "rgb(100,0,0)",
+                          fontSize: 10,
+                          content: ''
+                          position: "top",
+                          enabled: true
+                        },*/
+                    },
+                ]
+            },
+        }
+    }
+}
+
+    
+//**********************************************************************************************
+var charts={}
+var isBigCharts=false
+window.onload = function() {
+    var byYearStart=getBtnState("btnfirstjan")
+    var addProgn=getBtnState("btnprogn")
+    
+    var useECDCData=false;
+    //var useECDCData=getBtnState("btnecdcdata")
+
+	var container = document.querySelector('.container-all');
+    setSpanContent("ecdc_date",ch_stats.ecdc_date)
+    setSpanContent("eurostat_date",ch_stats.eurostat_date)
+    setSpanContent("destatis_date",ch_stats.destatis_date)
+    setSpanContent("jh_date",ch_stats.jh_date)
+    setSpanContent("cdc_date",ch_statsUS.cdc_date)
+    chdata.push(chdataUS[0])
+    chdata.forEach(function(details) {
+        var coShow=(coInclude=="*") || (coInclude.indexOf(details.cocode)>=0)
+            
+        var div = document.createElement('div')
+        div.classList.add('chart-container')
+        
+        div.style.display = coShow?'block':'none'
+        div.setAttribute('id','ccont'+details.cocode)
+
+        var canvas = document.createElement('canvas')
+        div.appendChild(canvas)
+
+        //display info about selection
+        var divInfo = document.createElement('div')
+        //divInfo.innerHTML='Hello World:<br/>Hello World2'
+        divInfo.classList.add('chart-info')
+        divInfo.setAttribute('id','cinfo'+details.cocode)
+        div.appendChild(divInfo)
+        
+        container.appendChild(div)
+
+
+
+
+        var ctx = canvas.getContext('2d')
+        var config = createConfig(details)
+        calcExcess(config,byYearStart,addProgn,useECDCData)
+        calcSums(config)
+
+        var cht=new Chart(ctx, config)
+        charts[details.cocode] = {
+            cocode: details.cocode,
+            chart: cht,
+            config: config,
+            div: div
+        }
+        addCountrySelect(details.cocode,details.coname,coShow)
+        
+    });
+}
+
+//**********************************************************************************************
+
+function addCountrySelect(ccode,cname,isActive) {
+    var cs = document.getElementById('countrySelect')
+    if (cs) {
+        var csBtn = document.createElement('a')
+        csBtn.classList.add('button')
+        csBtn.classList.add('button-outline')
+        csBtn.classList.add('button-small')
+        csBtn.setAttribute('data-state',isActive?'active':'')
+        csBtn.setAttribute('id','cbtn'+ccode)
+        csBtn.setAttribute('title',cname)
+        csBtn.setAttribute('href','javascript:toggleCountry("'+ccode+'")')
+        csBtn.appendChild(document.createTextNode(ccode))
+        cs.appendChild(csBtn)
+        charts[ccode].button = csBtn
+    }
+
+}
+
+function toggleCountry(ccode) {
+    if (ccode!='None') {
+        var csBtn=charts[ccode].button //document.getElementById('cbtn'+ccode)
+        
+        isVis = (charts[ccode].div.style.display == 'block')
+        isVis = !isVis
+        csBtn.setAttribute('data-state',isVis?'active':'')
+        charts[ccode].div.style.display = isVis?'block':'none'
+        
+        updateChartSizeIfVisible(charts[ccode]) 
+    } else {
+        for (var key in charts) {
+            charts[key].button.setAttribute('data-state','')
+            charts[key].div.style.display = 'none'
+        }
+    }
+}
+
+//**********************************************************************************************
+
+function prognose() {
+    //toggle
+    setBtnState("btnprogn",(!getBtnState("btnprogn"))?'active':'false')
+    recalcCharts()
+}
+
+//**********************************************************************************************
+
+function dataSourceECDC(isECDC) {
+    var currECDCData=getBtnState("btnecdcdata")
+    if (currECDCData != isECDC) {
+        setBtnState("btnecdcdata",isECDC?'active':'false')
+        setBtnState("btnjhdata",(!isECDC)?'active':'false')
+        
+        recalcCharts()
+    }
+}
+
+//**********************************************************************************************
+function byYearStart(isByYearStart) {
+    var currByYearStart=getBtnState("btnfirstjan")
+    if (currByYearStart != isByYearStart) {
+        setBtnState("btnfirstjan",isByYearStart?'active':'false')
+        setBtnState("btnfirstcovid",(!isByYearStart)?'active':'false')
+        
+        recalcCharts()
+    }
+}
+
+//**********************************************************************************************
+function rangeSelected(chartinstance,start,end) {
+    var cdata=chartinstance.config.data
+    var dInfo = document.getElementById('cinfo'+chartinstance.config.data.cocode)
+    var dContent =""
+    var fmtstart ="<strong>"
+    var fmtstop  ="</strong>"
+    if (dInfo) {
+        var isWeeks=(cdata.interval!='month')
+        //"let" collides with preview rendering -> use "var"
+        var aSel = chartinstance.config.options.annot_selection
+        if (start==end) {
+            dInfo.style.display = 'none' //need to change?
+            setAnnotVisibility(chartinstance.config,aSel,false)
+            if (typeof chartinstance.config._rangestart !== 'undefined') {
+                delete chartinstance.config._rangestart
+                delete chartinstance.config._rangeend
+            }
+        } else {
+            chartinstance.config._rangestart=start
+            chartinstance.config._rangeend=end
+        
+            dInfo.style.display = 'block'
+            
+            aSel=setAnnotVisibility(chartinstance.config,aSel,true)
+            aSel.xMin=start-0.5
+            aSel.xMax=end+0.5
+            
+            var y2020 = getDataByTag(cdata,'2020')
+            var covid = getDataByTag(cdata,'covid')
+            var avg = getDataByTag(cdata,'avg')
+            
+            var showProgn = getBtnState('btnprogn')
+            
+            var progn 
+            if (showProgn) 
+                progn=getDataByTag(cdata,'progn')
+                
+            var v2020 = dataSum(y2020.data,start,end)
+            var vAvg = Math.round(dataSum(avg.data,start,end))
+            var vDiff = Math.round(dataDiff(y2020.data,avg.data,start,end))
+            var vCovid = dataSum(covid.data,start,end)
+            var vDiffPerc = (vAvg!=0)?(Math.round(vDiff*1000/vAvg)/10):"--"
+            
+            dContent+='Ausgewählter Bereich: '+fmtstart+cdata.labels[start]+' - '+cdata.labels[end]+
+                        ' ('+(end-start+1)+(isWeeks?' Wochen)':' Monate')+')'+fmtstop+'<br />'
+            dContent+='∑ '+y2020.label+': '+fmtstart+   v2020.toLocaleString()+fmtstop+'<br />'
+            dContent+='∑ '+avg.label+': '+fmtstart+     vAvg.toLocaleString()+fmtstop+'<br />'
+            dContent+='∑ Übersterblichkeit: '+fmtstart+ vDiff.toLocaleString()
+                        +' ('+vDiffPerc+'%)'+fmtstop+' (Nur für Bereiche summiert, in denen Werte für Sterbefälle (2020-) verfügbar sind.)<br />'
+            dContent+='∑ '+covid.label+': '+fmtstart+   vCovid.toLocaleString()+fmtstop
+            if (showProgn) {
+                var pv2020 = Math.round(dataSumProgn(y2020.data,progn.data,start,end))
+                var pvDiff = Math.round(dataDiffProgn(y2020.data,progn.data,avg.data,start,end))
+                var pvDiffPerc = (vAvg!=0)?(Math.round(pvDiff*1000/vAvg)/10):"--"
+                
+                dContent+='<br /><br /><i>Inklusive Prognosewerte:<br />'
+                dContent+='∑ '+y2020.label+': '+fmtstart+   pv2020.toLocaleString()+fmtstop+'<br />'
+                dContent+='∑ Übersterblichkeit: '+fmtstart+ pvDiff.toLocaleString()
+                        +' ('+pvDiffPerc+'%)'+fmtstop+'</i>'
+            }
+            dInfo.innerHTML=dContent            
+        }
+    }
+}
+
+//sum of data values from start to end (undefined values are seen = 0)
+function dataSum(data_arr,start,end) {
+    var sum=0
+    for (var i=start;(i<=end) && (i<data_arr.length);i++) {
+        if (typeof data_arr[i]!=='undefined') {
+            sum+=data_arr[i]
+        }
+    }
+    return sum
+}
+
+//diff of 2 data arrays from start to end, if one or both values at index are undefined -> no diff is added for that index
+//diff is: data_arr1 - data_arr2
+function dataDiff(data_arr1,data_arr2,start,end) {
+    var diff=0
+    for (var i=start;(i<=end) && (i<data_arr1.length) && (i<data_arr2.length);i++) {
+        if ((typeof data_arr1[i]!=='undefined') && (typeof data_arr2[i]!=='undefined')) {
+            diff+=data_arr1[i]-data_arr2[i]
+        }
+    }
+    return diff
+}
+
+//same as dataSum, but sum data_progn instead of data_arr for values where it is assigned
+function dataSumProgn(data_arr,data_progn,start,end) {
+    var sum=0
+    for (var i=start;(i<=end) && (i<data_arr.length);i++) {
+        if (typeof data_progn[i]!=='undefined') {
+            sum+=data_progn[i]
+        } else if (typeof data_arr[i]!=='undefined') {
+            sum+=data_arr[i]
+        }
+    }
+    return sum
+}
+
+
+//same as dataDiff, but use data_progn instead of data_arr1 where "progn" data is assigned
+function dataDiffProgn(data_arr1,data_progn,data_arr2,start,end) {
+    var diff=0
+    for (var i=start;(i<=end) && (i<data_arr1.length) && (i<data_arr2.length);i++) {
+        if ((typeof data_progn[i]!=='undefined') && (typeof data_arr2[i]!=='undefined')) {
+            diff+=data_progn[i]-data_arr2[i]
+        } else if ((typeof data_arr1[i]!=='undefined') && (typeof data_arr2[i]!=='undefined')) {
+            diff+=data_arr1[i]-data_arr2[i]
+        }
+    }
+    return diff
+}
+
+function getDateFmtOfWeek(yweek) { //ISO8601 Date  yyyy/mm -> formatted date of mo
+    if ((""+yweek).indexOf("/")>0) {
+        w=yweek.substr(5,2)
+        y=yweek.substr(0,4)
+    } else return ""
+
+    var simple = new Date(y, 0, 1 + (w - 1) * 7);
+    var dow = simple.getDay();
+    var ISOweekStart = simple;
+    if (dow <= 4)
+        ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+    else
+        ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+        
+    opts={"year":"numeric","month":"2-digit","day":"2-digit"}
+    //ISOweekEnd=ISOweekStart
+    ISOweekEnd=new Date()
+    ISOweekEnd.setTime(ISOweekStart.getTime()+(6*24*60*60*1000))
+    
+    return ISOweekStart.toLocaleDateString("de-DE",opts)+"-"+ISOweekEnd.toLocaleDateString("de-DE",opts);
+}
+
+function getDateFmtOfMonth(ymonth) { //ISO8601 Date  yyyy/mm -> formatted date of mo
+    if ((""+ymonth).indexOf("/")>0) {
+        m=ymonth.substr(5,2)
+        y=ymonth.substr(0,4)
+    } else return ""
+
+    var y2=y
+    var m2=m
+    m2++
+    //console.log("y:"+y+" m:"+m+" y2: "+y2+" m2:"+m2)
+    if (m2>12) {
+        m2=1
+        y2++
+    }
+    var ymstart = new Date(y, m-1, 1);
+    var ymend = new Date(y2, m2-1, 1);              /*+1 month*/
+    ymend.setTime(ymend.getTime()-(24*60*60*1000))  /*-1 day*/
+        
+    opts={"year":"numeric","month":"2-digit","day":"2-digit"}
+    
+    return ymstart.toLocaleDateString("de-DE",opts)+"-"+ymend.toLocaleDateString("de-DE",opts);
+}
+
+
+//**********************************************************************************************
+
+function recalcCharts() {
+    var byYearStart=getBtnState("btnfirstjan")
+    var addProgn=getBtnState("btnprogn")
+    var useECDCData=false;//getBtnState("btnecdcdata")
+    
+    setBtnState("btnfirstjan",byYearStart?'active':'false')
+    setBtnState("btnfirstcovid",(!byYearStart)?'active':'false')
+    for (var key in charts) {
+        //console.log("recalc: "+key)
+        calcExcess(charts[key].config,byYearStart,addProgn,useECDCData)
+        calcSums(charts[key].config)
+        
+        if (typeof charts[key].config._rangestart !== 'undefined')
+             rangeSelected(charts[key],charts[key].config._rangestart,charts[key].config._rangestart)
+             
+        charts[key].chart.update()
+    }
+}
+
+//**********************************************************************************************
+function calcSums(config) { //maybe calc sums dynamically in label until data point, think of difference 52cw<>53cw
+    var ds=config.data.datasets
+    for (var i=0;i<ds.length;i++) {
+        var sum_all=0
+        var sum_y_1=0
+        for (w=0;w<config.data.labels.length;w++) {
+            var val = ds[i].data[w]
+            if (typeof val!=='undefined') {
+                sum_all+=val
+                if (w<53)
+                    sum_y_1+=val
+            }
+        }
+        ds[i]._sum_all=sum_all
+        ds[i]._sum_y_1=sum_y_1
+    }
+}
+
+
+//**********************************************************************************************
+function calcExcess(config,byYearStart,addProgn,useECDCData) {
+    var covid = getDataByTag(config.data,'covid')
+    var excess = getDataByTag(config.data,'excess')
+    var avg = getDataByTag(config.data,'avg')
+    var labels=config.data.labels
+    var cases = getDataByTag(config.data,'2020')
+    var progn = getDataByTag(config.data,'progn')
+    var usePrognFactor = false
+    var prognFactor
+    var prognFactorReduce
+    
+    var aCovidFirst = getAnnotByTag(config,'covidfirst')
+    var aCovid = getAnnotByTag(config,'covid')
+    var aCovidLastDay = getAnnotByTag(config,'covidlastday')
+    var aExcess = getAnnotByTag(config,'excess')
+    var aProgn = getAnnotByTag(config,'progn')
+    
+    config.data._avg=avg //set links to data as variables for use in tooltips
+    config.data._cases=cases
+    
+    if (useECDCData) {
+        covid.data=config.data._ecdc_data
+    } else {
+        //console.log("data: "+config.data.cocode)
+        covid.data=config.data._jh_data
+    }
+    
+    if (addProgn) {
+        if (progn==null) {
+            var progn={
+                label: 'Prognose',
+                _tag: 'progn',
+                borderColor: '#3399ff',
+                pointRadius: 0,
+                borderWidth: 1.5,
+                lineTension: 0,
+                order: 201,
+                fill: '-4',
+                backgroundColor: 'rgba(0,0,255,0.15)',
+                data: []
+            }
+            config.data.datasets.push(progn)
+        }
+        progn.data=[]
+    }
+    if (!addProgn && (progn!=null)) {
+        config.data.datasets.splice(getDataIxByTag(config.data,'progn'),1)
+    }
+    if (addProgn) {
+        if (!aProgn){
+            aProgn=config.options.annot_progn
+            config.options.annotation.annotations.push(aProgn)
+        }        
+    } else {
+        if (aProgn!=null) config.options.annotation.annotations.splice(getAnnotIxByTag(config,'progn'),1)
+    }
+    
+    if (covid && excess && avg && cases && aCovid && aExcess) {
+        var firstCovidCWix=0
+        var lastCovidCWix=0
+        var lastCasesCWix=0
+        
+        if (byYearStart) {
+            if (aCovidFirst) {
+                config.options.annotation.annotations.splice(getAnnotIxByTag(config,'covidfirst'),1)
+            }
+        } else {
+            if (!aCovidFirst) {
+                aCovidFirst=config.options.annot_covidfirst
+                config.options.annotation.annotations.push(aCovidFirst)
+            }
+        }
+        
+        if (byYearStart) {
+            firstCovidCWix=0 //start at 2020-01-01
+        } else {
+            for (var i=0; i<labels.length;i++) {
+                if ((typeof covid.data[i]!=='undefined') && (covid.data[i]!=0)) {
+                    firstCovidCWix=i
+                    break
+                }
+            }
+        }
+        for (var i=0; i<labels.length;i++) {
+            if (typeof cases.data[i]==='undefined') {
+                lastCasesCWix=i-1
+                break
+            }
+        }
+        var sumExcess=0
+        var sumAvg=0
+        var maxExcess=0
+        
+        var prognSumExcess=0 //for progn, get values of 1 week before last data
+        var prognSumAvg=0
+        var prognExc=0
+        var lastProgn=0
+        
+        excess.data=[]
+        config.data._excsum = []
+        config.data._covidsum = []
+        var covidsum=0
+        for (var i=0; i<labels.length;i++) {
+            if (typeof covid.data[i]!=='undefined') {
+                covidsum+=covid.data[i]
+                if (i>lastCovidCWix) lastCovidCWix=i
+            }
+            if ((i>=firstCovidCWix) && (i<=lastCasesCWix)) {
+                sumExcess += (cases.data[i]-avg.data[i])
+                sumAvg += avg.data[i]
+                var eVal=(sumExcess/sumAvg)*100
+                if (eVal>maxExcess) maxExcess=eVal
+                
+                config.data._excsum.push(sumExcess)
+                excess.data.push(eVal)
+            }
+            else {
+                excess.data.push(undefined)
+                config.data._excsum.push(undefined)
+            }
+            config.data._covidsum.push(covidsum)
+            
+            if (addProgn) {
+                if ((i<lastCasesCWix-1) || (typeof covid.data[i]=='undefined') ||
+                    (typeof avg.data[i]=='undefined')) {
+                    progn.data.push(undefined)
+                } else {
+                    lastProgn=i
+                    if (i==lastCasesCWix-1) {
+                        prognSumExcess=sumExcess
+                        prognSumAvg=sumAvg
+                        prognExc=(cases.data[i]-avg.data[i])
+                        
+                        if ((avg.data[i]>0) && (prognExc>covid.data[i])) {
+                            usePrognFactor=true //excess mortality exceeds covid-19 deaths -> use a factor and gradually reduce to 1
+                            
+                            if (covid.data[i]/avg.data[i]<0.05) {
+                                prognExc=covid.data[i] //low case# fix
+                                if (covid.data[i]>1) Math.min(prognExc/covid.data[i],5)
+                                else prognFactor=1 
+                                prognFactorReduce=0.6
+                            } else {
+                                prognFactorReduce=0.6
+                                prognFactor=Math.min(prognExc/covid.data[i],5)
+                            }
+                            //console.log(config.data.cocode+": usePrognFactor "+prognFactor+" * "+prognFactorReduce)
+                        }
+                    } else {
+                        //two methods: either use factor (which decreases over time) * covid deaths 
+                        if (usePrognFactor) {
+                            prognFactor=1+((prognFactor-1)*prognFactorReduce)
+                            prognExc=covid.data[i]*prognFactor
+                        } else { //or: +-covid deths difference on excess mortality
+                            prognExc+=(covid.data[i]-covid.data[i-1])
+                        }
+                        if (i==lastCasesCWix) { //not less than excess deaths on last 2020 cases data pt
+                            prognExc=Math.max(prognExc,cases.data[i]-avg.data[i])
+                        }
+                        prognSumExcess+=prognExc
+                        prognSumAvg+=avg.data[i]
+                    }
+                    //console.log(""+i+": c:"+covid.data[i]+"/a:"+avg.data[i]+"/"+prognSumExcess+"/"+prognSumAvg)
+                    progn.data.push(avg.data[i]+prognExc)
+                }
+            }
+            
+            
+        }
+        //todo -> redo cases Array
+        //aCovid.value=labels[lastCasesCWix]
+        if (!byYearStart) {
+            aCovidFirst.value=labels[firstCovidCWix]
+        }
+        aExcess.value=labels[lastCasesCWix]
+        aExcess.label.content = ""+(Math.round(excess.data[lastCasesCWix]*10)/10).toLocaleString()+"%, "+Math.round(sumExcess).toLocaleString()
+        
+        if (useECDCData) {
+            aCovid.label.content = (covidsum*1.0).toLocaleString()
+            aCovid.scaleID = "x-axis-0"
+            aCovid.value=labels[lastCovidCWix]
+            if (aCovidLastDay)
+                config.options.annotation.annotations.splice(getAnnotIxByTag(config,'covidlastday'),1)            
+        } else {
+            aCovid.label.content = (config.data.jh_covid_sum*1.0).toLocaleString()
+            aCovid.scaleID = "x-axis-1"
+            //config.options.scales.xAxes[1].ticks.max = labels.length
+            aCovid.value=lastCovidCWix+(config.data.jh_last_covid_dayoffset/7)
+            
+            if (config.data.jh_last_covid_dayoffset>0) {
+                if (!aCovidLastDay) {
+                    aCovidLastDay=config.options.annot_covidlastday
+                    config.options.annotation.annotations.push(aCovidLastDay)
+                }
+                aCovidLastDay.xMin=aCovid.value-(1/14)
+                aCovidLastDay.xMax=aCovid.value+(1/14)
+                aCovidLastDay.yMin=0
+                
+                var incompleteWeekCovid=config.data.jh_covid_sum-covidsum
+                var lastWeekCovid=covid.data[lastCovidCWix]
+                var scaleUpToWeek=(7/config.data.jh_last_covid_dayoffset) //scale incomplete week value up to 7 days est. value
+                
+                //console.log("lastcovidday: "+config.data.cocode+": diff: "+incompleteWeekCovid+", offs: "+config.data.jh_last_covid_dayoffset+", lastcdata: "+lastWeekCovid+", scaledDownCData:"+(lastWeekCovid/scaleUpToWeek))
+                //
+                //v1: scale case sum in new week to number of days in week
+                //aCovidLastDay.yMax=incompleteWeekCovid*scaleUpToWeek
+                //
+                //console.log("lastcovidday: "+config.data.cocode+",v1: "+aCovidLastDay.yMax)
+                //
+                //v2: scale only difference
+                //todo: simplify term
+                aCovidLastDay.yMax=lastWeekCovid+((incompleteWeekCovid-(lastWeekCovid/scaleUpToWeek))*scaleUpToWeek)
+                //console.log("lastcovidday: "+config.data.cocode+",v2: "+aCovidLastDay.yMax)
+            }
+        }
+        
+        config.options.scales.yAxes[1].ticks.max = (maxExcess>20?maxExcess:20)
+        
+        if (addProgn && aProgn) {
+            aProgn.value=labels[lastProgn]
+            if (!isNaN(prognSumExcess) && !isNaN(prognSumAvg)) {
+                aProgn.label.content = ""+(Math.round((prognSumExcess*100.0/prognSumAvg)*10)/10).toLocaleString()
+                    +"%, "+Math.round(prognSumExcess).toLocaleString()
+            } else {
+                aProgn.label.content = ""
+            }
+        }
+        
+        //console.log(config.data.cocode+" #1:"+firstCovidCWix+" last:"+lastCasesCWix)
+    }
+    else console.log("Missing data on "+config.data.cocode)
+}
+
+function getDataByTag(data,tagmatch) {
+    for (var i=0;i<data.datasets.length;i++) {
+        if (data.datasets[i]['_tag']==tagmatch) {
+            //console.log("tagmatch: "+tagmatch+" le "+el.data.length)
+            return data.datasets[i]
+        }
+    }
+    //console.log("data tag: "+tagmatch+" not found!")
+    return null
+}
+
+function getDataIxByTag(data,tagmatch) {
+    for (var i=0;i<data.datasets.length;i++) {
+        if (data.datasets[i]['_tag']==tagmatch) return i
+    }
+    //console.log("data tag: "+tagmatch+" not found!")
+    return -1
+}
+
+function getAnnotByTag(config,tagmatch) {
+    for (var i=0;i<config.options.annotation.annotations.length;i++) {
+        if (config.options.annotation.annotations[i]['_tag']==tagmatch) return config.options.annotation.annotations[i]
+    }
+    //console.log("annot tag: "+tagmatch+" not found!")
+    return null
+}
+function getAnnotIxByTag(config,tagmatch) {
+    for (var i=0;i<config.options.annotation.annotations.length;i++) {
+        if (config.options.annotation.annotations[i]['_tag']==tagmatch) return i
+    }
+    //console.log("annot tag: "+tagmatch+" not found!")
+    return -1
+}
+
+//add remove annotation from annotations, uses tag for identification inside annotations array
+//returns annot object (in annotations) when visible
+//return null if annot item is (now) hidden
+function setAnnotVisibility(config,annotitem,avisible) {
+    var annot=null
+    if (!(typeof annotitem=='undefined')) {
+        annot = getAnnotByTag(config,annotitem['_tag'])
+        if (avisible) {//show
+            if (!annot) {
+                config.options.annotation.annotations.push(annotitem)
+                annot=annotitem
+            }
+        } else { //hide
+            if (annot) {
+                config.options.annotation.annotations.splice(getAnnotIxByTag(config,annotitem['_tag']),1)
+                annot=null
+            }
+        }
+    } else console.log("setAnnotVisibility: Error, annotitem not found")
+    return annot
+}
+
+//**********************************************************************************************
+
+function bigCharts() {
+    setBtnState("btnbigcharts",'active')
+    setBtnState("btnsmallcharts",'notactive')
+    isBigCharts=true
+    
+    for (var key in charts) {
+        updateChartSizeIfVisible(charts[key])
+    }
+}
+
+function smallCharts() {
+    setBtnState("btnbigcharts",'notactive')
+    setBtnState("btnsmallcharts",'active')
+    isBigCharts=false
+    
+    for (var key in charts) {
+        updateChartSizeIfVisible(charts[key])
+    }
+}
+
+function updateChartSizeIfVisible(achart) {
+    //console.log("cocode: "+cocode+" cindex "+cindex+" elementid "+element.id)
+    if (achart.div.style.display == 'block') {
+        if (isBigCharts) {
+            if (!achart.div.classList.contains('big-chart')) {
+                achart.div.classList.add('big-chart')
+            }
+        } else {
+            if (achart.div.classList.contains('big-chart')) {
+                achart.div.classList.remove('big-chart')
+            }
+        }
+        achart.chart.resize()
+    }
+}
+
+
+//**********************************************************************************************
+function setSpanContent(id,str) {
+    var span = document.getElementById(id);
+
+    while( span.firstChild ) {
+        span.removeChild( span.firstChild );
+    }
+    span.appendChild( document.createTextNode(str) );
+}
+
+function getBtnState(id) {
+    var elem = document.getElementById(id);
+    return (elem.getAttribute('data-state')=='active')
+}
+
+
+function setBtnState(id,strState) {
+    var elem = document.getElementById(id);
+    if (elem) elem.setAttribute('data-state',strState)
+}
+
+
+function cssrules() {
+    var rules = {};
+    for (var i=0; i<document.styleSheets.length; ++i) {
+        var cssRules = document.styleSheets[i].cssRules;
+        for (var j=0; j<cssRules.length; ++j)
+            rules[cssRules[j].selectorText] = cssRules[j];
+    }
+    return rules;
+}
+
+function css_getclass(name) {
+    var rules = cssrules();
+    if (!rules.hasOwnProperty(name))
+        throw 'TODO: deal_with_notfound_case';
+    return rules[name];
+}
+
+
+//**********************************************************************************************
+
+//source/credits: http://www.salesianer.de/util/kalwoch.html
+function kalenderwoche(Datum) {
+    //var Datum=new Date(j,m-1,t)
+    var DoDat=donnerstag(Datum)
+    var kwjahr=DoDat.getFullYear()
+    var DoKW1=donnerstag(new Date(kwjahr,0,4))
+    return kwjahr+"/"+Math.floor(1.5+(DoDat.getTime()-DoKW1.getTime())/86400000/7)
+}
+
+function kalendermonat(Datum) {
+    var kwjahr=Datum.getFullYear()
+    return Datum.getFullYear()+"/"+(Datum.getMonth()+1).toLocaleString('de-DE', {
+        minimumIntegerDigits: 2,
+        useGrouping: false
+        })
+}
+
+
+function donnerstag(datum) {
+  var Do=new Date()
+  Do.setTime(datum.getTime() + (3-((datum.getDay()+6) % 7)) * 86400000)
+  return Do
+}
+
+function montag(datum) {
+  var Mo=new Date()
+  Mo.setTime(datum.getTime() + (-((datum.getDay()+6) % 7)) * 86400000)
+  return Mo
+}
+
+
+</script>
+</body>
