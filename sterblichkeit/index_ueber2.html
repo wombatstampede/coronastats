@@ -203,6 +203,8 @@ function createConfig(details) {
                         fontSize:10,
                         //minor: {enabled:true},
                         //major: {enabled:true},
+                        //autoSkip: false,
+                        // todo: custom filtering to force display of KW 01 (autoSkip)
                         callback: function(value, index, values) {
                             if ((""+value).indexOf("/")>0) {
                                 
@@ -210,7 +212,10 @@ function createConfig(details) {
                                     return value.substr(5,2)
                                 }
                                 else {
-                                    return value.substr(0,4) + " KW " + value.substr(5,2)
+                                    if (details.interval=='week')
+                                        return value.substr(0,4) + " KW " + value.substr(5,2)
+                                    else
+                                        return value.substr(0,4) + " / " + value.substr(5,2)
                                 }
                             }
                             else return value
@@ -910,20 +915,25 @@ function calcExcess(config,byYearStart,addProgn,useECDCData) {
             aCovid.label.content = (config.data.jh_covid_sum*1.0).toLocaleString()
             aCovid.scaleID = "x-axis-1"
             //config.options.scales.xAxes[1].ticks.max = labels.length
-            aCovid.value=lastCovidCWix+(config.data.jh_last_covid_dayoffset/7)
+            
+            var intervaldays=7
+            if (config.data.interval=='month')
+                intervaldays=parseInt(config.data.jh_last_covid_monthdays,10)
+                
+            aCovid.value=lastCovidCWix+(config.data.jh_last_covid_dayoffset/intervaldays)
             
             if (config.data.jh_last_covid_dayoffset>0) {
                 if (!aCovidLastDay) {
                     aCovidLastDay=config.options.annot_covidlastday
                     config.options.annotation.annotations.push(aCovidLastDay)
                 }
-                aCovidLastDay.xMin=aCovid.value-(1/14)
-                aCovidLastDay.xMax=aCovid.value+(1/14)
+                aCovidLastDay.xMin=aCovid.value-(1/(intervaldays*2))
+                aCovidLastDay.xMax=aCovid.value+(1/(intervaldays*2))
                 aCovidLastDay.yMin=0
                 
                 var incompleteWeekCovid=config.data.jh_covid_sum-covidsum
                 var lastWeekCovid=covid.data[lastCovidCWix]
-                var scaleUpToWeek=(7/config.data.jh_last_covid_dayoffset) //scale incomplete week value up to 7 days est. value
+                var scaleUpToWeek=(intervaldays/config.data.jh_last_covid_dayoffset) //scale incomplete week value up to 7 days est. value
                 
                 //console.log("lastcovidday: "+config.data.cocode+": diff: "+incompleteWeekCovid+", offs: "+config.data.jh_last_covid_dayoffset+", lastcdata: "+lastWeekCovid+", scaledDownCData:"+(lastWeekCovid/scaleUpToWeek))
                 //
