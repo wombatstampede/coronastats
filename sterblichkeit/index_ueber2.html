@@ -87,7 +87,7 @@ Die Sterbefalldaten für Deutschland werden den entsprechende Veröffentlichunge
 <li><strong>Russland:</strong><br/>
 <strong>Wichtig, Experiment!:</strong> Mangels Verfügbarkeit wöchentlicher Werte handelt es sich hier um monatliche Daten. Die Datenaufbereitung für dieses Land ist nur wenig getestet und kann noch Fehler enthalten.<br/>Die Sterbefalldaten für Russland werden aus dem <a href="https://github.com/akarlinsky/world_mortality">World Mortality Dataset</a> entnommen. Siehe Quellen "UK/RU".</li>
 <li><strong>Großbritannien:</strong><br/>
-Seit dem Brexit pausiert aktuell wohl die Datenlieferung von Großbritannien an EUROSTAT. Daher werden die Sterbefalldaten für 2020 und 2021 nun aus dem <a href="https://github.com/akarlinsky/world_mortality">World Mortality Dataset</a> entnommen. Siehe Quellen "UK".</li>
+Seit dem Brexit pausiert aktuell wohl die Datenlieferung von Großbritannien an EUROSTAT. Daher werden die Sterbefalldaten für 2020 und 2021 nun aus dem <a href="https://github.com/akarlinsky/world_mortality">World Mortality Dataset</a> entnommen. Siehe Quellen.</li>
 <li><strong>USA:</strong><br/>
 Die Sterbefälle/Übersterblichkeit stammen vom CDC. Die Sterbefälle entsprechen dem Wert "Predicted number of deaths from all causes". Details dazu finden sich beim <a href="https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm">CDC</a>. Aufgrund der Vergleichbarkeit wurden die US-Kalenderwochen (beginnen Sonntags) auf europäische Kalenderwochen (beginnen Montags) abgebildet. So kann es im Zeitbezug zu minimalen Abweichungen kommen.</li>
 </ul>
@@ -98,7 +98,7 @@ Die Sterbefälle/Übersterblichkeit stammen vom CDC. Die Sterbefälle entspreche
 <li>ECDC: <a href="https://www.ecdc.europa.eu/en/coronavirus">https://www.ecdc.europa.eu/en/coronavirus</a> (Sterbefalldaten COVID-19)</li>
 <li>JHU: <a href="https://github.com/CSSEGISandData/COVID-19">https://github.com/CSSEGISandData/COVID-19</a> (Sterbefalldaten Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE))</li>
 <li>CDC: <a href="https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm">https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm</a> (Sterbefalldaten USA)</li>
-<li>World Mortality Dataset (UK/RU): <a href="https://github.com/akarlinsky/world_mortality">https://github.com/akarlinsky/world_mortality</a></li>
+<li>World Mortality Dataset (IL/UK/RU): <a href="https://github.com/akarlinsky/world_mortality">https://github.com/akarlinsky/world_mortality</a></li>
 <!--
 <li>ONS: <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/datasets/weeklyprovisionalfiguresondeathsregisteredinenglandandwales">https://www.ons.gov.uk/</a> (UK: Sterbefalldaten England &amp; Wales)</li>
 <li>National Records of Scotland: <a href="https://www.nrscotland.gov.uk/statistics-and-data/statistics/statistics-by-theme/vital-events/general-publications/weekly-and-monthly-data-on-births-and-deaths/weekly-data-on-births-and-deaths">https://www.nrscotland.gov.uk/</a> (UK: Sterbefalldaten Schottland)</li>
@@ -213,6 +213,7 @@ function createConfig(details) {
                                 }
                                 else {
                                     if (details.interval=='week')
+                                        //return [value.substr(5,2),value.substr(0,4)]
                                         return value.substr(0,4) + " KW " + value.substr(5,2)
                                     else
                                         return value.substr(0,4) + " / " + value.substr(5,2)
@@ -471,6 +472,11 @@ function addCountrySelect(ccode,cname,isActive) {
         csBtn.setAttribute('href','javascript:toggleCountry("'+ccode+'")')
         csBtn.appendChild(document.createTextNode(ccode))
         cs.appendChild(csBtn)
+        
+        if (ccode=='UK') {//ad BR after UK to separate "EU" and "Other"
+            var csBr = document.createElement('br')
+            cs.appendChild(csBr)
+        }
         charts[ccode].button = csBtn
     }
 
