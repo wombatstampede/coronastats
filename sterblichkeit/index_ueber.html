@@ -12,7 +12,7 @@
 <script type="text/javascript" src="Chart.min.js"></script>
 <script type="text/javascript" src="chartjs-plugin-annotation.min.js"></script>
 <script type="text/javascript" src="chartjs-plugin-crosshair_modif.js"></script>
-<script type="text/javascript" src="sterbefaelle7_ueber.js"></script>
+<script type="text/javascript" src="sterbefaelle7_ueber_2.js"></script>
 <script type="text/javascript" src="sterbefaelle7_ueber_us.js"></script>
 <style>
 	canvas {
@@ -69,25 +69,25 @@
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
 <li><strong>Erläuterung:</strong><br/>
-Diese Grafiken stellen je Land die allgemeine Sterblichkeit (<strong><span style="color:blue;">blaue</span></strong> Linie für 2020+) bzw. Übersterblichkeit (Fläche in <span style="background-color: rgba(255,0,0,0.25);">Hellrot</span>) je Kalenderwoche den gemeldeten COVID-19 Sterbefällen (in <span style="background-color: rgba(0,193,143,0.25);">Grün</span>) gegenüber. Die Sterbefälle der Vorjahre werden ebenfalls als Linien in anderen Farben gezeigt.</li>
+Diese Grafiken stellen je Land die allgemeine Sterblichkeit (<strong><span style="color:blue;">blaue</span></strong> Linie für 2020+) bzw. Übersterblichkeit (Fläche in <span style="background-color: rgba(255,0,0,0.25);">Hellrot</span>) je Kalenderwoche (bzw. Monat) den gemeldeten COVID-19 Sterbefällen (in <span style="background-color: rgba(0,193,143,0.25);">Grün</span>) gegenüber. Die Sterbefälle der Vorjahre werden ebenfalls als Linien in anderen Farben gezeigt.</li>
 <li><strong>Abweichungen/Zeitraum:</strong><br/>Die Übersterblichkeit wird hier ab dem ersten dokumentierten COVID-19 Todesfall summiert (siehe schwarze vertikale Linie). Alternativ kann die Übersterblichkeit ab Jahresbeginn summiert werden. Dies führt jeweils zu unterschiedlichen Ergebnissen was bei der Interpretation berücksichtigt werden sollte.<br />
 <i>Zusätzlich</i> kann ein abweichender Zeitraum in der Grafik markiert werden. Die Summen werden dann unter der Grafik angezeigt.</li>
 <li><strong>Übersterblichkeit:</strong><br/>
-Beschreibt hier die Abweichung vom Vorjahresdurchschnitt ab dem ersten COVID-19 Todesfall (alternativ: 01.01.2020). Das Intervall für die Bildung des Durchschnittes ist je Land in der Legende angegeben. Es kann nach Datenverfügbarkeit variieren. Im Falle der USA wird als Durchschnitt der vom CDC gelieferte Wert "Average expected number of deaths" verwendet. Der prozentuale Wert (<strong><span style="color:red;">rote</span></strong> Linie) entspricht dem Anteil der kumulierten Abweichung an den gesamten durchschnittlichen Sterbefällen im jeweils gleichen Zeitraum. Der abschließende Wert (oben in <strong><span style="color:rgb(100,0,0);">Rot</span></strong>) zeigt also die Gesamtabweichung zum Durchschnitt im bekannten Zeitraum in % sowie in Sterbefällen. Je nach Land, kann dieser Zeitraum (siehe vertikale rote Linie) weit vor der aktuellen KW (siehe vertikale grüne Linie) enden. Negative Werte zeigen entsprechend eine unterdurchschnittliche Sterblichkeit.</li>
+Beschreibt hier die Abweichung vom Vorjahresdurchschnitt ab dem ersten COVID-19 Todesfall (alternativ: 01.01.2020). Das Intervall für die Bildung des Durchschnittes ist je Land in der Legende angegeben. Es kann nach Datenverfügbarkeit variieren. Im Falle der USA wird als Durchschnitt der vom CDC gelieferte Wert "Average expected number of deaths" verwendet. Der prozentuale Wert (<strong><span style="color:red;">rote</span></strong> Linie) entspricht dem Anteil der kumulierten Abweichung an den gesamten durchschnittlichen Sterbefällen im jeweils gleichen Zeitraum. Der abschließende Wert (oben in <strong><span style="color:rgb(100,0,0);">Rot</span></strong>) zeigt also die Gesamtabweichung zum Durchschnitt im bekannten Zeitraum in % sowie in Sterbefällen. Je nach Land, kann dieser Zeitraum (siehe vertikale rote Linie) weit vor der aktuellen KW bzw. Monat (siehe vertikale grüne Linie) enden. Negative Werte zeigen entsprechend eine unterdurchschnittliche Sterblichkeit.</li>
 <li><strong>Prognose: (Experiment!)</strong><br/>
 Wird diese Funktion aktiviert, so wird versucht eine grobe Prognose der Übersterblichkeit anhand der Entwicklung der gemeldeten COVID-19 Sterbezahlen zu "erraten". Es handelt es sich hier um eine experimentelle Funktion, daher ist sie normalerweise auch abgeschaltet. Die Prognose startet bei der vorletzten ermittelten Übersterblichkeit und schreibt diese orientiert an den wöchentlich gemeldeten COVID-19 Sterbezahlen fort. Das Ergebnis wird in <span style="background-color: rgba(0,0,255,0.15);">Blau</span> angezeigt.</li>
 <li><strong>Werte:</strong><br/>
-In dieser Statistik werden auch als 'provisional' oder 'estimated' gekennzeichnete Werte verwendet. Insbesondere die Angaben bzgl. Sterbefällen in den letzten Wochen können - je nach Land unterschiedlich - noch besonders unvollständig sein. Für die Ermittlung der durchschnittliche Sterblichkeit in KW53 wird in Jahren ohne KW53 der Mittelwert zwischen den Werten für KW52 und KW01 des Folgejahres verwendet.</li>
+In dieser Statistik werden auch als 'provisional' oder 'estimated' gekennzeichnete Werte verwendet. Insbesondere die Angaben bzgl. Sterbefällen in den letzten Wochen/Monat können - je nach Land unterschiedlich - noch besonders unvollständig sein. Für die Ermittlung der durchschnittliche Sterblichkeit in KW53 wird in Jahren ohne KW53 der Mittelwert zwischen den Werten für KW52 und KW01 des Folgejahres verwendet.</li>
 <!--<li><strong>COVID-19:</strong><br/>
 Dies sind die von der Johns Hopkins University zusammengetragenen bzw. (alternativ) an das ECDC gemeldeten COVID-19 Todesfälle je KW (in grün). Der abschließende Wert in <strong><span style="color:rgb(0,102,76);">Grün</span></strong> (unten) nennt die aktuell insgesamt gemeldeten COVID-19 Todesfälle gemäß Johns Hopkins University bzw. bei ECDC-Daten die kumulierten Todesfälle bis zur letzten gezeigten Woche (Aktualität, siehe Titelzeile). <strong>Die Datenquelle JHU/ECDC kann über die Buttons oben umgestellt werden.</strong> Die kleine graue vertikale Linie rechts daneben (nur JHU) zeigt die kumulierten Todesfälle der angebrochenen aktuellen Woche (daher ungenau) skaliert auf eine Woche.</li> -->
 <li><strong>COVID-19:</strong><br/>
-Dies sind die von der Johns Hopkins University zusammengetragenen COVID-19 Todesfälle je KW (in grün). Der abschließende Wert in <strong><span style="color:rgb(0,102,76);">Grün</span></strong> (unten) nennt die aktuell insgesamt gemeldeten COVID-19 Todesfälle gemäß Johns Hopkins University (Aktualität, siehe Titelzeile). Die kleine graue vertikale Linie rechts daneben zeigt die kumulierten Todesfälle der angebrochenen aktuellen Woche (daher ungenau) skaliert auf eine Woche.</li>
+Dies sind die von der Johns Hopkins University zusammengetragenen COVID-19 Todesfälle je KW bzw. Monat (in grün). Der abschließende Wert in <strong><span style="color:rgb(0,102,76);">Grün</span></strong> (unten) nennt die aktuell insgesamt gemeldeten COVID-19 Todesfälle gemäß Johns Hopkins University (Aktualität, siehe Titelzeile). Die kleine graue vertikale Linie rechts daneben zeigt die kumulierten Todesfälle der angebrochenen aktuellen Woche (daher ungenau) skaliert auf eine Woche.</li>
 <li><strong>Deutschland:</strong><br/>
 Die Sterbefalldaten für Deutschland werden den entsprechende Veröffentlichungen von DESTATIS entnommen.(Siehe Quellen)</li>
-<li><strong>Russland:</strong><br/>
-<strong>Wichtig, Experiment!:</strong> Es handelt sich im Quellsatz um monatliche Daten, die zwecks Vergleichbarkeit auf Wochen heruntergebrochen werden (der zeitliche Bezug ist daher ungenau). Die Datenaufbereitung für diese Statistik ist auch nur wenig getestet und kann noch Fehler enthalten.<br/>Die Sterbefalldaten für Russland werden aus dem <a href="https://github.com/akarlinsky/world_mortality">World Mortality Dataset</a> entnommen. Siehe Quellen "UK/RU".</li>
+<li><strong>Russland:</strong> (und manche anderen außereuropäische Länder)<br/>
+Mangels Verfügbarkeit wöchentlicher Werte handelt es sich hier um monatliche Daten. Die Sterbefalldaten für diese Länder werden aus dem <a href="https://github.com/akarlinsky/world_mortality">World Mortality Dataset</a> entnommen. Siehe Quellen.</li>
 <li><strong>Großbritannien:</strong><br/>
-Seit dem Brexit pausiert aktuell wohl die Datenlieferung von Großbritannien an EUROSTAT. Daher werden die Sterbefalldaten für 2020 und 2021 nun aus dem <a href="https://github.com/akarlinsky/world_mortality">World Mortality Dataset</a> entnommen. Siehe Quellen "UK".</li>
+Seit dem Brexit pausiert aktuell wohl die Datenlieferung von Großbritannien an EUROSTAT. Daher werden die Sterbefalldaten für 2020 und 2021 nun ebenfalls aus dem <a href="https://github.com/akarlinsky/world_mortality">World Mortality Dataset</a> entnommen.</li>
 <li><strong>USA:</strong><br/>
 Die Sterbefälle/Übersterblichkeit stammen vom CDC. Die Sterbefälle entsprechen dem Wert "Predicted number of deaths from all causes". Details dazu finden sich beim <a href="https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm">CDC</a>. Aufgrund der Vergleichbarkeit wurden die US-Kalenderwochen (beginnen Sonntags) auf europäische Kalenderwochen (beginnen Montags) abgebildet. So kann es im Zeitbezug zu minimalen Abweichungen kommen.</li>
 </ul>
@@ -98,7 +98,7 @@ Die Sterbefälle/Übersterblichkeit stammen vom CDC. Die Sterbefälle entspreche
 <li>ECDC: <a href="https://www.ecdc.europa.eu/en/coronavirus">https://www.ecdc.europa.eu/en/coronavirus</a> (Sterbefalldaten COVID-19)</li>
 <li>JHU: <a href="https://github.com/CSSEGISandData/COVID-19">https://github.com/CSSEGISandData/COVID-19</a> (Sterbefalldaten Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE))</li>
 <li>CDC: <a href="https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm">https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm</a> (Sterbefalldaten USA)</li>
-<li>World Mortality Dataset (UK/RU): <a href="https://github.com/akarlinsky/world_mortality">https://github.com/akarlinsky/world_mortality</a></li>
+<li>World Mortality Dataset (IL/UK/RU): <a href="https://github.com/akarlinsky/world_mortality">https://github.com/akarlinsky/world_mortality</a></li>
 <!--
 <li>ONS: <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/datasets/weeklyprovisionalfiguresondeathsregisteredinenglandandwales">https://www.ons.gov.uk/</a> (UK: Sterbefalldaten England &amp; Wales)</li>
 <li>National Records of Scotland: <a href="https://www.nrscotland.gov.uk/statistics-and-data/statistics/statistics-by-theme/vital-events/general-publications/weekly-and-monthly-data-on-births-and-deaths/weekly-data-on-births-and-deaths">https://www.nrscotland.gov.uk/</a> (UK: Sterbefalldaten Schottland)</li>
@@ -108,7 +108,8 @@ Die Sterbefälle/Übersterblichkeit stammen vom CDC. Die Sterbefälle entspreche
 <script>
 
 /****************************/
-    var coInclude="DE CH AT DK BE NL FR SE CZ EL ES IT PL NO PT UK BG FI HR HU RO RS SI SK US"
+    var coInclude="DE UK BG RO RU US"
+//    var coInclude="DE CH AT DK BE NL FR SE CZ EL ES IT PL NO PT UK BG FI HR HU RO RS SI SK US"
 //    var coInclude="*"
 /****************************/
 
@@ -170,7 +171,10 @@ function createConfig(details) {
                         //var v = data.datasets[items[0].datasetIndex].data[items[0].index]
                         //return [v.x+" / "+v.y+"J:"]
                         kw=data.labels[items[0].index]
-                        return kw+"  "+getDateFmtOfWeek(kw)
+                        if (data.interval=='week')
+                            return kw+"  "+getDateFmtOfWeek(kw)
+                        else
+                            return kw+"  "+getDateFmtOfMonth(kw)
                     },
                     label: function(item, data) {
                         var label = data.datasets[item.datasetIndex].label
@@ -200,6 +204,8 @@ function createConfig(details) {
                         fontSize:10,
                         //minor: {enabled:true},
                         //major: {enabled:true},
+                        //autoSkip: false,
+                        // todo: custom filtering to force display of KW 01 (autoSkip)
                         callback: function(value, index, values) {
                             if ((""+value).indexOf("/")>0) {
                                 
@@ -207,7 +213,11 @@ function createConfig(details) {
                                     return value.substr(5,2)
                                 }
                                 else {
-                                    return value.substr(0,4) + " KW " + value.substr(5,2)
+                                    if (details.interval=='week')
+                                        //return [value.substr(5,2),value.substr(0,4)]
+                                        return value.substr(0,4) + " KW " + value.substr(5,2)
+                                    else
+                                        return value.substr(0,4) + " / " + value.substr(5,2)
                                 }
                             }
                             else return value
@@ -368,7 +378,7 @@ function createConfig(details) {
                         _tag: 'nowcw',
                         mode: "vertical",
                         scaleID: "x-axis-0",
-                        value: kalenderwoche(new Date())-0.99, /*lastcw is correct, why then?*/
+                        value: (details.interval=='week')?kalenderwoche(new Date()):kalendermonat(new Date()),
                         borderColor: 'rgba(0,255,0,0.5)',
                         borderWidth: 1,
                         /*label: {
@@ -463,6 +473,12 @@ function addCountrySelect(ccode,cname,isActive) {
         csBtn.setAttribute('href','javascript:toggleCountry("'+ccode+'")')
         csBtn.appendChild(document.createTextNode(ccode))
         cs.appendChild(csBtn)
+        
+        if (ccode=='UK') {//ad BR after UK to separate "EU" and "Other"
+            var csBr = document.createElement('br')
+            cs.appendChild(csBr)
+            cs.appendChild(document.createTextNode("Weltweit: "))
+        }
         charts[ccode].button = csBtn
     }
 
@@ -520,11 +536,12 @@ function byYearStart(isByYearStart) {
 //**********************************************************************************************
 function rangeSelected(chartinstance,start,end) {
     var cdata=chartinstance.config.data
-    var dInfo = document.getElementById('cinfo'+chartinstance.config.data.cocode);
+    var dInfo = document.getElementById('cinfo'+chartinstance.config.data.cocode)
     var dContent =""
     var fmtstart ="<strong>"
     var fmtstop  ="</strong>"
     if (dInfo) {
+        var isWeeks=(cdata.interval!='month')
         //"let" collides with preview rendering -> use "var"
         var aSel = chartinstance.config.options.annot_selection
         if (start==end) {
@@ -561,7 +578,7 @@ function rangeSelected(chartinstance,start,end) {
             var vDiffPerc = (vAvg!=0)?(Math.round(vDiff*1000/vAvg)/10):"--"
             
             dContent+='Ausgewählter Bereich: '+fmtstart+cdata.labels[start]+' - '+cdata.labels[end]+
-                        ' ('+(end-start+1)+' Wochen)'+fmtstop+'<br />'
+                        ' ('+(end-start+1)+(isWeeks?' Wochen)':' Monate')+')'+fmtstop+'<br />'
             dContent+='∑ '+y2020.label+': '+fmtstart+   v2020.toLocaleString()+fmtstop+'<br />'
             dContent+='∑ '+avg.label+': '+fmtstart+     vAvg.toLocaleString()+fmtstop+'<br />'
             dContent+='∑ Übersterblichkeit: '+fmtstart+ vDiff.toLocaleString()
@@ -652,6 +669,29 @@ function getDateFmtOfWeek(yweek) { //ISO8601 Date  yyyy/mm -> formatted date of 
     ISOweekEnd.setTime(ISOweekStart.getTime()+(6*24*60*60*1000))
     
     return ISOweekStart.toLocaleDateString("de-DE",opts)+"-"+ISOweekEnd.toLocaleDateString("de-DE",opts);
+}
+
+function getDateFmtOfMonth(ymonth) { //ISO8601 Date  yyyy/mm -> formatted date of mo
+    if ((""+ymonth).indexOf("/")>0) {
+        m=ymonth.substr(5,2)
+        y=ymonth.substr(0,4)
+    } else return ""
+
+    var y2=y
+    var m2=m
+    m2++
+    //console.log("y:"+y+" m:"+m+" y2: "+y2+" m2:"+m2)
+    if (m2>12) {
+        m2=1
+        y2++
+    }
+    var ymstart = new Date(y, m-1, 1);
+    var ymend = new Date(y2, m2-1, 1);              /*+1 month*/
+    ymend.setTime(ymend.getTime()-(24*60*60*1000))  /*-1 day*/
+        
+    opts={"year":"numeric","month":"2-digit","day":"2-digit"}
+    
+    return ymstart.toLocaleDateString("de-DE",opts)+"-"+ymend.toLocaleDateString("de-DE",opts);
 }
 
 
@@ -883,20 +923,25 @@ function calcExcess(config,byYearStart,addProgn,useECDCData) {
             aCovid.label.content = (config.data.jh_covid_sum*1.0).toLocaleString()
             aCovid.scaleID = "x-axis-1"
             //config.options.scales.xAxes[1].ticks.max = labels.length
-            aCovid.value=lastCovidCWix+(config.data.jh_last_covid_dayoffset/7)
+            
+            var intervaldays=7
+            if (config.data.interval=='month')
+                intervaldays=parseInt(config.data.jh_last_covid_monthdays,10)
+                
+            aCovid.value=lastCovidCWix+(config.data.jh_last_covid_dayoffset/intervaldays)
             
             if (config.data.jh_last_covid_dayoffset>0) {
                 if (!aCovidLastDay) {
                     aCovidLastDay=config.options.annot_covidlastday
                     config.options.annotation.annotations.push(aCovidLastDay)
                 }
-                aCovidLastDay.xMin=aCovid.value-(1/14)
-                aCovidLastDay.xMax=aCovid.value+(1/14)
+                aCovidLastDay.xMin=aCovid.value-(1/(intervaldays*2))
+                aCovidLastDay.xMax=aCovid.value+(1/(intervaldays*2))
                 aCovidLastDay.yMin=0
                 
                 var incompleteWeekCovid=config.data.jh_covid_sum-covidsum
                 var lastWeekCovid=covid.data[lastCovidCWix]
-                var scaleUpToWeek=(7/config.data.jh_last_covid_dayoffset) //scale incomplete week value up to 7 days est. value
+                var scaleUpToWeek=(intervaldays/config.data.jh_last_covid_dayoffset) //scale incomplete week value up to 7 days est. value
                 
                 //console.log("lastcovidday: "+config.data.cocode+": diff: "+incompleteWeekCovid+", offs: "+config.data.jh_last_covid_dayoffset+", lastcdata: "+lastWeekCovid+", scaledDownCData:"+(lastWeekCovid/scaleUpToWeek))
                 //
@@ -1072,8 +1117,17 @@ function kalenderwoche(Datum) {
     var DoDat=donnerstag(Datum)
     var kwjahr=DoDat.getFullYear()
     var DoKW1=donnerstag(new Date(kwjahr,0,4))
-    return Math.floor(1.5+(DoDat.getTime()-DoKW1.getTime())/86400000/7)
+    return kwjahr+"/"+Math.floor(1.5+(DoDat.getTime()-DoKW1.getTime())/86400000/7)
 }
+
+function kalendermonat(Datum) {
+    var kwjahr=Datum.getFullYear()
+    return Datum.getFullYear()+"/"+(Datum.getMonth()+1).toLocaleString('de-DE', {
+        minimumIntegerDigits: 2,
+        useGrouping: false
+        })
+}
+
 
 function donnerstag(datum) {
   var Do=new Date()
