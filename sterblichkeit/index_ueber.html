@@ -393,6 +393,27 @@ function createConfig(details) {
                           enabled: true
                         },*/
                     },
+                    {
+                        type: "line",
+                        _tag: '_2021',
+                        mode: "vertical",
+                        scaleID: "x-axis-0",
+                        value: (details.interval=='week')?'2021/01':'2021/01',
+                        borderColor: 'rgba(0,0,0,0.5)',
+                        borderWidth: 1,
+                        label: {
+                          //backgroundColor: "red",
+                          backgroundColor: 'rgba(100,220,220,0)',
+                          //fontColor: window.chartColors.red,
+                          //yAdjust: 2,
+                          fontColor: "rgba(0,0,0,0.5)",
+                          xAdjust: -14,
+                          fontSize: 10,
+                          content: '2021',
+                          position: "top",
+                          enabled: true
+                        },
+                    },
                 ]
             },
         }
