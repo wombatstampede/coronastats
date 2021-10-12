@@ -398,7 +398,9 @@ function createConfig(details) {
                         _tag: '_2021',
                         mode: "vertical",
                         scaleID: "x-axis-0",
-                        value: (details.interval=='week')?'2021/01':'2021/01',
+                        //value: (details.interval=='week')?'2021/01':'2021/01',
+                        //value: (details.labels.findIndex(flb => flb == "2021/01")-0.5),
+                        value: (details.interval=='week')?(details.labels.findIndex(flb => flb == "2020/53")-3/7):details.labels.findIndex(flb => flb == "2020/12"),
                         borderColor: 'rgba(0,0,0,0.5)',
                         borderWidth: 1,
                         label: {
