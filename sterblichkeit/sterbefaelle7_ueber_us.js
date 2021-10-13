@@ -6,6 +6,7 @@ var chdataUS=[
 {
 cocode: 'US',
 coname: 'USA',
+interval: 'week',
 sumdiff: 834248,
 maxperc: 18.5514410,
 lastperc: 16.5458229,
