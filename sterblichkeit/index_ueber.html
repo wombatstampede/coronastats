@@ -249,7 +249,7 @@ function createConfig(details) {
                     position: 'right',
                     scaleLabel: {
                         display: true,
-                        labelString: 'Sterbefälle je KW',
+                        labelString: (details.interval=='week')?'Sterbefälle je KW':'Sterbefälle je Monat',
                         lineHeight: 1,
                         fontSize:10,
                         padding:0,
