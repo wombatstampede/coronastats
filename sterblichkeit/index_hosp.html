@@ -1,0 +1,248 @@
+<head>
+<meta charset="utf-8">
+<meta property="og:title" content="COVID-19 Impfungen in Deutschland" />
+<meta property="og:description" content="als Grafik über den zeitlichen Verlauf nach Bundesland" />
+<meta property="og:image" content="index_sh_impf.jpg" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="de_DE" />
+<title>COVID-19 Impfungen in Deutschland</title>
+<link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
+<link rel="stylesheet" media="screen" href="Chart.min.css"> 
+<link rel="stylesheet" media="screen" href="nouislider.min.css"> 
+<script type="text/javascript" src="Chart.min.js"></script>
+<script type="text/javascript" src="nouislider.min.js"></script>
+<script type="text/javascript" src="chartjs-plugin-annotation.min.js"></script>
+<script type="text/javascript" src="Data_Hosp.js"></script>
+<style>
+    a.button[data-state='active'],
+    a.button[data-state='active']:focus {
+        background-color: #A9BCF5;
+    }
+    
+    a.button.button-outline.button-small {
+        padding: 0 1rem;
+    }
+</style> 
+</head>
+<body>
+<a class="button" href="../">Inhalt</a>
+<a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
+<!-- <p><strong>Hinweis: Aufgrund von Umstellungen in der Datenquelle wird diese Grafik momentan nicht aktualisiert.</strong></p> -->
+<div id="countySelect"></div> 
+<div id="slider" style="left:10px;width:890px"></div>
+<canvas id="myChart" style="width:990px;height: 700px;"></canvas>
+<br/>
+<h2 id="Anmerkungen">Anmerkungen</h2>
+<ul>
+<li>Diese Grafik basiert auf den vom RKI veröffentlichten <a href="https://github.com/robert-koch-institut/COVID-19-Hospitalisierungen_in_Deutschland">COVID-19 Hospitalisierungen in Deutschland</a>.</li>
+</ul>
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var currentCounty="SH"
+
+
+var opt = {
+        animation: false,
+        responsive: false,
+        title: {
+            display: true,
+            text: ("COVID-19-Hospitalisierungsraten (Quelle: RKI), Stand: "+maxdate)
+        },
+        legend: {
+            position: 'right',         
+            labels: {
+                boxWidth: 15,
+                filter: function (item,data) {
+                    if (item.text.indexOf('Prognose') == -1) return item
+                    else return false
+                }
+            },
+            onClick: function (e, legendItem) {
+                var index = legendItem.datasetIndex
+                var ci = this.chart
+                var ds = ci.data.datasets[index]
+                ds.hidden=!ds.hidden
+                ci.update() 
+            }
+        },
+        scales: {
+            yAxes: [{
+                id: 'first-y-axis',
+                position: 'right',
+                type: 'linear',
+                ticks: {
+                    maxTicksLimit: 16,
+                    min:0,
+                    //max:100,
+                    /*callback: function(value, index, values) {
+                        return value + "%"
+                    }*/
+                },
+/*                scaleLabel: {
+                        display: true,
+                        labelString: 'Impfquote',
+                        lineHeight: 1,
+                        fontSize:10,
+                        padding:0,
+                }*/
+            },
+            ]
+        },
+        annotation: {
+            annotations: [
+            ]
+        },
+        tooltips: {
+            callbacks: {
+/*                title: function(items, data) {
+                    var weekdays=["So","Mo","Di","Mi","Do","Fr","Sa","So"]
+                    var dashDate = data.labels[items[0].index]
+                    var lblDate=new Date(dashDate.substr(0,4),dashDate.substr(5,2)-1,dashDate.substr(8,2))
+                    return [dashDate+" ("+weekdays[lblDate.getDay()]+")"]
+                },*/
+/*                label: function(item, data) {
+                    var ds= data.datasets[item.datasetIndex]
+                    var v = ds.data[item.index]
+                    var llist=[ds.label+": "+v]
+                    var stats=cStats[currentCounty]
+                    return llist
+                }*/
+            },        
+        }
+}
+var cht={
+        type:'bar',
+        data: chdata[currentCounty],
+        options: opt
+        }
+setChtTitle(currentCounty)
+
+function setChtTitle(ccode) {
+    cht.options.title.text="COVID-19-Hospitalisierungsraten in "+chdata[ccode]._name+", Stand: "+maxdate
+}
+
+
+//**********************************************************************************************
+
+for (var key in chdata) {
+    addCountySelect(key,chdata[key]._name,(key==currentCounty))
+    
+    for (var i=0;i<chdata[key].datasets.length;i++) {
+        chdata[key].datasets[i].pointHitRadius=15
+        //chdata[key].datasets[i].hidden = (i==0) //hide all rates value by default
+        //chdata.datasets[i].pointHoverRadius=5
+    }
+}
+
+//updateRate()
+//addEstimate()
+
+var myChart=new Chart(ctx,cht)
+
+
+
+function addCountySelect(ccode,cname,isActive) {
+    var cs = document.getElementById('countySelect')
+    if (cs) {
+        var csBtn = document.createElement('a')
+        csBtn.classList.add('button')
+        csBtn.classList.add('button-outline')
+        csBtn.classList.add('button-small')
+        csBtn.setAttribute('data-state',isActive?'active':'')
+        csBtn.setAttribute('id','cbtn'+ccode)
+        csBtn.setAttribute('title',cname)
+        csBtn.setAttribute('href','javascript:selectCounty("'+ccode+'")')
+        csBtn.appendChild(document.createTextNode(ccode))
+        cs.appendChild(csBtn)
+    }
+
+} 
+
+function selectCounty(ccode) {
+    if (ccode!=currentCounty) {
+        setBtnState('cbtn'+currentCounty,'')
+        currentCounty=ccode
+        setBtnState('cbtn'+currentCounty,'active')
+        
+        cht.data=chdata[ccode]
+        setChtTitle(ccode)
+        updChtSlider()
+        myChart.update()
+    }
+}
+ 
+function getBtnState(id) {
+    var elem = document.getElementById(id);
+    return (elem.getAttribute('data-state')=='active')
+}
+
+function setBtnState(id,strState) {
+    var elem = document.getElementById(id);
+    if (elem) elem.setAttribute('data-state',strState)
+}
+
+/*********** Slider *************************/
+var slider = document.getElementById('slider')
+
+noUiSlider.create(slider, {
+    start: [0, cht.data.datasets[0].data.length-1],
+    connect: true,
+    range: {
+        'min': 0,
+        'max': cht.data.labels.length-1
+    },
+    step: 1
+})
+slider.style.width=(myChart.chartArea.right-myChart.chartArea.left+1)+'px'
+slider.style.left=(myChart.chartArea.left)+'px'
+
+slider.noUiSlider.on('update', function (values,handle) {
+
+    updChtSlider()
+    myChart.update()
+    })
+
+function updChtSlider() {
+    var chtRange = slider.noUiSlider.get()
+    var sMin=Math.round(chtRange[0])
+    var sMax=Math.round(chtRange[1])
+    var xA=cht.options.scales.xAxes[0]
+    var yA=cht.options.scales.yAxes[0]
+    var xlb=cht.data.labels
+    var cmax=0
+    for (i=0;i<cht.data.datasets.length;i++) { 
+        onemax=Math.max(...cht.data.datasets[i].data.filter((el,ix) => (ix>=sMin && ix<=sMax)))
+        if (onemax>cmax)
+            cmax=onemax
+    }
+    yA.ticks.max=cmax
+    xA.ticks.min=xlb[sMin]
+    xA.ticks.max=xlb[sMax]
+}
+
+
+
+//**********************************************************************************************
+//source/credits: http://www.salesianer.de/util/kalwoch.html
+function kalenderwoche(Datum) {
+    //var Datum=new Date(j,m-1,t)
+    var DoDat=donnerstag(Datum)
+    var kwjahr=DoDat.getFullYear()
+    var DoKW1=donnerstag(new Date(kwjahr,0,4))
+    return Math.floor(1.5+(DoDat.getTime()-DoKW1.getTime())/86400000/7)
+}
+
+function donnerstag(datum) {
+  var Do=new Date()
+  Do.setTime(datum.getTime() + (3-((datum.getDay()+6) % 7)) * 86400000)
+  return Do
+}
+
+function montag(datum) {
+  var Mo=new Date()
+  Mo.setTime(datum.getTime() + (-((datum.getDay()+6) % 7)) * 86400000)
+  return Mo
+}
+
+</script>
+</body>
