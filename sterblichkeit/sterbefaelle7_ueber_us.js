@@ -1,5 +1,5 @@
 var ch_statsUS={
-ecdc_date: '',
+ecdc_date: '2020-12-14',
 cdc_date: '2021-10-27',
 }
 var chdataUS=[
