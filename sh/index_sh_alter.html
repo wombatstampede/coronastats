@@ -1,11 +1,11 @@
 <head>
 <meta charset="utf-8">
 <meta property="og:title" content="Altersverteilung der COVID-19-Fälle in Schleswig-Holstein" />
-<meta property="og:description" content="7-Tage Inzidenz je Altersgruppe und Datum" />
+<meta property="og:description" content="Schleswig-Holstein: 7-Tage Inzidenz je Altersgruppe und Datum" />
 <meta property="og:image" content="index_sh_alter.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<meta property="og:updated_time" content="2021-11-04T14:27:04+01:00" />
+<meta property="og:updated_time" content="2021-11-04T15:42:13+01:00" />
 <title>Altersverteilung der COVID-19-Fälle in Schleswig-Holstein</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
@@ -14,32 +14,52 @@
 <script type="text/javascript" src="chartjs-chart-matrix.min.js"></script>
 <script type="text/javascript" src="colors.js"></script>
 
-<link rel="stylesheet" media="screen" href="nouislider.min.css"> 
-<script type="text/javascript" src="nouislider.min.js"></script>
-
 <script type="text/javascript" src="Data_SH_Alter.js"></script>
 </head>
 <body>
 <a class="button" href="../">Inhalt</a>
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
-<!-- <div id="slider" style="left:10px;width:1000px"></div> -->
-<canvas id="myChart" style="width:650px;height: 450px;"></canvas>
+<p>Quelle / Stand: <a href="https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0">NPGEO Corona (RKI)</a>: <span id="rki_date"></span></p>
+<!--<canvas id="myChart" style="width:1200px;height: 250px;"></canvas>
+<canvas id="myChart3" style="width:1200px;height: 250px;"></canvas> -->
+<canvas id="myChart" style="width:650px;height: 250px;"></canvas>
+<canvas id="myChart3" style="width:650px;height: 250px;"></canvas>
 <!-- <br/><canvas id="legend" style="width:990px;height: 50px;padding-left:35px"></canvas> -->
+<br/><canvas id="myChart2" style="width:990px;height: 150px;"></canvas>
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
-<li>Diese Grafik basiert auf der unter <a href="https://www.schleswig-holstein.de/DE/Schwerpunkte/Coronavirus/Zahlen/zahlen_node.html">www.schleswig-holstein.de</a>
-veröffentlichten <strong>&quot;CSV-Datei der Daten zu den Altersgruppen&quot;</strong></li>
-<li>Für die Berechnung der Inzidenzen werden die Bevölkerungszahlen der Altersgruppen benötigt. Diese wurden vom Statistischen Amt für Hamburg und Schleswig-Holstein hier veröffentlicht: <a href="https://www.statistik-nord.de/presse-veroeffentlichungen/thematische-veroeffentlichungen/fachveroeffentlichungen-bevoelkerung/dokumentenansicht/product/1134/bevoelkerung-in-schleswig-holstein-310">&quot;Die Bevölkerung in Schleswig-Holstein nach Alter und Geschlecht 2019&quot;</a></li>
+<li>Aktive Fälle: Die aktiven Fälle ergeben sich (lt. RKI) aus der Zahl der übermittelten Fälle abzüglich der Todesfälle 
+und der <strong>geschätzten</strong> Zahl der Genesenen. Genauere Angaben dazu finden sich z.B. in den Situationsberichten des RKI. Aufgrund unterschiedlicher Herangehensweisen und Datenverfügbarkeit kann es Unterschiede zu veröffentlichten Daten auf Landesebene geben.</li>
+<li>Für die Berechnung der Inzidenzen werden die Bevölkerungszahlen der Altersgruppen benötigt. Diese wurden aus der <a href="https://www-genesis.destatis.de/genesis//online?operation=table&code=12411-0012&bypass=true&levelindex=0&levelid=1636036384576#abreadcrumb">Tabelle 12411-0012 "Bevölkerung: Bundesländer, Stichtag, Altersjahre"</a> von DESTATIS entnommen.</li>
 </ul>
 <script>
 var ctx = document.getElementById('myChart').getContext('2d');
+var ctx2 = document.getElementById('myChart2').getContext('2d');
+var ctx3 = document.getElementById('myChart3').getContext('2d');
 //var cleg= document.getElementById('legend').getContext('2d');
+
+var chdata3=JSON.parse(JSON.stringify(chdata));
+
+//**********************************************************************************************
+
+//dataMin = (chdata.data.datasets[0].data.length>=28)?(chdata.data.datasets[0].data.length-28):0
+dataLen = chdata.data.datasets[0].data.length
+lblLen= chdata.options.scales.xAxes[0].labels.length
+/*
+for (i=0;i<dataMin; i++) {
+    chdata.data.datasets[0].data.shift()
+    chdata.options.scales.xAxes[0].labels.shift()
+}*/
+
+
+//chdata.options.scales.xAxes[0].ticks.min=dataMin
+
 
 chdata.options.responsive=false
 chdata.options.animation=false
 chdata.options.title= {
             display: true,
-            text: "SH: Inzidenz je Altersgruppe und Datum (Stand: "+chdata.options.scales.xAxes[0].labels[chdata.options.scales.xAxes[0].labels.length-1]+", Quelle:www.schleswig-holstein.de)"
+            text: "Schleswig-Holstein: 7-Tage Inzidenz je Altersgruppe und Datum (Quelle:RKI)"
         }
 chdata.options.tooltips = {
         callbacks: {
@@ -50,7 +70,7 @@ chdata.options.tooltips = {
             },
             label: function(item, data) {
                 var v = data.datasets[item.datasetIndex].data[item.index]
-                return ["Inzidenz: " + Math.round(v.v*10)/10,"Fälle(7Tg): "+v.casesum]
+                return ["Fälle/Tag: "+v.cases,"Inzidenz: " + Math.round(v.v*10)/10,"Fälle(7Tg): "+v.casesum]
             }
         },
 }
@@ -58,6 +78,7 @@ chdata.options.scales.yAxes[0].position='right'
 chdata.options.scales.yAxes[0].id='first-y-axis'
 chdata.options.scales.yAxes[0].offset=true
 chdata.options.scales.xAxes[0].offset=true
+//chdata.options.scales.xAxes[0].ticks.min=dataMin
 
 chdata.options.annotation = {
         drawTime: 'afterDatasetsDraw',
@@ -71,8 +92,21 @@ for (i=0; i<chdata.options.scales.xAxes[0].labels.length; i++) {
 }
 
 //Inzidenzen als Annotations
-//var cellXWid=1111 / chdata.options.scales.xAxes[0].labels.length //1200px
-var cellXWid=561 / chdata.options.scales.xAxes[0].labels.length //650px
+//var cellXWid=1111 / lblLen //1200px
+var cellXWid=561 / lblLen //650px
+
+console.log(dataLen+"_"+chdata.data.datasets[0].data.length+"_"+lblLen+"_"+cellXWid)
+
+/*chdata.data.datasets[0].width = 
+            function(context) {
+				const a = context.chart.chartArea
+				if (!a) return 0
+                //console.log((a.right - a.left) / (dataLen+0.5))
+				return (a.right - a.left) / (dataLen+0.5)
+			}*/
+
+
+//chdata.options.scales.xAxes[0].labels.length
 for (i=0; i<chdata.data.datasets[0].data.length;i++) {
     var rec=chdata.data.datasets[0].data[i]
     var oneAnnot = {
@@ -92,13 +126,12 @@ for (i=0; i<chdata.data.datasets[0].data.length;i++) {
                       //fontColor: window.chartColors.red,
                       xPadding: 2,
                       yPadding: 3,
-//                      xAdjust: cellXWid*xLookup[rec.x],
                       xAdjust: cellXWid*xLookup[rec.x]+2,
                       //yAdjust: 2,
                       fontColor: "#E0E0E0",
-//                      fontSize: 8,
+                      //fontSize: 8,
                       fontSize: 11,
-                      content: Math.round(rec.v),
+                      content: Math.round(rec.v)+'',
                       rotation: 90,
                       position: "left",
                       fontStyle: "normal",
@@ -107,7 +140,7 @@ for (i=0; i<chdata.data.datasets[0].data.length;i++) {
     if (rec.v<35) oneAnnot.label.fontColor="black"
     if (Math.round(rec.v)>=100) {
         oneAnnot.label.fontFamily = 'Arial Narrow, sans-serif'
-//        oneAnnot.label.fontSize = 7.5
+        //oneAnnot.label.fontSize = 7.5
         oneAnnot.label.fontSize = 10
         oneAnnot.label.xPadding = 1
     }
@@ -116,7 +149,107 @@ for (i=0; i<chdata.data.datasets[0].data.length;i++) {
 //            oneAnnot.id="annot_"+i
 }
 
+//**********************************************************************************************
 
+
+chdata3.options.responsive=false
+chdata3.options.animation=false
+chdata3.options.title= {
+            display: true,
+            text: "Schleswig-Holstein: Tägliche Fallzahlen je Altersgruppe (Quelle:RKI)"
+        }
+chdata3.options.tooltips = {
+        callbacks: {
+            //title: function() { return '';},
+            title: function(items, data) {
+                var v = data.datasets[items[0].datasetIndex].data[items[0].index]
+                return [v.x+" / "+v.y+"J:"]
+            },
+            label: function(item, data) {
+                var v = data.datasets[item.datasetIndex].data[item.index]
+                return ["Fälle/Tag: "+v.cases,"Inzidenz: " + Math.round(v.v*10)/10,"Fälle(7Tg): "+v.casesum]
+            }
+        },
+}
+chdata3.options.scales.yAxes[0].position='right'
+chdata3.options.scales.yAxes[0].id='first-y-axis'
+chdata3.options.scales.yAxes[0].offset=true
+chdata3.options.scales.xAxes[0].offset=true
+
+chdata3.options.annotation = {
+        drawTime: 'afterDatasetsDraw',
+        display:true,
+        annotations:[]
+    }
+
+chdata3.data.datasets[0].backgroundColor = function(context) {
+                                                return inzColor(context.dataset.data[context.dataIndex].vday)
+                                            },
+
+chdata3.data.datasets[0].width = chdata.data.datasets[0].width
+chdata3.data.datasets[0].height= chdata.data.datasets[0].height
+
+chdata3.data.datasets[0].label = 'Tägliche Fallmeldungen je Altersgruppe'
+
+var xLookup ={}
+for (i=0; i<chdata3.options.scales.xAxes[0].labels.length; i++) {
+    xLookup[chdata3.options.scales.xAxes[0].labels[i]]=i
+}
+
+//Fälle als Annotations
+//var cellXWid=1111 / chdata3.options.scales.xAxes[0].labels.length //1200px
+var cellXWid=561/ chdata3.options.scales.xAxes[0].labels.length
+for (i=0; i<chdata3.data.datasets[0].data.length;i++) {
+    var rec=chdata3.data.datasets[0].data[i]
+    var oneAnnot = {
+                    type: "line",
+                    //mode: "vertical",
+                    mode:"horizontal",
+                    scaleID: "first-y-axis",
+                    value: rec.y,
+                    
+                    borderColor: 'rgba(0,0,0,0)',
+                    borderWidth: 0,
+                    label: {
+                      backgroundColor: 'rgba(220,220,220,0)',
+                      enabled: true,
+                      xPadding: 2,
+                      yPadding: 3,
+                      xAdjust: cellXWid*xLookup[rec.x]+2,
+                      fontColor: "#E0E0E0",
+                      fontSize: 11,
+                      content: Math.round(rec.cases)+'',
+                      rotation: 90,
+                      position: "left",
+                      fontStyle: "normal",
+                    }
+                }
+    if (rec.vday<35) oneAnnot.label.fontColor="black"
+    if (Math.round(rec.cases)>=100) {
+        oneAnnot.label.fontFamily = 'Arial Narrow, sans-serif'
+        oneAnnot.label.fontSize = 10
+        oneAnnot.label.xPadding = 1
+    }
+    chdata3.options.annotation.annotations.push(oneAnnot)
+}
+
+
+//**********************************************************************************************
+
+//aktive Fälle
+
+chdata2.data.datasets[0].backgroundColor = window.chartColors.blue
+chdata2.options.responsive=false
+chdata2.options.animation=false
+chdata2.options.title= {
+            display: true,
+            text: "Schleswig-Holstein: Aktive Fälle (Quelle:RKI)"
+        }
+
+//Aktive Fälle: Die aktiven Fälle ergeben sich (lt. RKI) aus der Zahl der übermittelten Fälle abzüglich der Todesfälle 
+//und der geschätzten Zahl der Genesenen. Genauere Angaben dazu finden sich in den Situationsberichten des RKI.
+
+//Legende, aktuell deaktiviert (weil Inzidenzenals Annotations angezeigt werden)
 /*
 var legenddata=JSON.parse(JSON.stringify(chdata))
 legenddata.options.title.display=false
@@ -133,72 +266,15 @@ for (i=0; i<=500; i+=10) legenddata.data.datasets[0].data.push({x:i, y:'Inzidenz
 for (i=0; i<=500; i+=10) legenddata.options.scales.xAxes[0].labels.push(i)
 */
 
-/* legende
-var chdata=2 
-	type: 'matrix',
-	data: {
-		datasets: [{
-			label: 'Inzidenz',
-            data:[],
-            backgroundColor(context) {
-				const v = context.dataset.data[context.dataIndex].v
-				if (v<=100) return 'hsl('+Math.round(120.0-(v*120/100))+',75%,50%)'
-				else return 'hsl(0,75%,'+Math.round(Math.max(50-((v-100)/4),0))+'%)'
-			},
-			width(context) {
-				const a = context.chart.chartArea
-				if (!a) return 0
-				return (a.right - a.left)/150
-			},
-			height(context) {
-				const a = context.chart.chartArea
-				if (!a) return 0
-				return (a.bottom - a.top)
-			},
-		}]
-	},
-	options: {
-		legend: { display: false },
-		scales: {
-			xAxes: [{type: 'category', labels: [], ticks: {display: true},gridlines:{display:false}}],
-			yAxes: [{type: 'category', labels: [], offset:true, ticks: {display: true},gridlines:{display:false}}],
-		},
-	}*/
-            
 //**********************************************************************************************
+setSpanContent('rki_date',chdata.options.scales.xAxes[0].labels[chdata.options.scales.xAxes[0].labels.length-1])
 
 var myChart=new Chart(ctx,chdata)
 //var myLeg=new Chart(cleg,legenddata)
+var myChart3=new Chart(ctx3,chdata3)
+var myChart2=new Chart(ctx2,chdata2)
 
-/*********** Slider *************************/
-/*
-var slider = document.getElementById('slider')
-
-noUiSlider.create(slider, {
-    start: [0, chdata.data.datasets[0].data.length-1],
-    connect: true,
-    range: {
-        'min': 0,
-        'max': chdata.data.labels.length-1
-    },
-    step: 1
-})
-slider.style.width=(myChart.chartArea.right-myChart.chartArea.left+1)+'px'
-slider.style.left=(myChart.chartArea.left)+'px'
-
-slider.noUiSlider.on('update', function (values,handle) {
-
-        var chtRange = slider.noUiSlider.get()
-        var sMin=Math.round(chtRange[0])
-        var sMax=Math.round(chtRange[1])
-        var xA=myChart.chart.options.scales.xAxes[0]
-        var xlb=myChart.chart.data.labels
-        xA.ticks.min=xlb[sMin]
-        xA.ticks.max=xlb[sMax]
-        myChart.update()
-
-    })
-*/
+//**********************************************************************************************
 
 function inzColor(v) {
     if (v<=50) return 'hsl('+Math.round(120.0-(v*120/50))+',75%,50%)'
@@ -206,6 +282,19 @@ function inzColor(v) {
     else return 'hsl(199,75%,'+Math.round(Math.max(25-((v-450)/6),0))+'%)'
 //    else return 'hsl(0,75%,'+Math.round(Math.max(50-((v-50)/2),0))+'%)'
 }
+
+//**********************************************************************************************
+
+function setSpanContent(id,str) {
+    var span = document.getElementById(id);
+
+    while( span.firstChild ) {
+        span.removeChild( span.firstChild );
+    }
+    span.appendChild( document.createTextNode(str) );
+}
+
+
 
 </script>
 </body>
