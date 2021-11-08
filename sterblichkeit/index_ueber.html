@@ -71,7 +71,7 @@
 <a class="button button-outline" id="btnfirstjan" data-state="notactive" href="javascript:byYearStart(true)">Ab dem 01.01.</a><a class="button button-outline" id="btnfirstcovid" data-state="active" href="javascript:byYearStart(false)">Ab dem 1. COVID-19 Todesfall</a>
 <!-- <a class="button button-outline" id="btnecdcdata" data-state="notactive" href="javascript:dataSourceECDC(true)">ECDC</a><a class="button button-outline" id="btnjhdata" data-state="active" href="javascript:dataSourceECDC(false)">JHU</a> -->
 <a class="button button-outline" id="btnprogn" data-state="notactive" href="javascript:prognose()">Prognose</a>
-<div id="countrySelect"><a class="button button-outline button-small" href="javascript:toggleCountry('None')">Keins</a></div>
+<div id="countrySelect">Europa: <a class="button button-outline button-small" href="javascript:toggleCountry('None')">Keins</a></div>
 <div class="container-all">
 </div>
 <h2 id="Anmerkungen">Anmerkungen</h2>
@@ -511,6 +511,11 @@ function addCountrySelect(ccode,cname,isActive) {
         cs.appendChild(csBtn)
         
         if (ccode=='UK') {//ad BR after UK to separate "EU" and "Other"
+            var csBr = document.createElement('br')
+            cs.appendChild(csBr)
+            cs.appendChild(document.createTextNode("Bundesländer: "))
+        }
+        if (ccode=='DE_TH') {//ad BR after UK to separate "EU" and "Other"
             var csBr = document.createElement('br')
             cs.appendChild(csBr)
             cs.appendChild(document.createTextNode("Weltweit: "))
