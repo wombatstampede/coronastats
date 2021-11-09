@@ -883,6 +883,7 @@ function calcExcess(config,byYearStart,addProgn,useECDCData) {
         for (var i=0; i<labels.length;i++) {
             if (typeof covid.data[i]!=='undefined') {
                 covidsum+=covid.data[i]
+                //if (config.data.cocode=="DE_SH") console.log("i: "+i+", lb: "+labels[i]+", val: "+covid.data[i]+", sum: "+covidsum)
                 if (i>lastCovidCWix) lastCovidCWix=i
             }
             if ((i>=firstCovidCWix) && (i<=lastCasesCWix)) {
@@ -994,7 +995,7 @@ function calcExcess(config,byYearStart,addProgn,useECDCData) {
                 //v2: scale only difference
                 //todo: simplify term
                 aCovidLastDay.yMax=lastWeekCovid+((incompleteWeekCovid-(lastWeekCovid/scaleUpToWeek))*scaleUpToWeek)
-                //console.log("lastcovidday: "+config.data.cocode+",v2: "+aCovidLastDay.yMax)
+                //console.log("lastcovidday: "+config.data.cocode+",yMax "+aCovidLastDay.yMax+" jh_covid_sum: "+config.data.jh_covid_sum+" covidsum: "+covidsum)
             }
         }
         
