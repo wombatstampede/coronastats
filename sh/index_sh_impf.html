@@ -24,7 +24,7 @@
 </head>
 <body>
 <a class="button" href="../">Inhalt</a>
-<a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
+<a class="button button-outline" href="#Anmerkungen">Anmerkungen</a> <a class="button button-outline showOnHover" id="showhide" href="javascript:hideHiddenData()" href="#Anmerkungen">Daten ausblenden</a>
 <!-- <p><strong>Hinweis: Aufgrund von Umstellungen in der Datenquelle wird diese Grafik momentan nicht aktualisiert.</strong></p> -->
 <div id="countySelect"></div> 
 <canvas id="myChart" style="width:990px;height: 700px;"></canvas>
@@ -55,6 +55,7 @@ var cStats = {
     }
 var currentCounty="SH"
 
+var hideHidden = false /*hide legend of "hidden"=striked out, data*/
 
 var opt = {
         animation: false,
@@ -68,6 +69,7 @@ var opt = {
             labels: {
                 boxWidth: 15,
                 filter: function (item,data) {
+                    if (hideHidden && data.datasets[item.datasetIndex].hidden) return false
                     if (item.text.indexOf('Prognose') == -1) return item
                     else return false
                 }
@@ -305,17 +307,31 @@ function addCountySelect(ccode,cname,isActive) {
 function selectCounty(ccode) {
     if (ccode!=currentCounty) {
         setBtnState('cbtn'+currentCounty,'')
+        //copy hide status        
+        for (var i=0;i<chdata[currentCounty].datasets.length;i++)
+            chdata[ccode].datasets[i].hidden=chdata[currentCounty].datasets[i].hidden
+        
         currentCounty=ccode
         setBtnState('cbtn'+currentCounty,'active')
-        
+            
         cht.data=chdata[ccode]
+            
         setChtTitle(ccode)
         //updateRate()
         //addEstimate()
         myChart.update()
     }
 }
- 
+
+function hideHiddenData() {
+    hideHidden = !hideHidden
+    var elem = document.getElementById("showhide");
+    if (hideHidden) elem.text="Daten einblenden"
+    else elem.text="Daten ausblenden"
+    
+    myChart.update()
+}
+
 function getBtnState(id) {
     var elem = document.getElementById(id);
     return (elem.getAttribute('data-state')=='active')
