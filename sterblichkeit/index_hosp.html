@@ -26,7 +26,7 @@
 </head>
 <body>
 <a class="button" href="../">Inhalt</a>
-<a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
+<a class="button button-outline" href="#Anmerkungen">Anmerkungen</a> <a class="button button-outline" id="btnzoom" data-state="notactive" href="javascript:yZoom()">Zoom</a>
 <!-- <p><strong>Hinweis: Aufgrund von Umstellungen in der Datenquelle wird diese Grafik momentan nicht aktualisiert.</strong></p> -->
 <div id="countySelect"></div> 
 <div id="slider" style="left:10px;width:890px"></div>
@@ -40,6 +40,7 @@
 var ctx = document.getElementById('myChart').getContext('2d');
 var currentCounty="SH"
 
+var zoomed=false
 
 var opt = {
         animation: false,
@@ -73,6 +74,7 @@ var opt = {
                 ticks: {
                     maxTicksLimit: 16,
                     min:0,
+                    max:maxhosp,
                     //max:100,
                     /*callback: function(value, index, values) {
                         return value + "%"
@@ -163,12 +165,24 @@ function selectCounty(ccode) {
         setBtnState('cbtn'+currentCounty,'')
         currentCounty=ccode
         setBtnState('cbtn'+currentCounty,'active')
-        
+
+        //copy hidden state of datasets
+        for (var i=0;i<cht.data.datasets.length;i++) {
+            chdata[ccode].datasets[i].hidden=cht.data.datasets[i].hidden
+        }
+
         cht.data=chdata[ccode]
         setChtTitle(ccode)
         updChtSlider()
         myChart.update()
     }
+}
+
+function yZoom() {
+    zoomed=!zoomed
+    setBtnState('btnzoom',zoomed?'active':'')
+    updChtSlider()
+    myChart.update()
 }
  
 function getBtnState(id) {
@@ -209,13 +223,17 @@ function updChtSlider() {
     var xA=cht.options.scales.xAxes[0]
     var yA=cht.options.scales.yAxes[0]
     var xlb=cht.data.labels
-    var cmax=0
-    for (i=0;i<cht.data.datasets.length;i++) { 
-        onemax=Math.max(...cht.data.datasets[i].data.filter((el,ix) => (ix>=sMin && ix<=sMax)))
-        if (onemax>cmax)
-            cmax=onemax
+    if (zoomed) {
+        var cmax=0
+        for (i=0;i<cht.data.datasets.length;i++) { 
+            onemax=Math.max(...cht.data.datasets[i].data.filter((el,ix) => (ix>=sMin && ix<=sMax)))
+            if (onemax>cmax)
+                cmax=onemax
+        }
+        yA.ticks.max=cmax
+    } else {
+        yA.ticks.max=maxhosp
     }
-    yA.ticks.max=cmax
     xA.ticks.min=xlb[sMin]
     xA.ticks.max=xlb[sMax]
 }
