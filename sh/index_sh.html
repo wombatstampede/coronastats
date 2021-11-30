@@ -31,8 +31,8 @@ Bei den Fallzahlen für Hospitalisierung, Todesfälle und Infektionsfälle werde
 Die hier gezeigte Hospitalisierungsrate stammt vom RKI. Durch Meldeverzug fällt diese Rate für die zurückliegenden 1-2 Wochen regelmäßig niedriger aus.</li>
 <li><strong>Achsen und Werte</strong><br />
 Bitte beachtet, dass die Hospitalisierungsrate mit einem anderen Wertebereich (linke Achse) als alle anderen Werte (rechte Achse) dargestellt wird.</li>
-<li><strong>Nachtrag</strong><br />
-Mitte Mai 2021 wurden in SH lt. Zeitungsmeldungen im Rahmen einer Datenbereinigung Fallzahlen für Hospitalisierung und Sterbefälle nachgetragen. Da die Quelle bislang nur den Unterschied von Tag zu Tag aber nicht den Meldezeitpunkt liefert, paßt hier ggf. der zeitliche Bezug nicht (gilt nicht für die Hospitalisierungsrate, da RKI-Daten die Korrektur bereits beinhalten).</li>
+<!-- <li><strong>Nachtrag</strong><br />
+Mitte Mai 2021 wurden in SH lt. Zeitungsmeldungen im Rahmen einer Datenbereinigung Fallzahlen für Hospitalisierung und Sterbefälle nachgetragen. Da die Quelle bislang nur den Unterschied von Tag zu Tag aber nicht den Meldezeitpunkt liefert, paßt hier ggf. der zeitliche Bezug nicht (gilt nicht für die Hospitalisierungsrate, da RKI-Daten die Korrektur bereits beinhalten).</li> -->
 </ul>
 <script>
 var ctx = document.getElementById('myChart').getContext('2d');
@@ -95,7 +95,7 @@ var opt = {
         },
         annotation: {
             annotations: [
-                { //"Nachtrag"
+/*                { //"Nachtrag"
                 type: "line",
                 //drawTime: "beforeDatasetsDraw",
                 mode: "vertical",
@@ -116,7 +116,7 @@ var opt = {
                   position: "middle",
                   enabled: true
                 }
-                }
+                }*/
             ]
         },
     };
