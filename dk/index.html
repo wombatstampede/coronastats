@@ -405,7 +405,7 @@ function dsMaxVal(datasets,from,to) {
     var maxVal=0
     for (i=0;i<datasets.length;i++) {
         ix=from
-        let dt=datasets[i].data
+        var dt=datasets[i].data
         while (ix<=to) {
             if (dt[ix]>maxVal)
                 maxVal=dt[ix]
