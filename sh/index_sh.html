@@ -17,7 +17,7 @@
 </head>
 <body>
 <a class="button" href="../">Inhalt</a>
-<a class="button button-outline" href="#Anmerkungen">Anmerkungen</a>
+<a class="button button-outline" href="#Anmerkungen">Anmerkungen</a> <a class="button button-outline showOnHover" id="showhide" href="javascript:hideHiddenData()" href="#Anmerkungen">Daten ausblenden</a>
 <div id="slider" style="left:10px;width:800px"></div>
 <canvas id="myChart" style="width:990px;height: 700px;"></canvas>
 <br/>
@@ -27,14 +27,18 @@
 veröffentlichten Daten. Das beinhaltet Zahlen auf der Website (z.B. Inzidenzen und Anzahl der Personen im Krankenhaus), sowie dort verlinkte CSV-Dateien.
 Bei den Fallzahlen für Hospitalisierung, Todesfälle und Infektionsfälle werden die Unterschiede der Fallzahlen (Δ zum Vortag) verwendet. Diese weichen zeitlich leicht ab von den dort gelisteten Fällen je Meldedatum. Siehe auch die Hinweise auf www.schleswig-holstein.de.</li>
 <li><strong>Quelle: DIVI-Intensivregister (www.intensivregister.de): </strong><a href="https://www.intensivregister.de/#/aktuelle-lage/reports">Daten über Intensivbettenbelegung/freie Intensivbetten</a> stammen aus: DIVI-Intensivregister (www.intensivregister.de)</li>
-<li><strong>Hospitalisierungsrate: (Quelle: <a href="https://github.com/robert-koch-institut/COVID-19-Hospitalisierungen_in_Deutschland">github RKI</a>)</strong><br />
-Die hier gezeigte Hospitalisierungsrate stammt vom RKI. Durch Meldeverzug fällt diese Rate für die zurückliegenden 1-2 Wochen regelmäßig niedriger aus.</li>
+<li><strong>7-Tage Inzidenz Hospitalisierungen: (7-Tg.-Inz. Hosp.) (Quelle: <a href="https://github.com/robert-koch-institut/COVID-19-Hospitalisierungen_in_Deutschland">github RKI</a>)</strong><br />
+Die hier gezeigten Werte stammen vom RKI. Durch Meldeverzug fällt diese Rate für die zurückliegenden 1-2 Wochen regelmäßig niedriger aus.</li>
+<li><strong>Adjustierte 7-Tage Inzidenz Hospitalisierungen: (7-Tg.-Inz. Hosp. Adj.) (Quelle: <a href="https://github.com/robert-koch-institut/COVID-19-Hospitalisierungen_in_Deutschland">github RKI</a>)</strong><br />
+Die Adjustierte Hospitalisierungsinzidenz zeigt insbesondere für die neueren Daten einen durch ein Nowcast Verfahren geschätzten, "adjustierten" Wert.</li>
 <li><strong>Achsen und Werte</strong><br />
 Bitte beachtet, dass die Hospitalisierungsrate mit einem anderen Wertebereich (linke Achse) als alle anderen Werte (rechte Achse) dargestellt wird.</li>
 <!-- <li><strong>Nachtrag</strong><br />
 Mitte Mai 2021 wurden in SH lt. Zeitungsmeldungen im Rahmen einer Datenbereinigung Fallzahlen für Hospitalisierung und Sterbefälle nachgetragen. Da die Quelle bislang nur den Unterschied von Tag zu Tag aber nicht den Meldezeitpunkt liefert, paßt hier ggf. der zeitliche Bezug nicht (gilt nicht für die Hospitalisierungsrate, da RKI-Daten die Korrektur bereits beinhalten).</li> -->
 </ul>
 <script>
+var hideHidden = false /*hide legend of "hidden"=striked out, data*/
+
 var ctx = document.getElementById('myChart').getContext('2d');
 var opt = {
         responsive: false,
@@ -46,6 +50,10 @@ var opt = {
         legend: {
             labels: {
                 boxWidth: 25,
+                filter: function (item,data) {
+                    if (hideHidden && data.datasets[item.datasetIndex].hidden) return false
+                    else return true
+                }
             }
         },
         scales: {
@@ -214,7 +222,15 @@ slider.noUiSlider.on('update', function (values,handle) {
 
     })
 
-
+//*********** optinally visually hide hidden/striked out Data **********************************
+function hideHiddenData() {
+    hideHidden = !hideHidden
+    var elem = document.getElementById("showhide");
+    if (hideHidden) elem.text="Daten einblenden"
+    else elem.text="Daten ausblenden"
+    
+    myChart.update()
+}
 
 //**********************************************************************************************
 //source/credits: http://www.salesianer.de/util/kalwoch.html

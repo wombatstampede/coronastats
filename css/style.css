@@ -37,6 +37,15 @@ blockquote *:last-child {
   margin-bottom: 0;
 }
 
+a.button.button-outline.showOnHover {
+  border-color: rgba(0,0,0,0);
+  color: rgba(0,0,0,0);
+}
+a.button.button-outline.showOnHover:hover {
+  border-color: #606c76;
+  color: #606c76;
+}
+
 .button,
 button,
 input[type='button'],
