@@ -5,7 +5,7 @@
 <meta property="og:image" content="index_pi_alter.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<meta property="og:updated_time" content="2022-01-10T14:27:19+01:00" />
+<meta property="og:updated_time" content="2022-01-10T17:03:49+01:00" />
 <title>Altersverteilung der COVID-19-Fälle im Kreis Pinneberg</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
@@ -22,8 +22,8 @@
 <p>Quelle / Stand: <a href="https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0">NPGEO Corona (RKI)</a>: <span id="rki_date"></span></p>
 <!--<canvas id="myChart" style="width:1200px;height: 250px;"></canvas>
 <canvas id="myChart3" style="width:1200px;height: 250px;"></canvas> -->
-<canvas id="myChart" style="width:650px;height: 250px;"></canvas>
-<canvas id="myChart3" style="width:650px;height: 250px;"></canvas>
+<canvas id="myChart" style="width:850px;height: 250px;"></canvas>
+<canvas id="myChart3" style="width:850px;height: 250px;"></canvas>
 <!-- <br/><canvas id="legend" style="width:990px;height: 50px;padding-left:35px"></canvas> -->
 <br/><canvas id="myChart2" style="width:990px;height: 150px;"></canvas>
 <h2 id="Anmerkungen">Anmerkungen</h2>
@@ -93,9 +93,10 @@ for (i=0; i<chdata.options.scales.xAxes[0].labels.length; i++) {
 
 //Inzidenzen als Annotations
 //var cellXWid=1111 / lblLen //1200px
-var cellXWid=561 / lblLen //650px
+var cellXWid=766 / lblLen //850px
+//var cellXWid=561 / lblLen //650px
 
-console.log(dataLen+"_"+chdata.data.datasets[0].data.length+"_"+lblLen+"_"+cellXWid)
+console.log(dataLen+"_"+chdata.data.datasets[0].data.length+"_"+lblLen+", Cellxwid: "+cellXWid)
 
 /*chdata.data.datasets[0].width = 
             function(context) {
@@ -198,7 +199,8 @@ for (i=0; i<chdata3.options.scales.xAxes[0].labels.length; i++) {
 
 //Fälle als Annotations
 //var cellXWid=1111 / chdata3.options.scales.xAxes[0].labels.length //1200px
-var cellXWid=561/ chdata3.options.scales.xAxes[0].labels.length
+var cellXWid=766 / chdata3.options.scales.xAxes[0].labels.length //850px
+//var cellXWid=561/ chdata3.options.scales.xAxes[0].labels.length
 for (i=0; i<chdata3.data.datasets[0].data.length;i++) {
     var rec=chdata3.data.datasets[0].data[i]
     var oneAnnot = {
