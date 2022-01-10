@@ -96,7 +96,7 @@ Die Sterbefalldaten für Deutschland werden den entsprechende Veröffentlichunge
 <li><strong>Russland:</strong> (und andere Länder unter "Weltweit")<br/>
 Mangels Verfügbarkeit wöchentlicher Werte handelt es sich hier um monatliche Daten. Die Sterbefalldaten für diese Länder werden aus dem <a href="https://github.com/akarlinsky/world_mortality">World Mortality Dataset</a> entnommen. Siehe Quellen.</li>
 <li><strong>Großbritannien:</strong><br/>
-Seit dem Brexit pausiert aktuell wohl die Datenlieferung von Großbritannien an EUROSTAT. Daher werden die Sterbefalldaten für 2020 und 2021 nun ebenfalls aus dem <a href="https://github.com/akarlinsky/world_mortality">World Mortality Dataset</a> entnommen.</li>
+Seit dem Brexit pausiert aktuell wohl die Datenlieferung von Großbritannien an EUROSTAT. Daher werden die Sterbefalldaten für 2020+ nun ebenfalls aus dem <a href="https://github.com/akarlinsky/world_mortality">World Mortality Dataset</a> entnommen.</li>
 <li><strong>USA:</strong><br/>
 Die Sterbefälle/Übersterblichkeit stammen vom CDC. Die Sterbefälle entsprechen dem Wert "Predicted number of deaths from all causes". Details dazu finden sich beim <a href="https://www.cdc.gov/nchs/nvss/vsrr/covid19/excess_deaths.htm">CDC</a>. Aufgrund der Vergleichbarkeit wurden die US-Kalenderwochen (beginnen Sonntags) auf europäische Kalenderwochen (beginnen Montags) abgebildet. So kann es im Zeitbezug zu minimalen Abweichungen kommen.</li>
 </ul>
@@ -428,6 +428,31 @@ function createConfig(details) {
                           xAdjust: -14,
                           fontSize: 10,
                           content: '2021',
+                          position: "top",
+                          enabled: true
+                        },
+                    },
+                    {
+                        type: "line",
+                        _tag: '_2022',
+                        mode: "vertical",
+                        scaleID: "x-axis-0",
+                        //value: (details.interval=='week')?'2021/01':'2021/01',
+                        //value: (details.labels.findIndex(flb => flb == "2021/01")-0.5),
+                        
+                        //findindex oder => führen zu syntax error beim preview erstellen
+                        value: (details.interval=='week')?(details.labels.findIndex(flb => flb == "2021/52")-3/7):details.labels.findIndex(flb => flb == "2021/12"),
+                        borderColor: 'rgba(0,0,0,0.5)',
+                        borderWidth: 1,
+                        label: {
+                          //backgroundColor: "red",
+                          backgroundColor: 'rgba(100,220,220,0)',
+                          //fontColor: window.chartColors.red,
+                          //yAdjust: 2,
+                          fontColor: "rgba(0,0,0,0.5)",
+                          xAdjust: -14,
+                          fontSize: 10,
+                          content: '2022',
                           position: "top",
                           enabled: true
                         },
