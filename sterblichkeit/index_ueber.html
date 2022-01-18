@@ -363,6 +363,7 @@ function createConfig(details) {
                           fontSize: 10,
                           content: ""+(Math.round(details.lastperc*10)/10).toLocaleString()+"%, "+Math.round(details.sumdiff).toLocaleString(),
                           position: "top",
+                          yAdjust: 4,
                           enabled: true
                         },
                     },
@@ -426,6 +427,7 @@ function createConfig(details) {
                           //yAdjust: 2,
                           fontColor: "rgba(0,0,0,0.5)",
                           xAdjust: -14,
+                          yAdjust: -4,
                           fontSize: 10,
                           content: '2021',
                           position: "top",
@@ -451,6 +453,7 @@ function createConfig(details) {
                           //yAdjust: 2,
                           fontColor: "rgba(0,0,0,0.5)",
                           xAdjust: -14,
+                          yAdjust: -4,
                           fontSize: 10,
                           content: '2022',
                           position: "top",
@@ -934,6 +937,8 @@ function calcExcess(config,byYearStart,addProgn,useECDCData) {
                     (typeof avg.data[i]=='undefined')) {
                     progn.data.push(undefined)
                 } else {
+                    //if (config.data.cocode=="NI") 
+                    //  console.log(config.data.cocode+": lCasWix: "+lastCasesCWix+"/"+labels[lastCasesCWix]+", i: "+i+"/"+labels[i])
                     lastProgn=i
                     if (i==lastCasesCWix-1) {
                         prognSumExcess=sumExcess
@@ -945,7 +950,7 @@ function calcExcess(config,byYearStart,addProgn,useECDCData) {
                             
                             if (covid.data[i]/avg.data[i]<0.05) {
                                 prognExc=covid.data[i] //low case# fix
-                                if (covid.data[i]>1) Math.min(prognExc/covid.data[i],5)
+                                if (covid.data[i]>1) prognFactor=Math.min(prognExc/covid.data[i],5)
                                 else prognFactor=1 
                                 prognFactorReduce=0.6
                             } else {
@@ -968,7 +973,8 @@ function calcExcess(config,byYearStart,addProgn,useECDCData) {
                         prognSumExcess+=prognExc
                         prognSumAvg+=avg.data[i]
                     }
-                    //console.log(""+i+": c:"+covid.data[i]+"/a:"+avg.data[i]+"/"+prognSumExcess+"/"+prognSumAvg)
+                    //if (config.data.cocode=="NI")
+                    //  console.log(""+i+": covdata:"+covid.data[i]+"/cases:"+cases.data[i]+"/avg:"+avg.data[i]+"/psumex:"+prognSumExcess+"/psumavg:"+prognSumAvg+"/usepf:"+usePrognFactor+"/pfact:"+prognFactor)
                     progn.data.push(avg.data[i]+prognExc)
                 }
             }
