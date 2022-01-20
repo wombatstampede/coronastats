@@ -54,6 +54,14 @@ var opt = {
                     if (hideHidden && data.datasets[item.datasetIndex].hidden) return false
                     else return true
                 }
+            },
+            onClick: function (e, legendItem) {
+                var index = legendItem.datasetIndex
+                var ci = this.chart
+                var ds = ci.data.datasets[index]
+                //console.log("ix: "+index+"hid: "+ds.hidden)
+                ds.hidden=!ds.hidden
+                ci.update()
             }
         },
         scales: {
