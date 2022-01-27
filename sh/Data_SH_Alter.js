@@ -75,3 +75,19 @@ var chdata2={
 		},
 	}
 }
+var chdata4={ 
+	type: 'horizontalBar',
+	data: {
+		datasets: [{
+			label: 'Aktive Fälle in % der Bevölkerung/Altersgruppe',
+			data: [2.442,2.392,4.997,3.973,2.359,0.685,0.646
+			],
+		}]
+	},
+	options: {
+		legend: { display: false },
+		scales: {
+			yAxes: [{type: 'category', labels: ["Alle","00-04","05-14","15-34","35-59","60-79","80+"]}],
+		},
+	}
+}

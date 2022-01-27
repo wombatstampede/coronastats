@@ -5,7 +5,7 @@
 <meta property="og:image" content="index_sh_alter.jpg" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="de_DE" />
-<meta property="og:updated_time" content="2022-01-27T07:17:57+01:00" />
+<meta property="og:updated_time" content="2022-01-27T14:29:32+01:00" />
 <title>Altersverteilung der COVID-19-Fälle in Schleswig-Holstein</title>
 <link rel="stylesheet" href="../css/style.css" media="screen" type="text/css">
 <link rel="stylesheet" media="screen" href="Chart.min.css"> 
@@ -26,6 +26,7 @@
 <canvas id="myChart3" style="width:850px;height: 250px;"></canvas>
 <!-- <br/><canvas id="legend" style="width:990px;height: 50px;padding-left:35px"></canvas> -->
 <br/><canvas id="myChart2" style="width:990px;height: 150px;"></canvas>
+<br/><canvas id="myChart4" style="width:990px;height: 150px;"></canvas>
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
 <li>Aktive Fälle: Die aktiven Fälle ergeben sich (lt. RKI) aus der Zahl der übermittelten Fälle abzüglich der Todesfälle 
@@ -36,6 +37,7 @@ und der <strong>geschätzten</strong> Zahl der Genesenen. Genauere Angaben dazu 
 var ctx = document.getElementById('myChart').getContext('2d');
 var ctx2 = document.getElementById('myChart2').getContext('2d');
 var ctx3 = document.getElementById('myChart3').getContext('2d');
+var ctx4 = document.getElementById('myChart4').getContext('2d');
 //var cleg= document.getElementById('legend').getContext('2d');
 
 var chdata3=JSON.parse(JSON.stringify(chdata));
@@ -248,6 +250,17 @@ chdata2.options.title= {
             text: "Schleswig-Holstein: Aktive Fälle (Quelle:RKI)"
         }
 
+//aktive Fälle %
+
+chdata4.data.datasets[0].backgroundColor = window.chartColors.blue
+chdata4.options.responsive=false
+chdata4.options.animation=false
+chdata4.options.title= {
+            display: true,
+            text: "Schleswig-Holstein: Aktive Fälle in % der Bevölkerung/Altersgruppe (Quelle:RKI)"
+        }
+
+
 //Aktive Fälle: Die aktiven Fälle ergeben sich (lt. RKI) aus der Zahl der übermittelten Fälle abzüglich der Todesfälle 
 //und der geschätzten Zahl der Genesenen. Genauere Angaben dazu finden sich in den Situationsberichten des RKI.
 
@@ -275,6 +288,7 @@ var myChart=new Chart(ctx,chdata)
 //var myLeg=new Chart(cleg,legenddata)
 var myChart3=new Chart(ctx3,chdata3)
 var myChart2=new Chart(ctx2,chdata2)
+var myChart4=new Chart(ctx2,chdata4)
 
 //**********************************************************************************************
 
