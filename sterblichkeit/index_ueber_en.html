@@ -124,6 +124,15 @@ Die Sterbefälle/Übersterblichkeit stammen vom CDC. Die Sterbefälle entspreche
 //    var coInclude="*"
 /****************************/
 
+var tr_tab = {
+    ix: {"de-DE":0,"en-EN":1},
+    tab: {
+       "Übersterblichkeit %": [ ,"excess mortality %"],
+       "KW": [,"CW"],
+    }
+}
+
+
 //fix/workaround for wkhtmltoimage
 Function.prototype.bind = Function.prototype.bind || function (thisp) {
   var fn = this;

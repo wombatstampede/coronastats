@@ -117,10 +117,50 @@ Die Sterbefälle/Übersterblichkeit stammen vom CDC. Die Sterbefälle entspreche
 <script>
 
 /****************************/
+    var loc = "de-DE"
+//    var loc = "en-EN"
     var coInclude="DE UK BG RO RU US"
 //    var coInclude="DE CH AT DK BE NL FR SE CZ EL ES IT PL NO PT UK BG FI HR HU RO RS SI SK US"
 //    var coInclude="*"
 /****************************/
+
+var tr_tab = {
+    ix: {"de":0,"en":1},
+    tab: {
+       "Überst.":[,"exc.mort."],
+       "Übersterblichkeit %": [ ,"excess mortality %"],
+       "Übersterblichkeit": [ ,"excess mortality"],
+       "KW": [,"CW"],
+       "Sterbefälle je KW":[,"Deaths per CW"],
+       "Sterbefälle je Monat":[,"Deaths per month"],
+       "Ausgewählter Bereich":[,"selected range"],
+       "Wochen":[,"weeks"],
+       "Monate":[,"months"],
+       "(Nur für Bereiche summiert, in denen Werte für Sterbefälle (2020-) verfügbar sind.)":
+                [,"(Only aggregated for ranges where mortality values (2020-) are available.)"],
+       "Inklusive Prognosewerte:":[,"including extrapolated values"],
+    }
+}
+
+//translate string and fill template arguments {n} if any
+String.prototype.tr = function() {
+    var s = this,
+        i = arguments.length;
+    var locsub=loc.substr(0,2)
+    var locix=tr_tab.ix[locsub]
+    if (typeof tr_tab.tab[s]!== 'undefined') {
+        if (typeof tr_tab.tab[s][locix]!== 'undefined') {
+            s=tr_tab.tab[s][locix]
+        }
+    }
+
+    while (i--) { //replace {n} arguments if any
+        s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
+    }
+    return s;
+}
+
+
 
 //fix/workaround for wkhtmltoimage
 Function.prototype.bind = Function.prototype.bind || function (thisp) {
@@ -133,6 +173,8 @@ Function.prototype.bind = Function.prototype.bind || function (thisp) {
 
 //var ctx = document.getElementById('myChart').getContext('2d');
 function createConfig(details) {
+    tr_labels(details)
+    
     return {
         type:'line',
         data: details,
@@ -142,7 +184,7 @@ function createConfig(details) {
             //maintainAspectRatio: false,
             title: {
                 display: true,
-                text: details.coname,
+                text: tr_field_suffix(details,'coname'),
             },
             legend: {
                 labels: {
@@ -190,8 +232,8 @@ function createConfig(details) {
                         var case2020 = data._cases.data[item.index]
                         var avg = data._avg.data[item.index]
                         //(Math.round(excess.data[lastCasesCWix]*10)/10)+"%
-                        if (label.substr(0,4)=='Über') {
-                            return 'Überst.: '+(Math.round(((case2020-avg)/avg)*1000)/10).toLocaleString()+"%, "
+                        if (label.substr(0,4)=='Übersterblichkeit'.tr().substr(0,4)) {
+                            return 'Überst.'.tr()+': '+(Math.round(((case2020-avg)/avg)*1000)/10).toLocaleString()+"%, "
                                         +Math.round(case2020-avg).toLocaleString()
                                     +', ∑ '+(Math.round(item.value*10)/10).toLocaleString()
                                     +'%, '+Math.round(data._excsum[item.index]).toLocaleString();
@@ -224,7 +266,7 @@ function createConfig(details) {
                                 else {
                                     if (details.interval=='week')
                                         //return [value.substr(5,2),value.substr(0,4)]
-                                        return value.substr(0,4) + " KW " + value.substr(5,2)
+                                        return value.substr(0,4) + " "+"KW".tr()+" " + value.substr(5,2)
                                     else
                                         return value.substr(0,4) + " / " + value.substr(5,2)
                                 }
@@ -255,7 +297,7 @@ function createConfig(details) {
                     position: 'right',
                     scaleLabel: {
                         display: true,
-                        labelString: (details.interval=='week')?'Sterbefälle je KW':'Sterbefälle je Monat',
+                        labelString: (details.interval=='week')?'Sterbefälle je KW'.tr():'Sterbefälle je Monat'.tr(),
                         lineHeight: 1,
                         fontSize:10,
                         padding:0,
@@ -466,6 +508,38 @@ function createConfig(details) {
     }
 }
 
+function tr_labels(details) {
+    details.datasets.forEach (function(item) {
+        if (typeof item.label_orig === 'undefined') {
+            item.label_orig = item.label //save original item text to be repeatable
+        }
+        item.label=item.label_orig.tr() //translate labels
+    });
+}
+
+function tr_field_suffix(obj,fieldix) {
+    var lsuffix=loc.substr(0,2).toUpperCase()
+    
+    if (obj[fieldix+'_'+lsuffix] !== 'undefined') {
+        return obj[fieldix+'_'+lsuffix]
+    } else {
+            return obj[fieldix]
+    }
+}
+
+function changeLng(newLoc) {
+    loc=newLoc //global variable loc
+    //var lsuffix=substr(loc,0,2).toUpperCase()
+
+    for (var key in charts) {
+        //charts[key].config = createConfig(charts[key].config.data)
+        tr_labels(charts[key].data) //.config
+        charts[key].config.title.text = tr_field_suffix(charts[key].data,'coname')
+        
+        charts[key].chart.update()
+    }
+}
+
     
 //**********************************************************************************************
 var charts={}
@@ -504,10 +578,7 @@ window.onload = function() {
         div.appendChild(divInfo)
         
         container.appendChild(div)
-
-
-
-
+        
         var ctx = canvas.getContext('2d')
         var config = createConfig(details)
         calcExcess(config,byYearStart,addProgn,useECDCData)
@@ -523,6 +594,7 @@ window.onload = function() {
         addCountrySelect(details.cocode,details.coname,coShow)
         
     });
+    changeLng("de-DE")
 }
 
 //**********************************************************************************************
