@@ -30,7 +30,8 @@
 <!-- <p><strong>Hinweis: Aufgrund von Umstellungen in der Datenquelle wird diese Grafik momentan nicht aktualisiert.</strong></p> -->
 <div id="countySelect"></div> 
 <div id="slider" style="left:10px;width:890px"></div>
-<canvas id="myChart" style="width:990px;height: 700px;"></canvas>
+<canvas id="myChart" style="width:990px;height: 500px;"></canvas>
+<canvas id="myChart2" style="width:990px;height: 500px;"></canvas>
 <br/>
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
@@ -41,6 +42,7 @@
 </ul>
 <script>
 var ctx = document.getElementById('myChart').getContext('2d');
+var ctx2 = document.getElementById('myChart2').getContext('2d');
 var currentCounty="SH"
 
 var zoomed=false
@@ -72,10 +74,10 @@ var opt = {
         tooltips: {
             callbacks: {
                 label: function(t, d) {
-                    return "hello";
-                    /*var data = d.datasets[t.datasetIndex].data[t.index]
+                    /*return "hello";*/
+                    var data = d.datasets[t.datasetIndex].data[t.index]
                     return [d.datasets[t.datasetIndex].label +
-                        ': '+d.labels[data.x] + ', ' + data.y+'%'];*/
+                        ': '+d.labels[data.x] + ', ' + data.y+'%'];
                 }
             }
         },
@@ -109,10 +111,6 @@ var opt = {
         annotation: {
             annotations: [
             ]
-        },
-        tooltips: {
-            callbacks: {
-            },        
         }
 }
 var cht={
@@ -120,11 +118,74 @@ var cht={
         data: chdata[currentCounty],
         options: opt
         }
+        
+var opt2 = {
+        animation: false,
+        responsive: false,
+        title: {
+            display: true,
+            text: ("COVID-19 Varianten skaliert, Stand: "+maxdate)
+        },
+        legend: {
+            position: 'right',         
+            labels: {
+                boxWidth: 15,
+                /*filter: function (item,data) {
+                    if (item.text.indexOf('Prognose') == -1) return item
+                    else return false
+                }*/
+            },
+            onClick: function (e, legendItem) {
+                var index = legendItem.datasetIndex
+                var ci = this.chart
+                var ds = ci.data.datasets[index]
+                ds.hidden=!ds.hidden
+                ci.update() 
+            }
+        },
+       /* tooltips: {
+            callbacks: {
+                label: function(t, d) {
+                    var data = d.datasets[t.datasetIndex].data[t.index]
+                    return [d.datasets[t.datasetIndex].label +
+                        ': '+d.labels[data.x] + ', ' + data.y+'%'];
+                }
+            }
+        },*/
+        scales: {
+            yAxes: [{
+                id: 'first-y-axis',
+                position: 'right',
+                stacked: true,
+            },
+            ],
+            xAxes: [{
+                id: 'first-x-axis',
+                stacked: true,
+            },
+            ]
+        },
+        annotation: {
+            annotations: [
+            ]
+        },
+        tooltips: {
+        }
+}
+var cht2={
+        type:'bar',
+        data: chdata2[currentCounty],
+        options: opt2
+        }
+        
+        
+        
 setChtTitle(currentCounty)
 //opt.scales.xAxes[0].labels=cht.data.labels
 
 function setChtTitle(ccode) {
     cht.options.title.text="COVID-19 Varianten in "+chdata[ccode]._name+", Stand: "+maxdate
+    cht2.options.title.text="COVID-19 Varianten skaliert auf Fälle in "+chdata[ccode]._name+", Stand: "+maxdate
 }
 
 
@@ -139,6 +200,7 @@ for (var key in chdata) {
 }
 
 var myChart=new Chart(ctx,cht)
+var myChart2=new Chart(ctx2,cht2)
 
 
 
@@ -169,21 +231,19 @@ function selectCounty(ccode) {
         for (var i=0;i<cht.data.datasets.length;i++) {
             chdata[ccode].datasets[i].hidden=cht.data.datasets[i].hidden
         }
+        for (var i=0;i<cht2.data.datasets.length;i++) {
+            chdata2[ccode].datasets[i].hidden=cht2.data.datasets[i].hidden
+        }
 
         cht.data=chdata[ccode]
+        cht2.data=chdata2[ccode]
         setChtTitle(ccode)
         updChtSlider()
         myChart.update()
+        myChart2.update()
     }
 }
 
-function yZoom() {
-    zoomed=!zoomed
-    setBtnState('btnzoom',zoomed?'active':'')
-    updChtSlider()
-    myChart.update()
-}
- 
 function getBtnState(id) {
     var elem = document.getElementById(id);
     return (elem.getAttribute('data-state')=='active')
