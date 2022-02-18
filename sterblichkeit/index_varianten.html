@@ -29,13 +29,19 @@
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen</a> <!-- <a class="button button-outline" id="btnzoom" data-state="notactive" href="javascript:yZoom()">Zoom</a> -->
 <!-- <p><strong>Hinweis: Aufgrund von Umstellungen in der Datenquelle wird diese Grafik momentan nicht aktualisiert.</strong></p> -->
 <div id="countySelect"></div> 
-<div id="slider" style="left:10px;width:890px"></div>
 <canvas id="myChart" style="width:990px;height: 500px;"></canvas>
 <canvas id="myChart2" style="width:990px;height: 500px;"></canvas>
 <br/>
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
+<li><strong>Repräsentativ?</strong><br/>
+Die Charts basieren auf sequenzierten Stichproben. An Tagen, an denen die Datenlage besonders "dünn" ist, wird dies durch "kleine" Punkte (Chart 1) bzw. transparente Balken (Chart 2) verdeutlicht. Insgesamt ist die Größe der Stichproben aktuell generell recht klein, insbesondere bei der Betrachtung je Bundesland.
+</li>
+<li><strong>Bundesland?</strong><br/>
+Die Zuordnung auf Bundesländer erfolgt lediglich anhand der Postleitzahlen der einsendenden Labore. Eine Gewißheit, daß die Proben aus dem jeweiligen Bundesland des Labores stammen besteht nicht.
+</li>
 <li><strong>Quellen:</strong><br/>
+<a href="https://github.com/robert-koch-institut/SARS-CoV-2-Sequenzdaten_aus_Deutschland">https://github.com/robert-koch-institut/SARS-CoV-2-Sequenzdaten_aus_Deutschland</a></br>
 <a href="https://github.com/corneliusroemer/desh-data/">https://github.com/corneliusroemer/desh-data/</a></br>
 <a href="https://github.com/robert-koch-institut/SARS-CoV-2_Infektionen_in_Deutschland">https://github.com/robert-koch-institut/SARS-CoV-2_Infektionen_in_Deutschland</a>
 </li>
@@ -118,7 +124,7 @@ var cht={
         data: chdata[currentCounty],
         options: opt
         }
-        
+
 var opt2 = {
         animation: false,
         responsive: false,
@@ -143,15 +149,15 @@ var opt2 = {
                 ci.update() 
             }
         },
-       /* tooltips: {
+        tooltips: {
             callbacks: {
                 label: function(t, d) {
                     var data = d.datasets[t.datasetIndex].data[t.index]
                     return [d.datasets[t.datasetIndex].label +
-                        ': '+d.labels[data.x] + ', ' + data.y+'%'];
+                        ': skaliert: '+ data];
                 }
             }
-        },*/
+        },
         scales: {
             yAxes: [{
                 id: 'first-y-axis',
@@ -165,18 +171,23 @@ var opt2 = {
             },
             ]
         },
+/*        elements: {
+            rectangle: {
+                backgroundColor: cht2Background,
+            }
+        },*/
         annotation: {
             annotations: [
             ]
         },
         tooltips: {
         }
-}
+};
 var cht2={
         type:'bar',
         data: chdata2[currentCounty],
         options: opt2
-        }
+};
         
         
         
@@ -185,9 +196,23 @@ setChtTitle(currentCounty)
 
 function setChtTitle(ccode) {
     cht.options.title.text="COVID-19 Varianten in "+chdata[ccode]._name+", Stand: "+maxdate
-    cht2.options.title.text="COVID-19 Varianten skaliert auf Fälle in "+chdata[ccode]._name+", Stand: "+maxdate
+    cht2.options.title.text="COVID-19 Varianten skaliert auf 7-Tg. Inzidenz in "+chdata[ccode]._name+", Stand: "+maxdate
 }
 
+//only called once per dataset? (of no use here)
+function cht2Background(ctx) {
+    var ds = ctx.dataset; //[ctx.datasetIndex];
+    var cfg = ctx.chart.config;
+    var co = cfg.data._bgcolors[ds._colorix];
+    var cnt = cfg.data._data_count[ds.data[ctx.dataIndex]];
+    
+    /*if (cnt) {
+        var alpha = Math.min(cnt/200,1);
+        co = co.substr(0,co.length-2)+alpha+")" //replace alpha original-value: "1)"
+        console.log("bg: "+co);
+    }*/
+	return co;
+}
 
 //**********************************************************************************************
 
@@ -238,7 +263,6 @@ function selectCounty(ccode) {
         cht.data=chdata[ccode]
         cht2.data=chdata2[ccode]
         setChtTitle(ccode)
-        updChtSlider()
         myChart.update()
         myChart2.update()
     }
@@ -253,53 +277,6 @@ function setBtnState(id,strState) {
     var elem = document.getElementById(id);
     if (elem) elem.setAttribute('data-state',strState)
 }
-
-/*********** Slider *************************/
-var slider = document.getElementById('slider')
-
-noUiSlider.create(slider, {
-    start: [0, cht.data.datasets[0].data.length-1],
-    connect: true,
-    range: {
-        'min': 0,
-        'max': cht.data.labels.length-1
-    },
-    step: 1
-})
-slider.style.width=(myChart.chartArea.right-myChart.chartArea.left+1)+'px'
-slider.style.left=(myChart.chartArea.left)+'px'
-
-slider.noUiSlider.on('update', function (values,handle) {
-
-    updChtSlider()
-    myChart.update()
-    })
-
-function updChtSlider() {
-    var chtRange = slider.noUiSlider.get()
-    var sMin=Math.round(chtRange[0])
-    var sMax=Math.round(chtRange[1])
-    var xA=cht.options.scales.xAxes[0]
-    var yA=cht.options.scales.yAxes[0]
-    var xlb=cht.data.labels
-/*    if (zoomed) {
-        var cmax=0
-        for (i=0;i<cht.data.datasets.length;i++) { 
-            onemax=Math.max(...cht.data.datasets[i].data.filter((el,ix) => (ix>=sMin && ix<=sMax)))
-            if (onemax>cmax)
-                cmax=onemax
-        }
-        yA.ticks.max=cmax
-    } else {
-        yA.ticks.max=maxhosp
-    }*/
-/*    xA.ticks.min=xlb[sMin]
-    xA.ticks.max=xlb[sMax]*/
-    
-/*    xA.ticks.min=sMin
-    xA.ticks.max=sMax*/
-}
-
 
 
 //**********************************************************************************************
