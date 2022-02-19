@@ -52,7 +52,7 @@ var ctx2 = document.getElementById('myChart2').getContext('2d');
 var currentCounty="SH"
 
 var zoomed=false
-
+/*
 var opt = {
         animation: false,
         responsive: false,
@@ -64,10 +64,6 @@ var opt = {
             position: 'right',         
             labels: {
                 boxWidth: 15,
-                /*filter: function (item,data) {
-                    if (item.text.indexOf('Prognose') == -1) return item
-                    else return false
-                }*/
             },
             onClick: function (e, legendItem) {
                 var index = legendItem.datasetIndex
@@ -80,7 +76,6 @@ var opt = {
         tooltips: {
             callbacks: {
                 label: function(t, d) {
-                    /*return "hello";*/
                     var data = d.datasets[t.datasetIndex].data[t.index]
                     return [d.datasets[t.datasetIndex].label +
                         ': '+d.labels[data.x] + ', ' + data.y+'%'];
@@ -119,11 +114,76 @@ var opt = {
             ]
         }
 }
+
 var cht={
         type:'bubble',
         data: chdata[currentCounty],
         options: opt
         }
+*/
+var opt3 = {
+        animation: false,
+        responsive: false,
+        title: {
+            display: true,
+            text: ("COVID-19 Varianten in %, Stand: "+maxdate)
+        },
+        legend: {
+            position: 'right',         
+            labels: {
+                boxWidth: 15,
+            },
+            onClick: function (e, legendItem) {
+                var index = legendItem.datasetIndex
+                var ci = this.chart
+                var ds = ci.data.datasets[index]
+                ds.hidden=!ds.hidden
+                ci.update() 
+            }
+        },
+        tooltips: {
+            callbacks: {
+                label: function(t, d) {
+                    var data = d.datasets[t.datasetIndex].data[t.index]
+                    return [d.datasets[t.datasetIndex].label +
+                        ': '+ data + ' %'];
+                }
+            }
+        },
+        scales: {
+            yAxes: [{
+                id: 'first-y-axis',
+                position: 'right',
+                stacked: true,
+                ticks: {
+                    maxTicksLimit: 20,
+                    min:0,
+                    max:100,
+                    callback: function(value, index, values) {
+                        return value + "%"
+                    }
+                },                
+            },
+            ],
+            xAxes: [{
+                id: 'first-x-axis',
+                stacked: true,
+            },
+            ]
+        },
+        annotation: {
+            annotations: [
+            ]
+        },
+        tooltips: {
+        }
+}
+var cht={
+        type:'bar',
+        data: chdata3[currentCounty],
+        options: opt3
+        }
+
 
 var opt2 = {
         animation: false,
@@ -195,8 +255,9 @@ setChtTitle(currentCounty)
 //opt.scales.xAxes[0].labels=cht.data.labels
 
 function setChtTitle(ccode) {
-    cht.options.title.text="COVID-19 Varianten in "+chdata[ccode]._name+", Stand: "+maxdate
-    cht2.options.title.text="COVID-19 Varianten skaliert auf 7-Tg. Inzidenz in "+chdata[ccode]._name+", Stand: "+maxdate
+//    cht.options.title.text="COVID-19 Varianten in "+chdata[ccode]._name+", Stand: "+maxdate
+    cht.options.title.text="COVID-19 Varianten Stichprobenanteil in %"+chdata3[ccode]._name+", Stand: "+maxdate
+    cht2.options.title.text="COVID-19 Varianten skaliert auf 7-Tg. Inzidenz in "+chdata2[ccode]._name+", Stand: "+maxdate
 }
 
 //only called once per dataset? (of no use here)
@@ -217,11 +278,12 @@ function cht2Background(ctx) {
 //**********************************************************************************************
 
 for (var key in chdata) {
-    addCountySelect(key,chdata[key]._name,(key==currentCounty))
+//    addCountySelect(key,chdata[key]._name,(key==currentCounty))
+    addCountySelect(key,chdata3[key]._name,(key==currentCounty))
     
-    for (var i=0;i<chdata[key].datasets.length;i++) {
+    /*for (var i=0;i<chdata[key].datasets.length;i++) {
         chdata[key].datasets[i].pointHitRadius=15
-    }
+    }*/
 }
 
 var myChart=new Chart(ctx,cht)
@@ -254,13 +316,15 @@ function selectCounty(ccode) {
 
         //copy hidden state of datasets
         for (var i=0;i<cht.data.datasets.length;i++) {
-            chdata[ccode].datasets[i].hidden=cht.data.datasets[i].hidden
+//            chdata[ccode].datasets[i].hidden=cht.data.datasets[i].hidden
+            chdata3[ccode].datasets[i].hidden=cht.data.datasets[i].hidden
         }
         for (var i=0;i<cht2.data.datasets.length;i++) {
             chdata2[ccode].datasets[i].hidden=cht2.data.datasets[i].hidden
         }
 
-        cht.data=chdata[ccode]
+//        cht.data=chdata[ccode]
+        cht.data=chdata3[ccode]
         cht2.data=chdata2[ccode]
         setChtTitle(ccode)
         myChart.update()
