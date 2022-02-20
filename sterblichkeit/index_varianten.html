@@ -259,14 +259,26 @@ var opt4 = {
         responsive: false,
         title: {
             display: true,
-            text: ("Stichprobenanteil in % der Fälle je BL, Stand: "+maxdate)
-//            text: ("Stichprobenanteil in % der Fälle (7-Tg. Mittel) je BL, Stand: "+maxdate)
+/*            text: ("Stichprobenanteil in % der Fälle je BL, Stand: "+maxdate)*/
+            text: ("Stichprobenanteil in % der Fälle (7-Tg. Mittel) je BL, Stand: "+maxdate)
         },
         legend: {
             position: 'right',         
             labels: {
                 boxWidth: 15,
             },
+        },
+        tooltips: {
+            callbacks: {
+                label: function(t, d) {
+                    var tt = d.datasets[t.datasetIndex]._tipdata[t.index]
+                    if (tt.cnt7!="")
+                        return [d.datasets[t.datasetIndex].label +
+                            ': '+ tt.cnt7 + " Stichproben aus " + tt.case7+" Fällen (7-Tg.)"];
+                    else
+                        return [d.datasets[t.datasetIndex].label + ": keine Stichproben"];
+                }
+            }
         },
         scales: {
             yAxes: [{
