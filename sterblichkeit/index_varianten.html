@@ -32,7 +32,7 @@
 <a class="button button-outline" data-state="active" id="rbtn1" href="javascript:selectReason(1)">X,N</a>
 <a class="button button-outline" data-state id="rbtn2" href="javascript:selectReason(2)">Alle: X,N,Y,A</a>
 </div> 
-</br>Bundesland:<div id="countySelect"></div> 
+Bundesland:<div id="countySelect"></div> 
 <canvas id="myChart" style="width:990px;height: 350px;"></canvas>
 <canvas id="myChart2" style="width:990px;height: 350px;"></canvas>
 <canvas id="myChart4" style="width:990px;height: 500px;"></canvas>
@@ -44,6 +44,11 @@ Die Charts basieren auf sequenzierten Stichproben. An Tagen, an denen die Datenl
 </li>
 <li><strong>Bundesland?</strong><br/>
 Die Zuordnung auf Bundesländer erfolgt lediglich anhand der Postleitzahlen der einsendenden Labore. Eine Gewißheit, daß die Proben aus dem jeweiligen Bundesland des Labores stammen besteht nicht.
+</li>
+<li><strong>Anlass der Sequenzierung?</strong><br/>
+Die Buchstaben repräsentieren den Inhalt von SEQ_REASON, siehe: <a href="https://github.com/corneliusroemer/desh-data/">https://github.com/corneliusroemer/desh-data/</a>
+</br><strong>X,N:</strong> Steht für unbekannte Gründe und zufällige Stichproben. Hier wird davon ausgegangen, daß die Anteile verschiedener Varianten keine gezielte Verzerrung aufweisen.
+</br><strong>Alle:</strong> In diesem Fall werden alle Sequenzierungsergebnisse einbezogen. Auch jene, die gezielt - z.B. aufgrund eines Verdachts auf VOC - sequenziert wurden. Insbesondere zu Beginn der Verbreitung einer VOC (Omikron) ist hierdurch mit einem überhöhten Anteil der VOC zu rechnen.
 </li>
 <li><strong>Quellen:</strong><br/>
 <a href="https://github.com/robert-koch-institut/SARS-CoV-2-Sequenzdaten_aus_Deutschland">https://github.com/robert-koch-institut/SARS-CoV-2-Sequenzdaten_aus_Deutschland</a></br>
@@ -273,6 +278,13 @@ var opt4 = {
             labels: {
                 boxWidth: 15,
             },
+            onClick: function (e, legendItem) {
+                var index = legendItem.datasetIndex
+                var ci = this.chart;
+                var ds = ci.data.datasets[index];
+                ds.hidden=!ds.hidden;
+                ci.update();
+            }
         },
         tooltips: {
             callbacks: {
@@ -387,7 +399,7 @@ function selectCounty(ccode,forced = false) {
 
         //copy hidden state of datasets
         
-        for (var rIx=1;rIx<reasonNum;rIx++) {
+        for (var rIx=1;rIx<=reasonNum;rIx++) {
             for (var i=0;i<cht.data.datasets.length;i++) {
     //            chdata[ccode].datasets[i].hidden=cht.data.datasets[i].hidden
                 chdata3[ccode+"_R"+rIx].datasets[i].hidden=cht.data.datasets[i].hidden
@@ -413,9 +425,12 @@ function selectReason(rIx) {
         setBtnState('rbtn'+reasonIx,'active');
 
         selectCounty(currentCounty,true);
-
-        for (var i=0;i<cht4.data.datasets.length;i++) {
-            chdata4["R"+rIx].datasets[i].hidden=cht4.data.datasets[i].hidden;
+        
+        for (var r=1;r<=reasonNum;r++) {
+            for (var i=0;i<cht4.data.datasets.length;i++) {
+                /*console.log("c4("+i+"): "+"R"+r+", h:"+chdata4["R"+r].datasets[i].hidden+" = "+cht4.data.datasets[i].hidden)*/
+                chdata4["R"+r].datasets[i].hidden=cht4.data.datasets[i].hidden;
+            }
         }
         cht4.data=chdata4["R"+reasonIx];
         myChart4.update()
