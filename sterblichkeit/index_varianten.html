@@ -28,7 +28,11 @@
 <a class="button" href="../">Inhalt</a>
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen</a> <!-- <a class="button button-outline" id="btnzoom" data-state="notactive" href="javascript:yZoom()">Zoom</a> -->
 <!-- <p><strong>Hinweis: Aufgrund von Umstellungen in der Datenquelle wird diese Grafik momentan nicht aktualisiert.</strong></p> -->
-<div id="countySelect"></div> 
+</br>Anlass der Sequenzierung:<div id="reasonSelect">
+<a class="button button-outline" data-state="active" id="rbtn1" href="javascript:selectReason(1)">X,N</a>
+<a class="button button-outline" data-state id="rbtn2" href="javascript:selectReason(2)">Alle: X,N,Y,A</a>
+</div> 
+</br>Bundesland:<div id="countySelect"></div> 
 <canvas id="myChart" style="width:990px;height: 350px;"></canvas>
 <canvas id="myChart2" style="width:990px;height: 350px;"></canvas>
 <canvas id="myChart4" style="width:990px;height: 500px;"></canvas>
@@ -36,7 +40,7 @@
 <h2 id="Anmerkungen">Anmerkungen</h2>
 <ul>
 <li><strong>Repräsentativ?</strong><br/>
-Die Charts basieren auf sequenzierten Stichproben. An Tagen, an denen die Datenlage besonders "dünn" ist, wird dies durch "kleine" Punkte (Chart 1) bzw. transparente Balken (Chart 2) verdeutlicht. Insgesamt ist die Größe der Stichproben aktuell generell recht klein, insbesondere bei der Betrachtung je Bundesland.
+Die Charts basieren auf sequenzierten Stichproben. An Tagen, an denen die Datenlage besonders "dünn" ist, wird dies transparente Balken verdeutlicht. Insgesamt ist die Größe der Stichproben aktuell recht klein, insbesondere bei der Betrachtung je Bundesland.
 </li>
 <li><strong>Bundesland?</strong><br/>
 Die Zuordnung auf Bundesländer erfolgt lediglich anhand der Postleitzahlen der einsendenden Labore. Eine Gewißheit, daß die Proben aus dem jeweiligen Bundesland des Labores stammen besteht nicht.
@@ -52,6 +56,8 @@ var ctx = document.getElementById('myChart').getContext('2d');
 var ctx2 = document.getElementById('myChart2').getContext('2d');
 var ctx4 = document.getElementById('myChart4').getContext('2d');
 var currentCounty="SH"
+var reasonIx=1; /* 1 = NX, 2 = ALL (SEQ_REASON) */
+var reasonNum=2;
 
 var zoomed=false
 /*
@@ -182,7 +188,7 @@ var opt3 = {
 }
 var cht={
         type:'bar',
-        data: chdata3[currentCounty],
+        data: chdata3[currentCounty+"_R"+reasonIx],
         options: opt3
         }
 
@@ -248,7 +254,7 @@ var opt2 = {
 
 var cht2={
         type:'bar',
-        data: chdata2[currentCounty],
+        data: chdata2[currentCounty+"_R"+reasonIx],
         options: opt2
 };
   
@@ -300,7 +306,8 @@ var opt4 = {
 };
 var cht4={
         type:'line',
-        data: chdata4,
+        data: chdata4["R"+reasonIx],
+        //data: chdata4,
         options: opt4
 };
         
@@ -311,8 +318,16 @@ setChtTitle(currentCounty)
 
 function setChtTitle(ccode) {
 //    cht.options.title.text="COVID-19 Varianten in "+chdata[ccode]._name+", Stand: "+maxdate
-    cht.options.title.text="COVID-19 Varianten Stichprobenanteil in "+chdata3[ccode]._name+", Stand: "+maxdate
-    cht2.options.title.text="COVID-19 Varianten skaliert auf 7-Tg. Inzidenz in "+chdata2[ccode]._name+", Stand: "+maxdate
+    var rStr;
+    if (reasonIx==1) rStr="X,N"
+    else rStr="Alle";
+    
+    cht.options.title.text="COVID-19 Varianten Stichprobenanteil in "+chdata3[ccode+'_R'+reasonIx]._name
+                            +", Sequenzierungsanlass: " + rStr + ", Stand: "+maxdate;
+    cht2.options.title.text="COVID-19 Varianten skaliert auf 7-Tg. Inzidenz in "+chdata2[ccode+'_R'+reasonIx]._name
+                             +", Sequenzierungsanlass: " + rStr + ", Stand: "+maxdate;
+    cht4.options.title.text="Sequenzierungsanteil in % der Fälle (7-Tg. Mittel) je BL "
+                             +", Anlass: " + rStr + ", Stand: "+maxdate;
 }
 
 //only called once per dataset? (of no use here)
@@ -334,7 +349,8 @@ function cht2Background(ctx) {
 
 for (var key in chdata) {
 //    addCountySelect(key,chdata[key]._name,(key==currentCounty))
-    addCountySelect(key,chdata3[key]._name,(key==currentCounty))
+    if (key == chdata3[key]._ccode + '_R1')
+        addCountySelect(chdata3[key]._ccode,chdata3[key]._name,(chdata3[key]._ccode==currentCounty));
     
     /*for (var i=0;i<chdata[key].datasets.length;i++) {
         chdata[key].datasets[i].pointHitRadius=15
@@ -344,7 +360,6 @@ for (var key in chdata) {
 var myChart=new Chart(ctx,cht);
 var myChart2=new Chart(ctx2,cht2);
 var myChart4=new Chart(ctx4,cht4);
-
 
 
 function addCountySelect(ccode,cname,isActive) {
@@ -364,29 +379,50 @@ function addCountySelect(ccode,cname,isActive) {
 
 } 
 
-function selectCounty(ccode) {
-    if (ccode!=currentCounty) {
+function selectCounty(ccode,forced = false) {
+    if (forced || (ccode!=currentCounty)) {
         setBtnState('cbtn'+currentCounty,'')
         currentCounty=ccode
         setBtnState('cbtn'+currentCounty,'active')
 
         //copy hidden state of datasets
-        for (var i=0;i<cht.data.datasets.length;i++) {
-//            chdata[ccode].datasets[i].hidden=cht.data.datasets[i].hidden
-            chdata3[ccode].datasets[i].hidden=cht.data.datasets[i].hidden
-        }
-        for (var i=0;i<cht2.data.datasets.length;i++) {
-            chdata2[ccode].datasets[i].hidden=cht2.data.datasets[i].hidden
+        
+        for (var rIx=1;rIx<reasonNum;rIx++) {
+            for (var i=0;i<cht.data.datasets.length;i++) {
+    //            chdata[ccode].datasets[i].hidden=cht.data.datasets[i].hidden
+                chdata3[ccode+"_R"+rIx].datasets[i].hidden=cht.data.datasets[i].hidden
+            }
+            for (var i=0;i<cht2.data.datasets.length;i++) {
+                chdata2[ccode+"_R"+rIx].datasets[i].hidden=cht2.data.datasets[i].hidden
+            }
         }
 
 //        cht.data=chdata[ccode]
-        cht.data=chdata3[ccode]
-        cht2.data=chdata2[ccode]
+        cht.data=chdata3[ccode+"_R"+reasonIx]
+        cht2.data=chdata2[ccode+"_R"+reasonIx]
         setChtTitle(ccode)
         myChart.update()
         myChart2.update()
     }
 }
+
+function selectReason(rIx) {
+    if (rIx!=reasonIx) {
+        setBtnState('rbtn'+reasonIx,'');
+        reasonIx=rIx;
+        setBtnState('rbtn'+reasonIx,'active');
+
+        selectCounty(currentCounty,true);
+
+        for (var i=0;i<cht4.data.datasets.length;i++) {
+            chdata4["R"+rIx].datasets[i].hidden=cht4.data.datasets[i].hidden;
+        }
+        cht4.data=chdata4["R"+reasonIx];
+        myChart4.update()
+    }
+}
+
+
 
 function getBtnState(id) {
     var elem = document.getElementById(id);
