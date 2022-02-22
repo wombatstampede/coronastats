@@ -43,7 +43,7 @@ Bundesland:<div id="countySelect"></div>
 Die Charts basieren auf sequenzierten Stichproben. An Tagen, an denen die Datenlage besonders "dünn" ist, wird dies transparente Balken verdeutlicht. Insgesamt ist die Größe der Stichproben aktuell recht klein, insbesondere bei der Betrachtung je Bundesland.
 </li>
 <li><strong>Bundesland?</strong><br/>
-Die Zuordnung auf Bundesländer erfolgt lediglich anhand der Postleitzahlen der einsendenden Labore. Eine Gewißheit, daß die Proben aus dem jeweiligen Bundesland des Labores stammen besteht nicht.
+Die Zuordnung auf Bundesländer erfolgt lediglich anhand der Postleitzahlen der einsendenden Labore. Es ist davon auszugehen, daß bestenfalls ein grober räumlicher Zusammenhang zwischen Laborstandort und Testort besteht. 
 </li>
 <li><strong>Anlass der Sequenzierung?</strong><br/>
 Die Buchstaben repräsentieren den Inhalt von SEQ_REASON, siehe: <a href="https://github.com/corneliusroemer/desh-data/">https://github.com/corneliusroemer/desh-data/</a>
@@ -176,6 +176,14 @@ var opt3 = {
                         return value + "%"
                     }
                 },                
+            },
+            {
+                id: 'second-y-axis',
+                position: 'left',
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Anzahl',
+                }
             },
             ],
             xAxes: [{
@@ -359,7 +367,7 @@ function cht2Background(ctx) {
 
 //**********************************************************************************************
 
-for (var key in chdata) {
+for (var key in chdata3) {
 //    addCountySelect(key,chdata[key]._name,(key==currentCounty))
     if (key == chdata3[key]._ccode + '_R1')
         addCountySelect(chdata3[key]._ccode,chdata3[key]._name,(chdata3[key]._ccode==currentCounty));
