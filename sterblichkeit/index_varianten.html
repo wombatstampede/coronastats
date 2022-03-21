@@ -29,8 +29,9 @@
 <a class="button button-outline" href="#Anmerkungen">Anmerkungen</a> <!-- <a class="button button-outline" id="btnzoom" data-state="notactive" href="javascript:yZoom()">Zoom</a> -->
 <!-- <p><strong>Hinweis: Aufgrund von Umstellungen in der Datenquelle wird diese Grafik momentan nicht aktualisiert.</strong></p> -->
 </br>Anlass der Sequenzierung:<div id="reasonSelect">
-<a class="button button-outline" data-state="active" id="rbtn1" href="javascript:selectReason(1)">X,N</a>
-<a class="button button-outline" data-state id="rbtn2" href="javascript:selectReason(2)">Alle: X,N,Y,A</a>
+<a class="button button-outline" data-state id="rbtn1" href="javascript:selectReason(1)">N</a>
+<a class="button button-outline" data-state="active" id="rbtn2" href="javascript:selectReason(2)">X,N</a>
+<a class="button button-outline" data-state id="rbtn3" href="javascript:selectReason(3)">Alle: X,N,Y,A</a>
 </div> 
 Bundesland:<div id="countySelect"></div> 
 <canvas id="myChart" style="width:990px;height: 350px;"></canvas>
@@ -47,8 +48,9 @@ Die Zuordnung auf Bundesländer erfolgt lediglich anhand der Postleitzahlen der 
 </li>
 <li><strong>Anlass der Sequenzierung?</strong><br/>
 Die Buchstaben repräsentieren den Inhalt von SEQ_REASON, siehe: <a href="https://github.com/corneliusroemer/desh-data/">https://github.com/corneliusroemer/desh-data/</a>
-</br><strong>X,N:</strong> Steht für unbekannte Gründe und zufällige Stichproben. Hier wird davon ausgegangen, daß die Anteile verschiedener Varianten keine gezielte Verzerrung aufweisen.
-</br><strong>Alle:</strong> In diesem Fall werden alle Sequenzierungsergebnisse einbezogen. Auch jene, die gezielt - z.B. aufgrund eines Verdachts auf VOC - sequenziert wurden. Insbesondere zu Beginn der Verbreitung einer VOC (Omikron) ist hierdurch mit einem überhöhten Anteil der VOC zu rechnen.
+</br><strong>N:</strong> Steht für zufällige Stichproben. Bei ausreichender Anzahl sollten diese Werte repräsentativ sein.
+</br><strong>X,N:</strong> Steht für unbekannte Gründe und zufällige Stichproben. Wenn (aktuell) wenig zufällige Stichproben verfügbar sind, stellt diese Auswahl ggf. einen Kompromiss dar. Verzerrungen sind möglich.
+</br><strong>Alle:</strong> In diesem Fall werden alle Sequenzierungsergebnisse einbezogen. Auch jene, die gezielt - z.B. aufgrund eines Verdachts auf VOC - sequenziert wurden. Insbesondere zu Beginn der Verbreitung einer VOC (z.B. Omikron) ist hierdurch mit einem überhöhten Anteil der VOC zu rechnen.
 </li>
 <li><strong>Quellen:</strong><br/>
 <a href="https://github.com/robert-koch-institut/SARS-CoV-2-Sequenzdaten_aus_Deutschland">https://github.com/robert-koch-institut/SARS-CoV-2-Sequenzdaten_aus_Deutschland</a></br>
@@ -60,8 +62,8 @@ var ctx = document.getElementById('myChart').getContext('2d');
 var ctx2 = document.getElementById('myChart2').getContext('2d');
 var ctx4 = document.getElementById('myChart4').getContext('2d');
 var currentCounty="SH"
-var reasonIx=1; /* 1 = NX, 2 = ALL (SEQ_REASON) */
-var reasonNum=2;
+var reasonIx=2; /* 1 = N 2 = NX, 3 = ALL (SEQ_REASON) */
+var reasonNum=3;
 
 var zoomed=false
 /*
