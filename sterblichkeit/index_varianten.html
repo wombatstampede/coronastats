@@ -340,7 +340,8 @@ setChtTitle(currentCounty)
 function setChtTitle(ccode) {
 //    cht.options.title.text="COVID-19 Varianten in "+chdata[ccode]._name+", Stand: "+maxdate
     var rStr;
-    if (reasonIx==1) rStr="X,N"
+    if (reasonIx==1) rStr="N"
+    else if (reasonIx==2) rStr="X,N"
     else rStr="Alle";
     
     cht.options.title.text="COVID-19 Varianten Stichprobenanteil in "+chdata3[ccode+'_R'+reasonIx]._name
