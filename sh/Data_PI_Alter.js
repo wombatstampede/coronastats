@@ -64,7 +64,7 @@ var chdata2={
 	data: {
 		datasets: [{
 			label: 'Aktive Fälle ',
-			data: [4813,98,706,1284,1985,569,163
+			data: [4538,91,663,1222,1861,540,154
 			],
 		}]
 	},
@@ -80,7 +80,7 @@ var chdata4={
 	data: {
 		datasets: [{
 			label: 'Aktive Fälle in % der Bevölkerung/Altersgruppe',
-			data: [1.523,0.652,2.378,1.955,1.725,0.831,0.735
+			data: [1.436,0.606,2.233,1.86,1.618,0.789,0.695
 			],
 		}]
 	},
