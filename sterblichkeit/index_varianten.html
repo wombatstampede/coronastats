@@ -140,7 +140,7 @@ var opt3 = {
         responsive: false,
         title: {
             display: true,
-            text: ("COVID-19 Varianten in %, Stand: "+maxdate)
+            text: ("COVID-19 Varianten in %, Letzte Daten von: "+maxdate)
         },
         legend: {
             position: 'right',         
@@ -212,7 +212,7 @@ var opt2 = {
         responsive: false,
         title: {
             display: true,
-            text: ("COVID-19 Varianten skaliert, Stand: "+maxdate)
+            text: ("COVID-19 Varianten skaliert, Letzte Daten von: "+maxdate)
         },
         legend: {
             position: 'right',         
@@ -280,7 +280,7 @@ var opt4 = {
         title: {
             display: true,
 /*            text: ("Stichprobenanteil in % der Fälle je BL, Stand: "+maxdate)*/
-            text: ("Stichprobenanteil in % der Fälle (7-Tg. Mittel) je BL, Stand: "+maxdate)
+            text: ("Stichprobenanteil in % der Fälle (7-Tg. Mittel) je BL, Letzte Daten von: "+maxdate)
         },
         legend: {
             position: 'right',         
@@ -345,11 +345,11 @@ function setChtTitle(ccode) {
     else rStr="Alle";
     
     cht.options.title.text="COVID-19 Varianten Stichprobenanteil in "+chdata3[ccode+'_R'+reasonIx]._name
-                            +", Sequenzierungsanlass: " + rStr + ", Stand: "+maxdate;
+                            +", Sequenzierungsanlass: " + rStr + ", Letzte Daten von: "+maxdate;
     cht2.options.title.text="COVID-19 Varianten skaliert auf 7-Tg. Inzidenz in "+chdata2[ccode+'_R'+reasonIx]._name
-                             +", Sequenzierungsanlass: " + rStr + ", Stand: "+maxdate;
+                             +", Sequenzierungsanlass: " + rStr + ", Letzte Daten von: "+maxdate;
     cht4.options.title.text="Sequenzierungsanteil in % der Fälle (7-Tg. Mittel) je BL "
-                             +", Anlass: " + rStr + ", Stand: "+maxdate;
+                             +", Anlass: " + rStr + ", Letzte Daten von: "+maxdate;
 }
 
 //only called once per dataset? (of no use here)
