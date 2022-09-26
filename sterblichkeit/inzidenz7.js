@@ -1,5 +1,5 @@
 var chdata={
-ecdc_date: '2020-12-14',
+ecdc_date: '2020-01-01',
 filled_up: 'Keine',
 labels: [],
 type: 'line',
