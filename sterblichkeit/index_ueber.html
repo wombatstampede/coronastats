@@ -514,6 +514,32 @@ function createConfig(details) {
                           enabled: true
                         },
                     },
+                    {
+                        type: "line",
+                        _tag: '_2023',
+                        mode: "vertical",
+                        scaleID: "x-axis-0",
+                        //value: (details.interval=='week')?'2021/01':'2021/01',
+                        //value: (details.labels.findIndex(flb => flb == "2021/01")-0.5),
+                        
+                        //findindex oder => führen zu syntax error beim preview erstellen
+                        value: (details.interval=='week')?(details.labels.findIndex(flb => flb == "2022/52")-3/7):details.labels.findIndex(flb => flb == "2022/12"),
+                        borderColor: 'rgba(0,0,0,0.5)',
+                        borderWidth: 1,
+                        label: {
+                          //backgroundColor: "red",
+                          backgroundColor: 'rgba(100,220,220,0)',
+                          //fontColor: window.chartColors.red,
+                          //yAdjust: 2,
+                          fontColor: "rgba(0,0,0,0.5)",
+                          xAdjust: -14,
+                          yAdjust: -4,
+                          fontSize: 10,
+                          content: '2023',
+                          position: "top",
+                          enabled: true
+                        },
+                    },
                 ]
             },
         }
