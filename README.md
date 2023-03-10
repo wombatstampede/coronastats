@@ -1,7 +1,7 @@
-## Update:no Update
+# Update:no Update
 Ab sofort wird die Site nicht mehr aktualisiert und auch nicht mehr auf github pages publiziert.
 
-# coronastats
+## coronastats
 
 Dieses Repository diente der Veröffentlichung von Auswertungen/Charts auf [https://wombatstampede.github.io/coronastats/](https://wombatstampede.github.io/coronastats/), die ich interessehalber als privates Projekt mit Hilfe verschiedener öffentlich verfügbarer Quellen erstellt habe.
 
