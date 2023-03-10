@@ -1,7 +1,11 @@
-# coronastats
-Dieses Repository dient der Veröffentlichung von Auswertungen/Charts auf [https://wombatstampede.github.io/coronastats/](https://wombatstampede.github.io/coronastats/), die ich interessehalber als privates Projekt mit Hilfe verschiedener öffentlich verfügbarer Quellen erstellt habe.
+## Update:no Update
+Ab sofort wird die Site nicht mehr aktualisiert und auch nicht mehr auf github pages publiziert.
 
-## Aktuell?
+# coronastats
+
+Dieses Repository diente der Veröffentlichung von Auswertungen/Charts auf [https://wombatstampede.github.io/coronastats/](https://wombatstampede.github.io/coronastats/), die ich interessehalber als privates Projekt mit Hilfe verschiedener öffentlich verfügbarer Quellen erstellt habe.
+
+## Aktuell? (nicht mehr, siehe oben)
 Die jeweiligen Charts enthalten entsprechende Datumsangaben.
 Ich werde versuchen, diese Auswertungen vorerst regelmäßig zu aktualisieren.
 
